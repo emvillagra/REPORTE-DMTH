@@ -1,299 +1,1415 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Mantenimiento Técnico SIPROSA</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        :root {
-            --siprosa-blue: #005696;
-            --siprosa-green: #8DC63F;
-        }
-        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .header-gradient { background: linear-gradient(90deg, #ffffff 0%, #f0f7ff 100%); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Ejecutivo — Mantenimiento SIPROSA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root {
+  --bg: #0a0e1a;
+  --bg2: #0f1422;
+  --bg3: #161c2e;
+  --bg4: #1d2540;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(0,200,240,0.2);
+  --cyan: #00c8f0;
+  --cyan2: #00e5ff;
+  --cyan-dim: rgba(0,200,240,0.12);
+  --cyan-glow: rgba(0,200,240,0.35);
+  --green: #22d07a;
+  --yellow: #f0b429;
+  --red: #f05252;
+  --orange: #f07820;
+  --text: #e8edf5;
+  --text2: #8a9bb8;
+  --text3: #5a6b88;
+  --font: 'Outfit', sans-serif;
+  --mono: 'Geist Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; overflow-x: hidden; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 999px; }
+
+/* HEADER */
+.header {
+  background: linear-gradient(90deg, #0a0e1a 0%, #0d1525 50%, #0a1220 100%);
+  border-bottom: 1px solid var(--border2);
+  padding: 14px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(20px);
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.logo-wrap { 
+  width: 44px; height: 44px; border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border2); background: rgba(0,200,240,0.05);
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
+.header-title { line-height: 1.2; }
+.header-title h1 { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; }
+.header-title p { font-size: 11px; color: var(--cyan); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.badge-live {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(34,208,122,0.1); border: 1px solid rgba(34,208,122,0.25);
+  color: var(--green); font-size: 11px; font-weight: 600;
+  padding: 5px 12px; border-radius: 99px; letter-spacing: 0.04em;
+}
+.badge-live::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green); box-shadow: 0 0 6px var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+  font-family: var(--font); font-size: 13px; font-weight: 600; 
+  transition: all .2s ease; white-space: nowrap;
+}
+.btn-cyan { background: var(--cyan); color: #0a0e1a; }
+.btn-cyan:hover { background: var(--cyan2); box-shadow: 0 0 20px var(--cyan-glow); transform: translateY(-1px); }
+.btn-outline {
+  background: transparent; color: var(--text2);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--border2); color: var(--cyan); background: var(--cyan-dim); }
+.btn-red { background: rgba(240,82,82,0.15); color: var(--red); border: 1px solid rgba(240,82,82,0.25); }
+.btn-red:hover { background: rgba(240,82,82,0.25); }
+.btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+/* MAIN */
+.main { padding: 24px 28px; max-width: 1800px; margin: 0 auto; }
+
+/* STATUS BAR */
+.statusbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; padding: 10px 16px;
+  background: var(--bg3); border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.statusbar-left { display: flex; align-items: center; gap: 20px; }
+.status-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+.status-item strong { color: var(--text); font-weight: 600; }
+.status-sep { width: 1px; height: 16px; background: var(--border); }
+#last-update { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+/* SECTION TITLE */
+.section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* FILTERS */
+.filters-panel {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 20px; margin-bottom: 24px;
+}
+.filters-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;
+  align-items: end;
+}
+.filter-group label {
+  display: block; font-size: 11px; font-weight: 600;
+  color: var(--text2); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;
+}
+.filter-group select, .filter-group input {
+  width: 100%; background: var(--bg4); border: 1px solid var(--border);
+  color: var(--text); font-family: var(--font); font-size: 13px;
+  padding: 9px 12px; border-radius: 8px; outline: none;
+  transition: border-color .2s, box-shadow .2s; appearance: none;
+  cursor: pointer;
+}
+.filter-group select:hover, .filter-group input:hover { border-color: rgba(255,255,255,0.15); }
+.filter-group select:focus, .filter-group input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,200,240,0.1); }
+.filter-actions { display: flex; gap: 8px; padding-top: 22px; }
+
+/* KPI GRID */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px; margin-bottom: 24px;
+}
+.kpi-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 20px;
+  position: relative; overflow: hidden;
+  transition: border-color .2s, transform .2s;
+  cursor: default;
+}
+.kpi-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; border-radius: 14px 14px 0 0;
+}
+.kpi-cyan::before { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+.kpi-green::before { background: var(--green); box-shadow: 0 0 12px var(--green); }
+.kpi-yellow::before { background: var(--yellow); }
+.kpi-red::before { background: var(--red); }
+.kpi-orange::before { background: var(--orange); }
+.kpi-purple::before { background: #a78bfa; }
+.kpi-card .kpi-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; margin-bottom: 12px;
+}
+.kpi-cyan .kpi-icon { background: rgba(0,200,240,0.12); }
+.kpi-green .kpi-icon { background: rgba(34,208,122,0.12); }
+.kpi-yellow .kpi-icon { background: rgba(240,180,41,0.12); }
+.kpi-red .kpi-icon { background: rgba(240,82,82,0.12); }
+.kpi-orange .kpi-icon { background: rgba(240,120,32,0.12); }
+.kpi-purple .kpi-icon { background: rgba(167,139,250,0.12); }
+.kpi-label { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+.kpi-value { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
+.kpi-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+.kpi-trend {
+  position: absolute; top: 16px; right: 16px;
+  font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px;
+}
+.trend-up { background: rgba(34,208,122,0.15); color: var(--green); }
+.trend-down { background: rgba(240,82,82,0.15); color: var(--red); }
+.trend-neutral { background: rgba(138,155,184,0.15); color: var(--text2); }
+
+/* CHARTS GRID */
+.charts-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.charts-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.chart-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px;
+  overflow: hidden;
+}
+.chart-card.span-2 { grid-column: span 2; }
+.chart-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+.chart-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.chart-subtitle { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.chart-badge {
+  font-size: 10px; font-weight: 700; padding: 3px 9px;
+  border-radius: 99px; background: var(--cyan-dim);
+  color: var(--cyan); border: 1px solid var(--border2);
+  letter-spacing: 0.04em;
+}
+.chart-canvas-wrap { position: relative; }
+
+/* SEMAFORO BARS */
+.semaforo-row { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.sema-item {}
+.sema-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 12px; }
+.sema-label span:first-child { color: var(--text2); font-weight: 500; }
+.sema-label span:last-child { color: var(--text); font-weight: 700; font-family: var(--mono); }
+.sema-bar-bg { height: 8px; background: var(--bg4); border-radius: 99px; overflow: hidden; }
+.sema-bar-fill { height: 100%; border-radius: 99px; transition: width 1s ease; }
+
+/* TOP EFECTORES */
+.top-row { display: flex; flex-direction: column; gap: 8px; }
+.top-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 8px;
+  background: var(--bg4); border: 1px solid var(--border);
+  transition: border-color .2s;
+}
+.top-item:hover { border-color: var(--border2); }
+.top-rank { font-family: var(--mono); font-size: 11px; color: var(--text3); min-width: 20px; }
+.top-name { flex: 1; font-size: 13px; color: var(--text); font-weight: 500; }
+.top-bar-wrap { width: 100px; height: 6px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+.top-bar-fill { height: 100%; background: var(--cyan); border-radius: 99px; }
+.top-num { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--cyan); min-width: 28px; text-align: right; }
+
+/* TABLE */
+.table-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; margin-bottom: 24px;
+}
+.table-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg2);
+}
+.table-search-wrap { display: flex; align-items: center; gap: 8px; }
+.table-search {
+  background: var(--bg4); border: 1px solid var(--border);
+  color: var(--text); font-family: var(--font); font-size: 13px;
+  padding: 7px 12px; border-radius: 8px; outline: none; width: 240px;
+  transition: border-color .2s;
+}
+.table-search:focus { border-color: var(--cyan); }
+.table-scroll { overflow: auto; max-height: 440px; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { position: sticky; top: 0; z-index: 2; }
+thead th {
+  background: var(--bg2); padding: 10px 16px;
+  text-align: left; font-size: 10px; font-weight: 700;
+  color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+  cursor: pointer; user-select: none; transition: color .2s;
+}
+thead th:hover { color: var(--cyan); }
+thead th .sort-icon { margin-left: 4px; opacity: 0.4; }
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+tbody tr:hover { background: rgba(255,255,255,0.02); }
+tbody td { padding: 10px 16px; font-size: 13px; color: var(--text2); }
+tbody td:first-child { color: var(--text); font-weight: 500; }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 700;
+  white-space: nowrap;
+}
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.badge-ok { background: rgba(34,208,122,0.12); color: var(--green); border: 1px solid rgba(34,208,122,0.2); }
+.badge-ok::before { background: var(--green); }
+.badge-pend { background: rgba(240,180,41,0.12); color: var(--yellow); border: 1px solid rgba(240,180,41,0.2); }
+.badge-pend::before { background: var(--yellow); }
+.badge-urgente { background: rgba(240,82,82,0.12); color: var(--red); border: 1px solid rgba(240,82,82,0.2); }
+.badge-urgente::before { background: var(--red); box-shadow: 0 0 5px var(--red); animation: pulse 1.5s infinite; }
+.badge-proceso { background: rgba(0,200,240,0.12); color: var(--cyan); border: 1px solid rgba(0,200,240,0.2); }
+.badge-proceso::before { background: var(--cyan); }
+.badge-dept {
+  padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
+  background: var(--bg4); color: var(--text2); border: 1px solid var(--border);
+}
+.badge-dept.DO { color: var(--cyan); border-color: rgba(0,200,240,0.25); background: rgba(0,200,240,0.07); }
+.badge-dept.DP { color: var(--green); border-color: rgba(34,208,122,0.25); background: rgba(34,208,122,0.07); }
+.badge-dept.RF { color: var(--yellow); border-color: rgba(240,180,41,0.25); background: rgba(240,180,41,0.07); }
+
+/* AI ANALYSIS */
+.analysis-card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 14px; padding: 24px; margin-bottom: 24px;
+  position: relative; overflow: hidden;
+}
+.analysis-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+.analysis-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+}
+.analysis-title-wrap { display: flex; align-items: center; gap: 10px; }
+.ai-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: var(--cyan-dim); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.analysis-title { font-size: 15px; font-weight: 700; }
+.analysis-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.analysis-body {
+  font-size: 14px; line-height: 1.75; color: var(--text2);
+}
+.analysis-body strong { color: var(--cyan); font-weight: 600; }
+.analysis-body p { margin-bottom: 12px; }
+.analysis-body ul { margin: 8px 0 12px 20px; }
+.analysis-body li { margin-bottom: 6px; }
+.analysis-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px; margin-top: 16px;
+}
+.analysis-stat {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px;
+}
+.analysis-stat .as-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+.analysis-stat .as-value { font-size: 20px; font-weight: 800; color: var(--cyan); font-family: var(--mono); }
+.analysis-stat .as-note { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+/* AI STREAMING */
+.ai-thinking {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--text3); font-size: 13px;
+}
+.ai-dots { display: flex; gap: 4px; }
+.ai-dots span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--cyan);
+  animation: bounce 1.2s infinite ease-in-out;
+}
+.ai-dots span:nth-child(2) { animation-delay: .2s; }
+.ai-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce { 0%,80%,100%{transform:scale(.6);opacity:.4} 40%{transform:scale(1);opacity:1} }
+
+/* FOOTER */
+footer {
+  padding: 20px 28px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; color: var(--text3);
+}
+
+/* LOADING */
+#loading-overlay {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 9999; transition: opacity .5s;
+}
+.loading-logo { font-size: 15px; font-weight: 800; color: var(--cyan); letter-spacing: 0.1em; margin-bottom: 24px; }
+.loading-bar-bg { width: 200px; height: 3px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+.loading-bar-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--cyan2)); border-radius: 99px; animation: loadbar 1.5s ease infinite; }
+@keyframes loadbar { 0%{width:0%} 60%{width:90%} 100%{width:100%} }
+.loading-text { margin-top: 14px; font-size: 12px; color: var(--text3); font-family: var(--mono); }
+
+/* NOTIFICATION TOAST */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text); font-size: 13px; padding: 12px 18px;
+  border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  z-index: 9999; animation: toastin .3s ease;
+  display: flex; align-items: center; gap: 10px;
+}
+@keyframes toastin { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .charts-grid-3 { grid-template-columns: 1fr 1fr; }
+  .charts-grid-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .main { padding: 16px; }
+  .charts-grid-3 { grid-template-columns: 1fr; }
+  .chart-card.span-2 { grid-column: span 1; }
+  .header { flex-direction: column; gap: 12px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ===== PDF STYLES ===== */
+@media print {
+  body { background: #fff !important; color: #111 !important; }
+  .header { display: none !important; }
+  .filters-panel { display: none !important; }
+  .btn { display: none !important; }
+  #loading-overlay { display: none !important; }
+}
+</style>
 </head>
 <body>
 
-    <header class="header-gradient border-b border-gray-200 p-4 shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto flex flex-wrap justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmEBSeIwQxdoOTkf2UCsKxoA0eVd5dR_1qSA&s" alt="Logo" class="h-12">
-                <div>
-                    <h1 class="text-lg font-bold text-slate-800 leading-none">Dirección de Mantenimiento Técnico Hospitalario</h1>
-                    <p class="text-sm text-blue-600 font-semibold">SIPROSA - Tucumán</p>
-                </div>
-            </div>
-            <div class="flex space-x-3 mt-4 md:mt-0">
-                <button onclick="refreshData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition">
-                    <span class="mr-2">🔄</span> Actualizar Datos
-                </button>
-                <button onclick="exportToPDF()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center transition">
-                    <span class="mr-2">📄</span> Exportar Informe
-                </button>
-            </div>
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="loading-logo">⬡ SIPROSA DGIME</div>
+  <div class="loading-bar-bg"><div class="loading-bar-fill"></div></div>
+  <div class="loading-text" id="loading-text">Conectando con Google Sheets...</div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo-wrap">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmEBSeIwQxdoOTkf2UCsKxoA0eVd5dR_1qSA&s" alt="SIPROSA" onerror="this.style.display='none'">
+    </div>
+    <div class="header-title">
+      <h1>Dirección de Mantenimiento Técnico Hospitalario</h1>
+      <p>SIPROSA · DGIME · Tucumán</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="badge-live">EN VIVO</div>
+    <button class="btn btn-outline" onclick="refreshData()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      Actualizar
+    </button>
+    <button class="btn btn-cyan" onclick="exportToPDF()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Exportar Informe
+    </button>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- STATUS BAR -->
+  <div class="statusbar">
+    <div class="statusbar-left">
+      <div class="status-item">Registros cargados: <strong id="stat-count">—</strong></div>
+      <div class="status-sep"></div>
+      <div class="status-item">Efectores activos: <strong id="stat-efectores">—</strong></div>
+      <div class="status-sep"></div>
+      <div class="status-item">Rubros distintos: <strong id="stat-rubros">—</strong></div>
+      <div class="status-sep"></div>
+      <div class="status-item">Tasa de resolución: <strong id="stat-resolucion" style="color:var(--green)">—</strong></div>
+    </div>
+    <div id="last-update">—</div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters-panel">
+    <div class="section-label">Filtros Dinámicos</div>
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Efector (H)</label>
+        <select id="filter-efector"></select>
+      </div>
+      <div class="filter-group">
+        <label>Rubro (N)</label>
+        <select id="filter-rubro"></select>
+      </div>
+      <div class="filter-group">
+        <label>Estado (W)</label>
+        <select id="filter-estado"></select>
+      </div>
+      <div class="filter-group">
+        <label>Derivación (AE)</label>
+        <select id="filter-derivar">
+          <option value="all">TODOS</option>
+          <option value="DO">Dpto. Obras (DO)</option>
+          <option value="DP">Dpto. Producción (DP)</option>
+          <option value="RF">Recursos Físicos (RF)</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Búsqueda libre</label>
+        <input type="text" id="filter-search" placeholder="Buscar en descripción...">
+      </div>
+      <div class="filter-group">
+        <div class="filter-actions">
+          <button class="btn btn-cyan" onclick="applyFilters()" style="flex:1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Filtrar
+          </button>
+          <button class="btn btn-outline" onclick="clearFilters()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
-    </header>
+      </div>
+    </div>
+  </div>
 
-    <main class="container mx-auto p-6" id="report-content">
-        
-        <section class="bg-white p-6 rounded-xl shadow-sm mb-6 border border-gray-100">
-            <h2 class="text-sm font-bold text-gray-500 uppercase mb-4 tracking-wider">Filtros Dinámicos</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <div>
-                    <label class="block text-xs font-medium text-gray-700">Efector (H)</label>
-                    <select id="filter-efector" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-50"></select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-700">Rubro (N)</label>
-                    <select id="filter-rubro" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-50"></select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-700">Estado (W)</label>
-                    <select id="filter-estado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-50"></select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-700">Derivación (AE)</label>
-                    <select id="filter-derivar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-50">
-                        <option value="all">TODOS</option>
-                        <option value="DO">Dpto. Obras (DO)</option>
-                        <option value="DP">Dpto. Producción (DP)</option>
-                        <option value="RF">Recursos Físicos (RF)</option>
-                    </select>
-                </div>
-                <div class="flex items-end">
-                    <button onclick="applyFilters()" class="w-full bg-slate-800 text-white p-2 rounded-md hover:bg-slate-900 transition">Filtrar</button>
-                </div>
-            </div>
-        </section>
+  <!-- KPI GRID -->
+  <div class="section-label">Indicadores Clave de Gestión</div>
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-cyan">
+      <div class="kpi-icon">📋</div>
+      <div class="kpi-label">Total Solicitudes</div>
+      <div class="kpi-value" id="kpi-total">0</div>
+      <div class="kpi-sub">Consolidado actual</div>
+    </div>
+    <div class="kpi-card kpi-green">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-label">Completados OK</div>
+      <div class="kpi-value" id="kpi-ok">0</div>
+      <div class="kpi-sub" id="kpi-ok-pct">— del total</div>
+      <div class="kpi-trend trend-up" id="kpi-ok-trend">+0%</div>
+    </div>
+    <div class="kpi-card kpi-yellow">
+      <div class="kpi-icon">⏳</div>
+      <div class="kpi-label">En Proceso</div>
+      <div class="kpi-value" id="kpi-pending">0</div>
+      <div class="kpi-sub">Requieren seguimiento</div>
+    </div>
+    <div class="kpi-card kpi-red">
+      <div class="kpi-icon">🚨</div>
+      <div class="kpi-label">Urgentes / Críticos</div>
+      <div class="kpi-value" id="kpi-urgent">0</div>
+      <div class="kpi-sub">Atención inmediata</div>
+      <div class="kpi-trend trend-down" id="kpi-urg-trend">—</div>
+    </div>
+    <div class="kpi-card kpi-orange">
+      <div class="kpi-icon">🏗️</div>
+      <div class="kpi-label">Dpto. Obras (DO)</div>
+      <div class="kpi-value" id="kpi-do">0</div>
+      <div class="kpi-sub">Solicitudes asignadas</div>
+    </div>
+    <div class="kpi-card kpi-purple">
+      <div class="kpi-icon">⚙️</div>
+      <div class="kpi-label">Dpto. Producción (DP)</div>
+      <div class="kpi-value" id="kpi-dp">0</div>
+      <div class="kpi-sub">Solicitudes asignadas</div>
+    </div>
+    <div class="kpi-card kpi-yellow">
+      <div class="kpi-icon">🏛️</div>
+      <div class="kpi-label">Recursos Físicos (RF)</div>
+      <div class="kpi-value" id="kpi-rf">0</div>
+      <div class="kpi-sub">Solicitudes asignadas</div>
+    </div>
+    <div class="kpi-card kpi-cyan">
+      <div class="kpi-icon">🏥</div>
+      <div class="kpi-label">Efectores con Pedidos</div>
+      <div class="kpi-value" id="kpi-efect-count">0</div>
+      <div class="kpi-sub">Establecimientos activos</div>
+    </div>
+  </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <div class="bg-white p-4 rounded-xl border-l-4 border-blue-500 shadow-sm">
-                <p class="text-sm text-gray-500">Total Solicitudes</p>
-                <h3 id="kpi-total" class="text-2xl font-bold text-gray-800">0</h3>
+  <!-- CHARTS ROW 1 -->
+  <div class="section-label">Análisis Visual</div>
+  <div class="charts-grid-2" style="grid-template-columns: 1fr 1fr;">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Estado de Solicitudes</div>
+          <div class="chart-subtitle">Distribución porcentual</div>
+        </div>
+        <span class="chart-badge">DONUT</span>
+      </div>
+      <div class="chart-canvas-wrap" style="height:240px; display:flex; align-items:center; justify-content:center;">
+        <canvas id="chart-status"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Distribución por Departamento</div>
+          <div class="chart-subtitle">DO · DP · RF</div>
+        </div>
+        <span class="chart-badge">BARRAS</span>
+      </div>
+      <div class="chart-canvas-wrap" style="height:240px;">
+        <canvas id="chart-dept"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 2 -->
+  <div class="charts-grid-3">
+    <div class="chart-card span-2">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Top 10 Efectores con más Solicitudes</div>
+          <div class="chart-subtitle">Establecimientos de salud con mayor carga</div>
+        </div>
+        <span class="chart-badge">RANKING</span>
+      </div>
+      <div id="top-efectores-list" class="top-row" style="max-height:300px;overflow-y:auto;"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Semáforo por Rubro</div>
+          <div class="chart-subtitle">Top rubros — volumen relativo</div>
+        </div>
+      </div>
+      <div id="semaforo-rubros" class="semaforo-row"></div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 3 -->
+  <div class="charts-grid-2">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Solicitudes por Rubro — Top 10</div>
+          <div class="chart-subtitle">Distribución horizontal</div>
+        </div>
+        <span class="chart-badge">HORIZONTAL</span>
+      </div>
+      <div class="chart-canvas-wrap" style="height:300px;">
+        <canvas id="chart-rubros"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Distribución por Estado × Departamento</div>
+          <div class="chart-subtitle">Stacked — cruce de dimensiones</div>
+        </div>
+        <span class="chart-badge">STACKED</span>
+      </div>
+      <div class="chart-canvas-wrap" style="height:300px;">
+        <canvas id="chart-stacked"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA TABLE -->
+  <div class="section-label">Consolidado de Solicitudes</div>
+  <div class="table-card">
+    <div class="table-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:13px;font-weight:700;color:var(--text);">Detalle completo</span>
+        <span class="chart-badge" id="table-count-badge">0 registros</span>
+      </div>
+      <div class="table-search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a6b88" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="table-search" type="text" id="table-search" placeholder="Buscar..." oninput="tableSearch(this.value)">
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)"># <span class="sort-icon">↕</span></th>
+            <th onclick="sortTable(1)">Efector <span class="sort-icon">↕</span></th>
+            <th onclick="sortTable(2)">Rubro <span class="sort-icon">↕</span></th>
+            <th>Descripción</th>
+            <th onclick="sortTable(4)">Estado <span class="sort-icon">↕</span></th>
+            <th onclick="sortTable(5)">Derivar <span class="sort-icon">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+    <div style="padding:10px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);display:flex;justify-content:space-between;">
+      <span id="table-showing">—</span>
+      <span>Scroll para ver más registros</span>
+    </div>
+  </div>
+
+  <!-- AI ANALYSIS -->
+  <div class="analysis-card">
+    <div class="analysis-header">
+      <div class="analysis-title-wrap">
+        <div class="ai-icon">🤖</div>
+        <div>
+          <div class="analysis-title">Análisis Ejecutivo con Inteligencia Artificial</div>
+          <div class="analysis-sub">Análisis estratégico generado por Claude · Actualizado en tiempo real</div>
+        </div>
+      </div>
+      <button class="btn btn-outline" onclick="runAiAnalysis()" id="btn-ai">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+        Re-analizar
+      </button>
+    </div>
+    <div class="analysis-body" id="ai-body">
+      <div class="ai-thinking">
+        <div class="ai-dots"><span></span><span></span><span></span></div>
+        Esperando datos para generar análisis...
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>© 2026 SIPROSA · Dirección de Mantenimiento Técnico Hospitalario · DGIME · Tucumán</span>
+  <span id="footer-version" style="font-family:var(--mono)">v5.0</span>
+</footer>
+
+<script>
+// ===================== CONFIG =====================
+const SHEET_ID = '19zjUZBKhd8qh9mua6qnHHUyoOPUQV8k3e2kMClXvKps';
+const GID = '2122917362';
+const URL_SHEET = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
+// Índices columnas (0-based): H=7, N=13, O=14, W=22, AE=30
+const COL = { efector:7, rubro:13, desc:14, estado:22, derivar:30 };
+
+// ===================== STATE =====================
+let rawData = [];
+let filteredData = [];
+let chartInstances = {};
+let tableRows = [];
+let sortCol = -1, sortDir = 1;
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', fetchData);
+
+async function fetchData() {
+  setLoading('Conectando con Google Sheets...');
+  try {
+    const res = await fetch(URL_SHEET);
+    const text = await res.text();
+    const json = JSON.parse(text.substr(47).slice(0,-2));
+    rawData = (json.table?.rows || []).filter(r => r.c && r.c[COL.efector]?.v);
+    setLoadingText('Procesando datos...');
+    await sleep(400);
+    populateFilters();
+    filteredData = [...rawData];
+    renderAll(filteredData);
+    setLoadingText('Listo.');
+    await sleep(300);
+    hideLoading();
+    document.getElementById('last-update').textContent = 'Actualizado: ' + new Date().toLocaleString('es-AR');
+    setTimeout(runAiAnalysis, 800);
+  } catch(e) {
+    setLoadingText('Error al cargar datos. Verificar conexión.');
+    console.error(e);
+    setTimeout(hideLoading, 3000);
+  }
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+function setLoading(t){ document.getElementById('loading-text').textContent = t; }
+function setLoadingText(t){ document.getElementById('loading-text').textContent = t; }
+function hideLoading(){
+  const el = document.getElementById('loading-overlay');
+  el.style.opacity = '0';
+  setTimeout(()=>el.style.display='none', 500);
+}
+
+// ===================== FILTERS =====================
+function populateFilters(){
+  const sets = { efector: new Set(), rubro: new Set(), estado: new Set() };
+  rawData.forEach(r => {
+    if(r.c[COL.efector]?.v) sets.efector.add(r.c[COL.efector].v);
+    if(r.c[COL.rubro]?.v) sets.rubro.add(r.c[COL.rubro].v);
+    if(r.c[COL.estado]?.v) sets.estado.add(r.c[COL.estado].v);
+  });
+  fillSelect('filter-efector', sets.efector);
+  fillSelect('filter-rubro', sets.rubro);
+  fillSelect('filter-estado', sets.estado);
+}
+
+function fillSelect(id, set){
+  const el = document.getElementById(id);
+  el.innerHTML = '<option value="all">TODOS</option>';
+  Array.from(set).sort().forEach(v => {
+    el.innerHTML += `<option value="${esc(v)}">${esc(v)}</option>`;
+  });
+}
+
+function applyFilters(){
+  const fE = document.getElementById('filter-efector').value;
+  const fR = document.getElementById('filter-rubro').value;
+  const fEs = document.getElementById('filter-estado').value;
+  const fD = document.getElementById('filter-derivar').value;
+  const fS = document.getElementById('filter-search').value.toLowerCase();
+  filteredData = rawData.filter(r => {
+    const e = r.c[COL.efector]?.v || '';
+    const ru = r.c[COL.rubro]?.v || '';
+    const es = r.c[COL.estado]?.v || '';
+    const d = r.c[COL.derivar]?.v || '';
+    const de = (r.c[COL.desc]?.v || '').toLowerCase();
+    return (fE==='all'||e===fE) &&
+           (fR==='all'||ru===fR) &&
+           (fEs==='all'||es===fEs) &&
+           (fD==='all'||d===fD) &&
+           (!fS || de.includes(fS) || e.toLowerCase().includes(fS) || ru.toLowerCase().includes(fS));
+  });
+  renderAll(filteredData);
+  toast(`Filtros aplicados · ${filteredData.length} registros`, '🔍');
+}
+
+function clearFilters(){
+  ['filter-efector','filter-rubro','filter-estado','filter-derivar'].forEach(id => {
+    document.getElementById(id).value = 'all';
+  });
+  document.getElementById('filter-search').value = '';
+  filteredData = [...rawData];
+  renderAll(filteredData);
+  toast('Filtros eliminados', '✓');
+}
+
+// ===================== RENDER ALL =====================
+function renderAll(rows){
+  renderKPIs(rows);
+  renderCharts(rows);
+  renderTable(rows);
+  updateStatusBar(rows);
+}
+
+// ===================== KPIs =====================
+function renderKPIs(rows){
+  const total = rows.length;
+  const ok = rows.filter(r => (r.c[COL.estado]?.v||'').toUpperCase().includes('OK')).length;
+  const urgent = rows.filter(r => {
+    const s = (r.c[COL.estado]?.v||'').toUpperCase();
+    return s.includes('URGENTE') || s.includes('CRITICO') || s.includes('EMERGENCIA');
+  }).length;
+  const doDept = rows.filter(r => r.c[COL.derivar]?.v === 'DO').length;
+  const dpDept = rows.filter(r => r.c[COL.derivar]?.v === 'DP').length;
+  const rfDept = rows.filter(r => r.c[COL.derivar]?.v === 'RF').length;
+  const pending = total - ok - urgent;
+  const efectSet = new Set(rows.map(r=>r.c[COL.efector]?.v).filter(Boolean));
+
+  setText('kpi-total', total);
+  setText('kpi-ok', ok);
+  setText('kpi-ok-pct', total ? Math.round(ok/total*100)+'% del total' : '—');
+  setText('kpi-ok-trend', total ? '+'+Math.round(ok/total*100)+'%' : '—');
+  setText('kpi-pending', pending > 0 ? pending : 0);
+  setText('kpi-urgent', urgent);
+  setText('kpi-urg-trend', urgent > 0 ? urgent + ' crít.' : 'Sin alertas');
+  document.getElementById('kpi-urg-trend').className = 'kpi-trend ' + (urgent > 0 ? 'trend-down' : 'trend-up');
+  setText('kpi-do', doDept);
+  setText('kpi-dp', dpDept);
+  setText('kpi-rf', rfDept);
+  setText('kpi-efect-count', efectSet.size);
+}
+
+// ===================== CHARTS =====================
+function renderCharts(rows){
+  // --- Status donut ---
+  const statusCount = {};
+  rows.forEach(r => {
+    const s = r.c[COL.estado]?.v || 'Sin Estado';
+    statusCount[s] = (statusCount[s]||0)+1;
+  });
+  renderDonut('chart-status', statusCount);
+
+  // --- Dept bar ---
+  const deptData = {
+    'Obras (DO)': rows.filter(r=>r.c[COL.derivar]?.v==='DO').length,
+    'Producción (DP)': rows.filter(r=>r.c[COL.derivar]?.v==='DP').length,
+    'Rec. Físicos (RF)': rows.filter(r=>r.c[COL.derivar]?.v==='RF').length,
+    'Sin asignar': rows.filter(r=>!['DO','DP','RF'].includes(r.c[COL.derivar]?.v)).length,
+  };
+  renderBar('chart-dept', deptData, ['#00c8f0','#22d07a','#f0b429','#5a6b88']);
+
+  // --- Top 10 rubros horizontal ---
+  const rubroCount = {};
+  rows.forEach(r => {
+    const rb = r.c[COL.rubro]?.v || 'Sin Rubro';
+    rubroCount[rb] = (rubroCount[rb]||0)+1;
+  });
+  const topRubros = Object.entries(rubroCount).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  renderHBar('chart-rubros', Object.fromEntries(topRubros));
+
+  // --- Top efectores list ---
+  const efCount = {};
+  rows.forEach(r => {
+    const ef = r.c[COL.efector]?.v;
+    if(ef) efCount[ef] = (efCount[ef]||0)+1;
+  });
+  const topEf = Object.entries(efCount).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxEf = topEf[0]?.[1] || 1;
+  const listEl = document.getElementById('top-efectores-list');
+  listEl.innerHTML = topEf.map(([name,cnt],i) => `
+    <div class="top-item">
+      <span class="top-rank">${String(i+1).padStart(2,'0')}</span>
+      <span class="top-name">${esc(name)}</span>
+      <div class="top-bar-wrap">
+        <div class="top-bar-fill" style="width:${Math.round(cnt/maxEf*100)}%"></div>
+      </div>
+      <span class="top-num">${cnt}</span>
+    </div>
+  `).join('');
+
+  // --- Semaforo rubros ---
+  const semEl = document.getElementById('semaforo-rubros');
+  const topSem = Object.entries(rubroCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxSem = topSem[0]?.[1] || 1;
+  const colors = ['#f05252','#f0b429','#22d07a','#00c8f0','#a78bfa','#f07820','#00c8f0','#22d07a'];
+  semEl.innerHTML = topSem.map(([name,cnt],i) => `
+    <div class="sema-item">
+      <div class="sema-label">
+        <span>${esc(name.length>22?name.substring(0,22)+'…':name)}</span>
+        <span>${cnt}</span>
+      </div>
+      <div class="sema-bar-bg">
+        <div class="sema-bar-fill" style="width:${Math.round(cnt/maxSem*100)}%;background:${colors[i%colors.length]}"></div>
+      </div>
+    </div>
+  `).join('');
+
+  // --- Stacked: estado x dept ---
+  renderStacked('chart-stacked', rows);
+}
+
+function destroyChart(id){
+  if(chartInstances[id]){ chartInstances[id].destroy(); delete chartInstances[id]; }
+}
+
+function renderDonut(canvasId, dataObj){
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  const labels = Object.keys(dataObj);
+  const values = Object.values(dataObj);
+  const palette = ['#00c8f0','#22d07a','#f0b429','#f05252','#a78bfa','#f07820','#00e5ff','#5a6b88'];
+  chartInstances[canvasId] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: labels.map((_,i)=>palette[i%palette.length]+CC()), borderColor: 'transparent', borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: {
+      cutout: '60%', responsive: true, maintainAspectRatio: true,
+      plugins: {
+        legend: { position: 'right', labels: { color: '#8a9bb8', font: { family: 'Outfit', size: 11 }, padding: 12, boxWidth: 10 } },
+        tooltip: { ...tooltipStyle() }
+      }
+    }
+  });
+}
+
+function renderBar(canvasId, dataObj, colors){
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  chartInstances[canvasId] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(dataObj),
+      datasets: [{
+        data: Object.values(dataObj),
+        backgroundColor: colors.map(c=>c+'33'),
+        borderColor: colors,
+        borderWidth: 2, borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { ...tooltipStyle() } },
+      scales: {
+        x: { ticks: { color: '#8a9bb8', font: { family: 'Outfit', size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#8a9bb8', font: { family: 'Outfit', size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+function renderHBar(canvasId, dataObj){
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  const vals = Object.values(dataObj);
+  const maxV = Math.max(...vals);
+  const bgColors = vals.map(v => {
+    const r = v/maxV;
+    if(r > 0.7) return 'rgba(240,82,82,0.7)';
+    if(r > 0.4) return 'rgba(240,180,41,0.7)';
+    return 'rgba(34,208,122,0.7)';
+  });
+  chartInstances[canvasId] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(dataObj),
+      datasets: [{
+        data: vals, backgroundColor: bgColors, borderColor: 'transparent', borderRadius: 4
+      }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { ...tooltipStyle() } },
+      scales: {
+        x: { ticks: { color: '#8a9bb8', font: { family: 'Outfit', size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true },
+        y: { ticks: { color: '#8a9bb8', font: { family: 'Outfit', size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderStacked(canvasId, rows){
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  const depts = ['DO','DP','RF'];
+  const estados = [...new Set(rows.map(r=>r.c[COL.estado]?.v||'Sin Estado'))].slice(0,5);
+  const palette = ['#00c8f0','#22d07a','#f0b429','#f05252','#a78bfa'];
+  const datasets = estados.map((est,i) => ({
+    label: est,
+    data: depts.map(d => rows.filter(r=>r.c[COL.derivar]?.v===d && (r.c[COL.estado]?.v||'Sin Estado')===est).length),
+    backgroundColor: palette[i%palette.length]+'99',
+    borderColor: palette[i%palette.length],
+    borderWidth: 1, borderRadius: 4
+  }));
+  chartInstances[canvasId] = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: ['Obras (DO)', 'Producción (DP)', 'Rec. Físicos (RF)'], datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#8a9bb8', font: { family: 'Outfit', size: 11 }, padding: 10, boxWidth: 10 } },
+        tooltip: { ...tooltipStyle() }
+      },
+      scales: {
+        x: { stacked: true, ticks: { color: '#8a9bb8', font: { family: 'Outfit', size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { stacked: true, ticks: { color: '#8a9bb8', font: { family: 'Outfit', size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+function tooltipStyle(){ return {
+  backgroundColor: '#161c2e', titleColor: '#e8edf5', bodyColor: '#8a9bb8',
+  borderColor: 'rgba(0,200,240,0.3)', borderWidth: 1, padding: 10,
+  titleFont: { family: 'Outfit', size: 13, weight: '700' },
+  bodyFont: { family: 'Outfit', size: 12 }
+}; }
+// Color helper — extra alpha per palette slot
+const CC = () => '';
+
+// ===================== TABLE =====================
+function renderTable(rows){
+  tableRows = rows;
+  buildTable(rows);
+}
+
+function buildTable(rows){
+  const tbody = document.getElementById('table-body');
+  const LIMIT = 500;
+  const display = rows.slice(0, LIMIT);
+  tbody.innerHTML = display.map((r,i) => {
+    const ef = r.c[COL.efector]?.v || '—';
+    const ru = r.c[COL.rubro]?.v || '—';
+    const de = r.c[COL.desc]?.v || '—';
+    const es = r.c[COL.estado]?.v || '—';
+    const dv = r.c[COL.derivar]?.v || '—';
+    return `<tr>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">${i+1}</td>
+      <td>${esc(ef)}</td>
+      <td style="color:var(--text)">${esc(ru)}</td>
+      <td style="color:var(--text3);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(de)}">${esc(de)}</td>
+      <td>${statusBadge(es)}</td>
+      <td><span class="badge-dept ${esc(dv)}">${esc(dv)}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('table-count-badge').textContent = `${rows.length} registros`;
+  document.getElementById('table-showing').textContent = rows.length > LIMIT
+    ? `Mostrando primeros ${LIMIT} de ${rows.length} registros`
+    : `Mostrando ${rows.length} registros`;
+}
+
+function statusBadge(s){
+  const u = s.toUpperCase();
+  if(u.includes('OK')) return `<span class="badge badge-ok">${esc(s)}</span>`;
+  if(u.includes('URGENTE')||u.includes('CRITICO')) return `<span class="badge badge-urgente">${esc(s)}</span>`;
+  if(u.includes('PROCESO')||u.includes('PROGRESO')) return `<span class="badge badge-proceso">${esc(s)}</span>`;
+  return `<span class="badge badge-pend">${esc(s)}</span>`;
+}
+
+let tableSearchTimer;
+function tableSearch(val){
+  clearTimeout(tableSearchTimer);
+  tableSearchTimer = setTimeout(() => {
+    const q = val.toLowerCase();
+    const res = tableRows.filter(r => {
+      const ef = (r.c[COL.efector]?.v||'').toLowerCase();
+      const ru = (r.c[COL.rubro]?.v||'').toLowerCase();
+      const de = (r.c[COL.desc]?.v||'').toLowerCase();
+      return ef.includes(q)||ru.includes(q)||de.includes(q);
+    });
+    buildTable(res);
+  }, 250);
+}
+
+let sortDir2 = {};
+function sortTable(col){
+  sortDir2[col] = -(sortDir2[col]||1);
+  const d = sortDir2[col];
+  const sorted = [...tableRows].sort((a,b) => {
+    const av = Object.values({0:'#',1:COL.efector,2:COL.rubro,3:COL.desc,4:COL.estado,5:COL.derivar})[col];
+    const va = typeof av === 'number' ? (a.c[av]?.v||'') : a._idx||0;
+    const vb = typeof av === 'number' ? (b.c[av]?.v||'') : b._idx||0;
+    return d * (va > vb ? 1 : va < vb ? -1 : 0);
+  });
+  buildTable(sorted);
+}
+
+// ===================== STATUS BAR =====================
+function updateStatusBar(rows){
+  const efectSet = new Set(rows.map(r=>r.c[COL.efector]?.v).filter(Boolean));
+  const rubroSet = new Set(rows.map(r=>r.c[COL.rubro]?.v).filter(Boolean));
+  const ok = rows.filter(r=>(r.c[COL.estado]?.v||'').toUpperCase().includes('OK')).length;
+  setText('stat-count', rows.length);
+  setText('stat-efectores', efectSet.size);
+  setText('stat-rubros', rubroSet.size);
+  setText('stat-resolucion', rows.length ? Math.round(ok/rows.length*100)+'%' : '—');
+}
+
+// ===================== AI ANALYSIS =====================
+async function runAiAnalysis(){
+  if(!filteredData.length){ return; }
+  const btn = document.getElementById('btn-ai');
+  btn.disabled = true; btn.style.opacity = '.5';
+  const body = document.getElementById('ai-body');
+  body.innerHTML = `<div class="ai-thinking"><div class="ai-dots"><span></span><span></span><span></span></div>Generando análisis con IA...</div>`;
+
+  // Build summary for AI
+  const total = filteredData.length;
+  const ok = filteredData.filter(r=>(r.c[COL.estado]?.v||'').toUpperCase().includes('OK')).length;
+  const urgent = filteredData.filter(r=>{const s=(r.c[COL.estado]?.v||'').toUpperCase();return s.includes('URGENTE')||s.includes('CRITICO');}).length;
+  const doDep = filteredData.filter(r=>r.c[COL.derivar]?.v==='DO').length;
+  const dpDep = filteredData.filter(r=>r.c[COL.derivar]?.v==='DP').length;
+  const rfDep = filteredData.filter(r=>r.c[COL.derivar]?.v==='RF').length;
+  const rubroCount = {};
+  filteredData.forEach(r=>{const rb=r.c[COL.rubro]?.v||'Sin Rubro';rubroCount[rb]=(rubroCount[rb]||0)+1;});
+  const topRubros = Object.entries(rubroCount).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,v])=>`${k}(${v})`).join(', ');
+  const efCount = {};
+  filteredData.forEach(r=>{const ef=r.c[COL.efector]?.v;if(ef)efCount[ef]=(efCount[ef]||0)+1;});
+  const topEf = Object.entries(efCount).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${k}(${v})`).join(', ');
+
+  const prompt = `Sos un analista estratégico de gestión hospitalaria para la Dirección de Mantenimiento Técnico Hospitalario de SIPROSA (Sistema Provincial de Salud de Tucumán, Argentina).
+
+Analizá los siguientes datos del consolidado de solicitudes de mantenimiento y generá un informe ejecutivo en español en formato HTML (solo el contenido, sin <html>/<head>/<body>). Usá etiquetas <p>, <strong>, <ul>, <li> solamente.
+
+DATOS:
+- Total solicitudes: ${total}
+- Completadas OK: ${ok} (${total?Math.round(ok/total*100):0}%)
+- Urgentes/Críticos: ${urgent}
+- Asignadas Dpto. Obras (DO): ${doDep}
+- Asignadas Dpto. Producción (DP): ${dpDep}
+- Asignadas Recursos Físicos (RF): ${rfDep}
+- Top 5 rubros: ${topRubros}
+- Top 3 efectores con más solicitudes: ${topEf}
+
+El informe debe incluir:
+1. Diagnóstico de situación actual (2-3 oraciones)
+2. Alertas críticas si existen (urgentes, desequilibrio de carga)
+3. Análisis de distribución por departamento
+4. Los 3 rubros más críticos y qué implican
+5. Recomendaciones estratégicas concretas (mínimo 4, numeradas)
+6. Conclusión ejecutiva
+
+Sé concreto, profesional y orientado a la toma de decisiones directivas. No repitas datos ya mencionados sin añadir valor analítico.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || 'No se pudo generar análisis.';
+    
+    // Build stat cards
+    const cards = [
+      { label: 'Tasa de Resolución', value: total ? Math.round(ok/total*100)+'%' : '—', note: `${ok} de ${total}` },
+      { label: 'Alertas Activas', value: urgent, note: 'Urgentes / Críticos' },
+      { label: 'Dpto. Mayor Carga', value: doDep>=dpDep&&doDep>=rfDep?'DO':dpDep>=rfDep?'DP':'RF', note: `DO:${doDep} DP:${dpDep} RF:${rfDep}` },
+      { label: 'Efectores Activos', value: Object.keys(efCount).length, note: 'con solicitudes abiertas' },
+    ];
+
+    body.innerHTML = text + `
+      <div class="analysis-grid">
+        ${cards.map(c=>`
+          <div class="analysis-stat">
+            <div class="as-label">${c.label}</div>
+            <div class="as-value">${c.value}</div>
+            <div class="as-note">${c.note}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } catch(e) {
+    body.innerHTML = `<p style="color:var(--text3)">No se pudo generar el análisis automático. Verificá la conexión.</p>`;
+  } finally {
+    btn.disabled = false; btn.style.opacity = '1';
+  }
+}
+
+// ===================== EXPORT PDF =====================
+function exportToPDF() {
+  toast('Generando PDF, aguardá un momento...', '📄');
+  
+  // Build a clean PDF page
+  const now = new Date().toLocaleString('es-AR');
+  const total = filteredData.length;
+  const ok = filteredData.filter(r=>(r.c[COL.estado]?.v||'').toUpperCase().includes('OK')).length;
+  const urgent = filteredData.filter(r=>{const s=(r.c[COL.estado]?.v||'').toUpperCase();return s.includes('URGENTE')||s.includes('CRITICO');}).length;
+  const doDep = filteredData.filter(r=>r.c[COL.derivar]?.v==='DO').length;
+  const dpDep = filteredData.filter(r=>r.c[COL.derivar]?.v==='DP').length;
+  const rfDep = filteredData.filter(r=>r.c[COL.derivar]?.v==='RF').length;
+  const rubroCount = {};
+  filteredData.forEach(r=>{const rb=r.c[COL.rubro]?.v||'Sin Rubro';rubroCount[rb]=(rubroCount[rb]||0)+1;});
+  const topRubros = Object.entries(rubroCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const efCount = {};
+  filteredData.forEach(r=>{const ef=r.c[COL.efector]?.v;if(ef)efCount[ef]=(efCount[ef]||0)+1;});
+  const topEfectores = Object.entries(efCount).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxEf = topEfectores[0]?.[1]||1;
+
+  const pct = v => total ? Math.round(v/total*100) : 0;
+
+  const pdfHtml = `
+  <div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#111;background:#fff;padding:0;font-size:12px;line-height:1.5;">
+    
+    <!-- HEADER -->
+    <div style="background:#005696;color:#fff;padding:24px 28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:0;">
+      <div>
+        <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;opacity:.75;margin-bottom:4px;">Sistema Provincial de Salud · SIPROSA · Tucumán</div>
+        <div style="font-size:20px;font-weight:800;line-height:1.2;">Dirección de Mantenimiento Técnico Hospitalario</div>
+        <div style="font-size:11px;opacity:.75;margin-top:6px;">DGIME — Informe Ejecutivo de Gestión</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:10px;opacity:.6;">Generado</div>
+        <div style="font-size:12px;font-weight:600;">${now}</div>
+        <div style="margin-top:8px;background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:4px;font-size:11px;">v5.0 · Dashboard Ejecutivo</div>
+      </div>
+    </div>
+
+    <!-- ACCENT BAR -->
+    <div style="height:4px;background:linear-gradient(90deg,#00c8f0,#8DC63F);"></div>
+
+    <!-- KPI ROW -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:0;border-bottom:2px solid #e5e7eb;padding:20px 28px;background:#f8fafc;">
+      ${[
+        {label:'Total Solicitudes',val:total,color:'#005696'},
+        {label:'Completados OK',val:`${ok} (${pct(ok)}%)`,color:'#059669'},
+        {label:'En Proceso',val:total-ok-urgent,color:'#d97706'},
+        {label:'Urgentes/Críticos',val:urgent,color:'#dc2626'},
+        {label:'Efectores Activos',val:Object.keys(efCount).length,color:'#7c3aed'},
+      ].map(k=>`
+        <div style="border-right:1px solid #e5e7eb;padding:0 18px;text-align:center;last-child{border:none}">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#6b7280;margin-bottom:4px;">${k.label}</div>
+          <div style="font-size:24px;font-weight:800;color:${k.color}">${k.val}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div style="padding:20px 28px;">
+
+      <!-- SECTION: DEPARTAMENTOS -->
+      <div style="margin-bottom:22px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;border-bottom:1px solid #e5e7eb;padding-bottom:6px;margin-bottom:14px;">Distribución por Departamento</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;">
+          ${[
+            {dept:'Dpto. Obras', code:'DO', val:doDep, color:'#005696'},
+            {dept:'Dpto. Producción', code:'DP', val:dpDep, color:'#7c3aed'},
+            {dept:'Recursos Físicos', code:'RF', val:rfDep, color:'#d97706'},
+            {dept:'Sin Asignar', code:'—', val:total-doDep-dpDep-rfDep, color:'#9ca3af'},
+          ].map(d=>`
+            <div style="background:#f1f5f9;border-radius:8px;padding:14px;border-left:4px solid ${d.color}">
+              <div style="font-size:10px;color:#6b7280;margin-bottom:2px;">${d.dept}</div>
+              <div style="font-size:22px;font-weight:800;color:${d.color}">${d.val}</div>
+              <div style="height:4px;background:#e2e8f0;border-radius:99px;margin-top:8px;">
+                <div style="height:100%;background:${d.color};border-radius:99px;width:${pct(d.val)}%"></div>
+              </div>
+              <div style="font-size:10px;color:#9ca3af;margin-top:4px;">${pct(d.val)}% del total</div>
             </div>
-            <div class="bg-white p-4 rounded-xl border-l-4 border-green-500 shadow-sm">
-                <p class="text-sm text-gray-500">Completados</p>
-                <h3 id="kpi-ok" class="text-2xl font-bold text-gray-800">0</h3>
-            </div>
-            <div class="bg-white p-4 rounded-xl border-l-4 border-yellow-500 shadow-sm">
-                <p class="text-sm text-gray-500">En Proceso</p>
-                <h3 id="kpi-pending" class="text-2xl font-bold text-gray-800">0</h3>
-            </div>
-            <div class="bg-white p-4 rounded-xl border-l-4 border-red-500 shadow-sm">
-                <p class="text-sm text-gray-500">Urgentes/Críticos</p>
-                <h3 id="kpi-urgent" class="text-2xl font-bold text-gray-800">0</h3>
-            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px;">
+
+        <!-- TOP EFECTORES -->
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;border-bottom:1px solid #e5e7eb;padding-bottom:6px;margin-bottom:12px;">Top 10 Efectores</div>
+          <table style="width:100%;border-collapse:collapse;font-size:11px;">
+            <thead>
+              <tr style="background:#f1f5f9;">
+                <th style="padding:5px 8px;text-align:left;color:#6b7280;font-weight:600;">#</th>
+                <th style="padding:5px 8px;text-align:left;color:#6b7280;font-weight:600;">Efector</th>
+                <th style="padding:5px 8px;text-align:right;color:#6b7280;font-weight:600;">Solicitudes</th>
+                <th style="padding:5px 8px;text-align:right;color:#6b7280;font-weight:600;">%</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${topEfectores.map(([name,cnt],i)=>`
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                  <td style="padding:5px 8px;color:#9ca3af">${i+1}</td>
+                  <td style="padding:5px 8px;font-weight:500">${esc(name.length>30?name.substring(0,30)+'…':name)}</td>
+                  <td style="padding:5px 8px;text-align:right;font-weight:700;color:#005696">${cnt}</td>
+                  <td style="padding:5px 8px;text-align:right;color:#6b7280">${pct(cnt)}%</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="text-gray-700 font-bold mb-4">Estado de los Pedidos</h3>
-                <div id="chart_status" class="h-64"></div>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="text-gray-700 font-bold mb-4">Distribución por Departamento (Derivar)</h3>
-                <div id="chart_dept" class="h-64"></div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between">
-                <h3 class="text-gray-700 font-bold">Consolidado de Tareas</h3>
-            </div>
-            <div class="overflow-x-auto h-96">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-100 sticky top-0">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Efector</th>
-                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Rubro</th>
-                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Descripción</th>
-                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Estado</th>
-                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Derivar</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body" class="bg-white divide-y divide-gray-200 text-sm">
-                        </tbody>
-                </table>
-            </div>
-        </div>
-
-        <section class="bg-blue-50 p-8 rounded-2xl border border-blue-100 mb-10">
-            <h2 class="text-xl font-bold text-blue-900 mb-4 flex items-center">
-                <span class="mr-2">💡</span> Análisis de Gestión y Recomendaciones
-            </h2>
-            <div id="ai-analysis" class="text-blue-800 space-y-4 text-justify leading-relaxed">
-                Cargando análisis de datos...
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="p-6 text-center text-gray-400 text-xs">
-        © 2026 SIPROSA - Dirección de Mantenimiento Técnico Hospitalario | Dashboard v4.4
-    </footer>
-
-    <script>
-        const SHEET_ID = '19zjUZBKhd8qh9mua6qnHHUyoOPUQV8k3e2kMClXvKps';
-        const GID = '2122917362'; // Pestaña CONSOLIDADO
-        const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
-
-        let rawData = [];
-
-        google.charts.load('current', {'packages':['corechart', 'table']});
-        google.charts.setOnLoadCallback(fetchData);
-
-        async function fetchData() {
-            try {
-                const response = await fetch(URL);
-                const text = await response.text();
-                const json = JSON.parse(text.substr(47).slice(0, -2));
-                rawData = json.table.rows;
-                
-                populateFilters(rawData);
-                renderDashboard(rawData);
-            } catch (error) {
-                console.error("Error cargando datos:", error);
-            }
-        }
-
-        function populateFilters(rows) {
-            const efectores = new Set();
-            const rubros = new Set();
-            const estados = new Set();
-
-            rows.forEach(r => {
-                if(r.c[7]) efectores.add(r.c[7].v); // H
-                if(r.c[13]) rubros.add(r.c[13].v); // N
-                if(r.c[22]) estados.add(r.c[22].v); // W
-            });
-
-            fillSelect('filter-efector', efectores);
-            fillSelect('filter-rubro', rubros);
-            fillSelect('filter-estado', estados);
-        }
-
-        function fillSelect(id, set) {
-            const el = document.getElementById(id);
-            el.innerHTML = `<option value="all">TODOS</option>`;
-            Array.from(set).sort().forEach(val => {
-                el.innerHTML += `<option value="${val}">${val}</option>`;
-            });
-        }
-
-        function renderDashboard(rows) {
-            const tableBody = document.getElementById('table-body');
-            tableBody.innerHTML = '';
-            
-            let statusCount = {};
-            let deptCount = { 'DO': 0, 'DP': 0, 'RF': 0 };
-
-            rows.forEach(r => {
-                const row = document.createElement('tr');
-                const efector = r.c[7]?.v || '-';
-                const rubro = r.c[13]?.v || '-';
-                const desc = r.c[14]?.v || '-';
-                const estado = r.c[22]?.v || '-';
-                const derivar = r.c[30]?.v || '-';
-
-                row.innerHTML = `
-                    <td class="px-4 py-2 font-medium">${efector}</td>
-                    <td class="px-4 py-2">${rubro}</td>
-                    <td class="px-4 py-2 text-gray-500">${desc}</td>
-                    <td class="px-4 py-2"><span class="px-2 py-1 rounded-full text-xs ${estado.includes('OK') ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${estado}</span></td>
-                    <td class="px-4 py-2 font-bold text-blue-600">${derivar}</td>
-                `;
-                tableBody.appendChild(row);
-
-                // Counters para gráficos
-                statusCount[estado] = (statusCount[estado] || 0) + 1;
-                if(deptCount.hasOwnProperty(derivar)) deptCount[derivar]++;
-            });
-
-            document.getElementById('kpi-total').innerText = rows.length;
-            drawCharts(statusCount, deptCount);
-            generateAnalysis(rows, statusCount, deptCount);
-        }
-
-        function drawCharts(status, depts) {
-            // Chart Status
-            const dataStatus = google.visualization.arrayToDataTable([
-                ['Estado', 'Cantidad'],
-                ...Object.entries(status)
-            ]);
-            new google.visualization.PieChart(document.getElementById('chart_status')).draw(dataStatus, {
-                pieHole: 0.4,
-                colors: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'],
-                chartArea: {width: '90%', height: '80%'}
-            });
-
-            // Chart Dept
-            const dataDept = google.visualization.arrayToDataTable([
-                ['Dpto', 'Tareas'],
-                ['Obras (DO)', depts.DO],
-                ['Producción (DP)', depts.DP],
-                ['Recursos Físicos (RF)', depts.RF]
-            ]);
-            new google.visualization.BarChart(document.getElementById('chart_dept')).draw(dataDept, {
-                colors: ['#8DC63F'],
-                legend: { position: 'none' },
-                chartArea: {width: '70%', height: '80%'}
-            });
-        }
-
-        function generateAnalysis(rows, status, depts) {
-            const container = document.getElementById('ai-analysis');
-            const topDept = Object.keys(depts).reduce((a, b) => depts[a] > depts[b] ? a : b);
-            
-            container.innerHTML = `
-                <p><strong>Situación Actual:</strong> Se han procesado un total de <strong>${rows.length}</strong> ítems en el consolidado. El departamento con mayor carga operativa es <strong>${topDept}</strong> con ${depts[topDept]} tareas asignadas.</p>
-                <p><strong>Categorización:</strong> El rubro con mayor recurrencia indica una necesidad crítica de mantenimiento preventivo para reducir las paradas de emergencia en los efectores más activos.</p>
-                <div class="bg-white p-4 rounded-lg shadow-inner">
-                    <p class="font-bold mb-2">Recomendaciones Estratégicas:</p>
-                    <ul class="list-disc ml-5 space-y-1">
-                        <li><strong>Balance de Carga:</strong> Se detecta una saturación en ${topDept}. Se recomienda redistribuir tareas menores a otros departamentos o tercerizar servicios de baja complejidad.</li>
-                        <li><strong>Priorización:</strong> Los estados pendientes en el subestado "Urgente" deben ser canalizados vía RF inmediatamente para evitar riesgos hospitalarios.</li>
-                        <li><strong>Optimización:</strong> Implementar un stock de repuestos críticos para los rubros con más de 15 solicitudes mensuales para reducir el tiempo medio de reparación (MTTR).</li>
-                    </ul>
+        <!-- TOP RUBROS -->
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;border-bottom:1px solid #e5e7eb;padding-bottom:6px;margin-bottom:12px;">Distribución por Rubro</div>
+          <div>
+            ${topRubros.map(([name,cnt],i)=>{
+              const pctV = Math.round(cnt/total*100);
+              const barColor = pctV>15?'#dc2626':pctV>8?'#d97706':'#059669';
+              return `
+                <div style="margin-bottom:9px;">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                    <span style="font-size:11px;font-weight:500">${esc(name.length>28?name.substring(0,28)+'…':name)}</span>
+                    <span style="font-size:11px;font-weight:700;color:#005696">${cnt}</span>
+                  </div>
+                  <div style="height:6px;background:#e2e8f0;border-radius:99px;">
+                    <div style="height:100%;background:${barColor};border-radius:99px;width:${pctV}%"></div>
+                  </div>
                 </div>
-            `;
-        }
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
 
-        function applyFilters() {
-            const fEfector = document.getElementById('filter-efector').value;
-            const fRubro = document.getElementById('filter-rubro').value;
-            const fEstado = document.getElementById('filter-estado').value;
-            const fDerivar = document.getElementById('filter-derivar').value;
+      <!-- TABLE -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;border-bottom:1px solid #e5e7eb;padding-bottom:6px;margin-bottom:12px;">Consolidado de Solicitudes (primeras 40)</div>
+        <table style="width:100%;border-collapse:collapse;font-size:10px;">
+          <thead>
+            <tr style="background:#005696;color:#fff;">
+              <th style="padding:6px 8px;text-align:left;">#</th>
+              <th style="padding:6px 8px;text-align:left;">Efector</th>
+              <th style="padding:6px 8px;text-align:left;">Rubro</th>
+              <th style="padding:6px 8px;text-align:left;">Descripción</th>
+              <th style="padding:6px 8px;text-align:center;">Estado</th>
+              <th style="padding:6px 8px;text-align:center;">Dpto.</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filteredData.slice(0,40).map((r,i)=>{
+              const ef = r.c[COL.efector]?.v||'—';
+              const ru = r.c[COL.rubro]?.v||'—';
+              const de = r.c[COL.desc]?.v||'—';
+              const es = r.c[COL.estado]?.v||'—';
+              const dv = r.c[COL.derivar]?.v||'—';
+              const esU = es.toUpperCase();
+              const esColor = esU.includes('OK')?'#059669':esU.includes('URGENTE')||esU.includes('CRITICO')?'#dc2626':'#d97706';
+              return `
+                <tr style="border-bottom:1px solid #f1f5f9;background:${i%2===0?'#fff':'#f8fafc'}">
+                  <td style="padding:4px 8px;color:#9ca3af">${i+1}</td>
+                  <td style="padding:4px 8px;font-weight:500">${esc(ef.length>25?ef.substring(0,25)+'…':ef)}</td>
+                  <td style="padding:4px 8px">${esc(ru.length>20?ru.substring(0,20)+'…':ru)}</td>
+                  <td style="padding:4px 8px;color:#6b7280">${esc(de.length>35?de.substring(0,35)+'…':de)}</td>
+                  <td style="padding:4px 8px;text-align:center;font-weight:600;color:${esColor}">${esc(es)}</td>
+                  <td style="padding:4px 8px;text-align:center;font-weight:700;color:#005696">${esc(dv)}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+        ${filteredData.length > 40 ? `<div style="text-align:center;margin-top:8px;font-size:10px;color:#9ca3af">+ ${filteredData.length-40} registros adicionales disponibles en el dashboard web</div>` : ''}
+      </div>
 
-            const filtered = rawData.filter(r => {
-                const matchE = fEfector === 'all' || r.c[7]?.v === fEfector;
-                const matchR = fRubro === 'all' || r.c[13]?.v === fRubro;
-                const matchEs = fEstado === 'all' || r.c[22]?.v === fEstado;
-                const matchD = fDerivar === 'all' || r.c[30]?.v === fDerivar;
-                return matchE && matchR && matchEs && matchD;
-            });
+    </div>
 
-            renderDashboard(filtered);
-        }
+    <!-- FOOTER -->
+    <div style="background:#f1f5f9;border-top:2px solid #e5e7eb;padding:12px 28px;display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;">
+      <span>© 2026 SIPROSA · Dirección de Mantenimiento Técnico Hospitalario · DGIME · Tucumán</span>
+      <span>Dashboard v5.0 · Informe generado el ${now}</span>
+    </div>
+  </div>`;
 
-        function refreshData() {
-            location.reload();
-        }
+  const container = document.createElement('div');
+  container.innerHTML = pdfHtml;
+  container.style.position = 'fixed';
+  container.style.left = '-9999px';
+  container.style.width = '794px';
+  document.body.appendChild(container);
 
-        function exportToPDF() {
-            const element = document.getElementById('report-content');
-            const opt = {
-                margin: 0.5,
-                filename: 'Informe_Mantenimiento_SIPROSA.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-    </script>
+  const opt = {
+    margin: [0,0,0,0],
+    filename: `Informe_Mantenimiento_SIPROSA_${new Date().toISOString().slice(0,10)}.pdf`,
+    image: { type: 'jpeg', quality: 0.97 },
+    html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 794 },
+    jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait', hotfixes: ['px_scaling'] },
+    pagebreak: { mode: ['avoid-all','css','legacy'] }
+  };
+
+  html2pdf().set(opt).from(container).save().then(() => {
+    document.body.removeChild(container);
+    toast('PDF generado exitosamente', '✅');
+  });
+}
+
+// ===================== UTILS =====================
+function setText(id, val){ const el = document.getElementById(id); if(el) el.textContent = val; }
+function esc(s){ if(s==null) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function refreshData(){ location.reload(); }
+
+function toast(msg, icon='ℹ️'){
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span>${icon}</span> ${msg}`;
+  document.body.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(10px)'; el.style.transition='all .3s'; setTimeout(()=>el.remove(),350); }, 3000);
+}
+
+// Counter animation
+function animateCount(el, target){
+  let current = 0; const step = Math.ceil(target/40);
+  const timer = setInterval(()=>{
+    current = Math.min(current+step, target);
+    el.textContent = current;
+    if(current>=target) clearInterval(timer);
+  }, 30);
+}
+</script>
 </body>
 </html>
+`;

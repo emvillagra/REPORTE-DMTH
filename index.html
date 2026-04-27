@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mantenimiento Técnico SIPROSA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --siprosa-blue: #005696;
+            --siprosa-green: #8DC63F;
+        }
+        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .header-gradient { background: linear-gradient(90deg, #ffffff 0%, #f0f7ff 100%); }
+    </style>
+</head>
+<body>
+
+    <header class="header-gradient border-b border-gray-200 p-4 shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmEBSeIwQxdoOTkf2UCsKxoA0eVd5dR_1qSA&s" alt="Logo" class="h-12">
+                <div>
+                    <h1 class="text-lg font-bold text-slate-800 leading-none">Dirección de Mantenimiento Técnico Hospitalario</h1>
+                    <p class="text-sm text-blue-600 font-semibold">SIPROSA - Tucumán</p>
+                </div>
+            </div>
+            <div class="flex space-x-3 mt-4 md:mt-0">
+                <button onclick="refreshData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition">
+                    <span class="mr-2">🔄</span> Actualizar Datos
+                </button>
+                <button onclick="exportToPDF()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center transition">
+                    <span class="mr-2">📄</span> Exportar Informe
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6" id="report-content">
+        
+        <section class="bg-white p-6 rounded-xl shadow-sm mb-6 border border-gray-100">
+            <h2 class="text-sm font-bold text-gray-500 uppercase mb-4 tracking-wider">Filtros Dinámicos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Efector (H)</label>
+                    <select id="filter-efector" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-50"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Rubro (N)</label>
+                    <select id="filter-rubro" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-50"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Estado (W)</label>
+                    <select id="filter-estado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-50"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700">Derivación (AE)</label>
+                    <select id="filter-derivar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-50">
+                        <option value="all">TODOS</option>
+                        <option value="DO">Dpto. Obras (DO)</option>
+                        <option value="DP">Dpto. Producción (DP)</option>
+                        <option value="RF">Recursos Físicos (RF)</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="applyFilters()" class="w-full bg-slate-800 text-white p-2 rounded-md hover:bg-slate-900 transition">Filtrar</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="bg-white p-4 rounded-xl border-l-4 border-blue-500 shadow-sm">
+                <p class="text-sm text-gray-500">Total Solicitudes</p>
+                <h3 id="kpi-total" class="text-2xl font-bold text-gray-800">0</h3>
+            </div>
+            <div class="bg-white p-4 rounded-xl border-l-4 border-green-500 shadow-sm">
+                <p class="text-sm text-gray-500">Completados</p>
+                <h3 id="kpi-ok" class="text-2xl font-bold text-gray-800">0</h3>
+            </div>
+            <div class="bg-white p-4 rounded-xl border-l-4 border-yellow-500 shadow-sm">
+                <p class="text-sm text-gray-500">En Proceso</p>
+                <h3 id="kpi-pending" class="text-2xl font-bold text-gray-800">0</h3>
+            </div>
+            <div class="bg-white p-4 rounded-xl border-l-4 border-red-500 shadow-sm">
+                <p class="text-sm text-gray-500">Urgentes/Críticos</p>
+                <h3 id="kpi-urgent" class="text-2xl font-bold text-gray-800">0</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="text-gray-700 font-bold mb-4">Estado de los Pedidos</h3>
+                <div id="chart_status" class="h-64"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 class="text-gray-700 font-bold mb-4">Distribución por Departamento (Derivar)</h3>
+                <div id="chart_dept" class="h-64"></div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+            <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between">
+                <h3 class="text-gray-700 font-bold">Consolidado de Tareas</h3>
+            </div>
+            <div class="overflow-x-auto h-96">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100 sticky top-0">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Efector</th>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Rubro</th>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Descripción</th>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Estado</th>
+                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Derivar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="bg-white divide-y divide-gray-200 text-sm">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <section class="bg-blue-50 p-8 rounded-2xl border border-blue-100 mb-10">
+            <h2 class="text-xl font-bold text-blue-900 mb-4 flex items-center">
+                <span class="mr-2">💡</span> Análisis de Gestión y Recomendaciones
+            </h2>
+            <div id="ai-analysis" class="text-blue-800 space-y-4 text-justify leading-relaxed">
+                Cargando análisis de datos...
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="p-6 text-center text-gray-400 text-xs">
+        © 2026 SIPROSA - Dirección de Mantenimiento Técnico Hospitalario | Dashboard v4.4
+    </footer>
+
+    <script>
+        const SHEET_ID = '19zjUZBKhd8qh9mua6qnHHUyoOPUQV8k3e2kMClXvKps';
+        const GID = '2122917362'; // Pestaña CONSOLIDADO
+        const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
+
+        let rawData = [];
+
+        google.charts.load('current', {'packages':['corechart', 'table']});
+        google.charts.setOnLoadCallback(fetchData);
+
+        async function fetchData() {
+            try {
+                const response = await fetch(URL);
+                const text = await response.text();
+                const json = JSON.parse(text.substr(47).slice(0, -2));
+                rawData = json.table.rows;
+                
+                populateFilters(rawData);
+                renderDashboard(rawData);
+            } catch (error) {
+                console.error("Error cargando datos:", error);
+            }
+        }
+
+        function populateFilters(rows) {
+            const efectores = new Set();
+            const rubros = new Set();
+            const estados = new Set();
+
+            rows.forEach(r => {
+                if(r.c[7]) efectores.add(r.c[7].v); // H
+                if(r.c[13]) rubros.add(r.c[13].v); // N
+                if(r.c[22]) estados.add(r.c[22].v); // W
+            });
+
+            fillSelect('filter-efector', efectores);
+            fillSelect('filter-rubro', rubros);
+            fillSelect('filter-estado', estados);
+        }
+
+        function fillSelect(id, set) {
+            const el = document.getElementById(id);
+            el.innerHTML = `<option value="all">TODOS</option>`;
+            Array.from(set).sort().forEach(val => {
+                el.innerHTML += `<option value="${val}">${val}</option>`;
+            });
+        }
+
+        function renderDashboard(rows) {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+            
+            let statusCount = {};
+            let deptCount = { 'DO': 0, 'DP': 0, 'RF': 0 };
+
+            rows.forEach(r => {
+                const row = document.createElement('tr');
+                const efector = r.c[7]?.v || '-';
+                const rubro = r.c[13]?.v || '-';
+                const desc = r.c[14]?.v || '-';
+                const estado = r.c[22]?.v || '-';
+                const derivar = r.c[30]?.v || '-';
+
+                row.innerHTML = `
+                    <td class="px-4 py-2 font-medium">${efector}</td>
+                    <td class="px-4 py-2">${rubro}</td>
+                    <td class="px-4 py-2 text-gray-500">${desc}</td>
+                    <td class="px-4 py-2"><span class="px-2 py-1 rounded-full text-xs ${estado.includes('OK') ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${estado}</span></td>
+                    <td class="px-4 py-2 font-bold text-blue-600">${derivar}</td>
+                `;
+                tableBody.appendChild(row);
+
+                // Counters para gráficos
+                statusCount[estado] = (statusCount[estado] || 0) + 1;
+                if(deptCount.hasOwnProperty(derivar)) deptCount[derivar]++;
+            });
+
+            document.getElementById('kpi-total').innerText = rows.length;
+            drawCharts(statusCount, deptCount);
+            generateAnalysis(rows, statusCount, deptCount);
+        }
+
+        function drawCharts(status, depts) {
+            // Chart Status
+            const dataStatus = google.visualization.arrayToDataTable([
+                ['Estado', 'Cantidad'],
+                ...Object.entries(status)
+            ]);
+            new google.visualization.PieChart(document.getElementById('chart_status')).draw(dataStatus, {
+                pieHole: 0.4,
+                colors: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'],
+                chartArea: {width: '90%', height: '80%'}
+            });
+
+            // Chart Dept
+            const dataDept = google.visualization.arrayToDataTable([
+                ['Dpto', 'Tareas'],
+                ['Obras (DO)', depts.DO],
+                ['Producción (DP)', depts.DP],
+                ['Recursos Físicos (RF)', depts.RF]
+            ]);
+            new google.visualization.BarChart(document.getElementById('chart_dept')).draw(dataDept, {
+                colors: ['#8DC63F'],
+                legend: { position: 'none' },
+                chartArea: {width: '70%', height: '80%'}
+            });
+        }
+
+        function generateAnalysis(rows, status, depts) {
+            const container = document.getElementById('ai-analysis');
+            const topDept = Object.keys(depts).reduce((a, b) => depts[a] > depts[b] ? a : b);
+            
+            container.innerHTML = `
+                <p><strong>Situación Actual:</strong> Se han procesado un total de <strong>${rows.length}</strong> ítems en el consolidado. El departamento con mayor carga operativa es <strong>${topDept}</strong> con ${depts[topDept]} tareas asignadas.</p>
+                <p><strong>Categorización:</strong> El rubro con mayor recurrencia indica una necesidad crítica de mantenimiento preventivo para reducir las paradas de emergencia en los efectores más activos.</p>
+                <div class="bg-white p-4 rounded-lg shadow-inner">
+                    <p class="font-bold mb-2">Recomendaciones Estratégicas:</p>
+                    <ul class="list-disc ml-5 space-y-1">
+                        <li><strong>Balance de Carga:</strong> Se detecta una saturación en ${topDept}. Se recomienda redistribuir tareas menores a otros departamentos o tercerizar servicios de baja complejidad.</li>
+                        <li><strong>Priorización:</strong> Los estados pendientes en el subestado "Urgente" deben ser canalizados vía RF inmediatamente para evitar riesgos hospitalarios.</li>
+                        <li><strong>Optimización:</strong> Implementar un stock de repuestos críticos para los rubros con más de 15 solicitudes mensuales para reducir el tiempo medio de reparación (MTTR).</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function applyFilters() {
+            const fEfector = document.getElementById('filter-efector').value;
+            const fRubro = document.getElementById('filter-rubro').value;
+            const fEstado = document.getElementById('filter-estado').value;
+            const fDerivar = document.getElementById('filter-derivar').value;
+
+            const filtered = rawData.filter(r => {
+                const matchE = fEfector === 'all' || r.c[7]?.v === fEfector;
+                const matchR = fRubro === 'all' || r.c[13]?.v === fRubro;
+                const matchEs = fEstado === 'all' || r.c[22]?.v === fEstado;
+                const matchD = fDerivar === 'all' || r.c[30]?.v === fDerivar;
+                return matchE && matchR && matchEs && matchD;
+            });
+
+            renderDashboard(filtered);
+        }
+
+        function refreshData() {
+            location.reload();
+        }
+
+        function exportToPDF() {
+            const element = document.getElementById('report-content');
+            const opt = {
+                margin: 0.5,
+                filename: 'Informe_Mantenimiento_SIPROSA.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>

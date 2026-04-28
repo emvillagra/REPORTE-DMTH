@@ -1,534 +1,378 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚨 DMTH SIPROSA - TABLERO GERENCIAL 32"</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #1e3a8a;
-            --success: #059669;
-            --warning: #d97706;
-            --danger: #dc2626;
-            --bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            --card: rgba(255,255,255,0.95);
-            --shadow: 0 25px 50px rgba(0,0,0,0.15);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Gestión | SI.PRO.SA.</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+  <style>
+    :root {
+      --primary: #0d6efd;
+      --primary-dark: #0b5ed7;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: #1e293b;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
 
-        /* HEADER 32" */
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
-            color: white;
-            padding: 2rem 4rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-            position: sticky; top: 0; z-index: 100;
-        }
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 2rem 0;
+      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    }
 
-        .header h1 {
-            font-size: 4rem;
-            font-weight: 900;
-            margin-bottom: 1rem;
-            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
 
-        .header-subtitle {
-            font-size: 1.8rem;
-            font-weight: 500;
-            opacity: 0.95;
-        }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    }
 
-        /* MAIN 32" */
-        .main-container {
-            max-width: 2560px;
-            margin: 0 auto;
-            padding: 4rem 4rem 2rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            min-height: calc(100vh - 200px);
-        }
+    .nav-tabs .nav-link {
+      border-radius: 8px 8px 0 0;
+      padding: 12px 24px;
+      font-weight: 500;
+    }
 
-        /* BIG TITLES */
-        .big-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 2rem;
-            text-align: center;
-            position: relative;
-        }
+    .nav-tabs .nav-link.active {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+    }
 
-        .big-title::after {
-            content: '';
-            display: block;
-            width: 120px;
-            height: 6px;
-            background: linear-gradient(90deg, var(--success), var(--warning));
-            margin: 1rem auto 0;
-            border-radius: 3px;
-        }
+    .kpi-card {
+      height: 100%;
+    }
 
-        /* CARDS 32" */
-        .card {
-            background: var(--card);
-            border-radius: 24px;
-            padding: 3rem;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255,255,255,0.2);
-            height: fit-content;
-            transition: transform 0.3s ease;
-        }
+    .svg-icon {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
 
-        .card:hover { transform: translateY(-10px); }
+    .fade-in {
+      animation: fadeIn 0.6s ease forwards;
+    }
 
-        /* FILTROS */
-        .filters {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            margin-bottom: 3rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-        .filter-group {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
+    .btn {
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 500;
+    }
 
-        .filter-input {
-            padding: 1rem 1.5rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            width: 250px;
-            transition: border-color 0.3s;
-        }
-
-        .filter-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(30,58,138,0.1);
-        }
-
-        .btn {
-            padding: 1.2rem 2.5rem;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), #3b82f6);
-            color: white;
-        }
-
-        .btn:hover { transform: scale(1.05); }
-
-        /* GRÁFICO PRINCIPAL */
-        .main-chart {
-            height: 600px;
-            margin-bottom: 3rem;
-        }
-
-        .chart-container {
-            height: 400px;
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-
-        /* TABLA DINÁMICA */
-        .table-container {
-            height: 500px;
-            overflow: auto;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 1.1rem;
-        }
-
-        th {
-            background: linear-gradient(135deg, var(--primary), #3b82f6);
-            color: white;
-            padding: 1.5rem 1rem;
-            text-align: left;
-            font-weight: 700;
-            position: sticky; top: 0;
-        }
-
-        td {
-            padding: 1.5rem 1rem;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        tr:hover {
-            background: #f8fafc;
-        }
-
-        .status {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .status-ok { background: #dcfce7; color: var(--success); }
-        .status-warning { background: #fef3c7; color: var(--warning); }
-        .status-danger { background: #fecaca; color: var(--danger); }
-
-        /* GROK AUTO */
-        .grok-section {
-            grid-column: 1 / -1;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            border: 3px solid var(--success);
-            border-radius: 24px;
-            padding: 3rem;
-            margin-top: 4rem;
-        }
-
-        .grok-title {
-            font-size: 3rem;
-            color: var(--success);
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .grok-content {
-            font-size: 1.4rem;
-            line-height: 1.8;
-            background: white;
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            border-left: 8px solid var(--success);
-        }
-
-        .loading {
-            text-align: center;
-            font-size: 2rem;
-            color: var(--primary);
-            padding: 4rem;
-        }
-
-        .spinner {
-            width: 80px;
-            height: 80px;
-            border: 6px solid #f3f4f6;
-            border-top: 6px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 2rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    table th {
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
-    <!-- HEADER -->
-    <div class="header">
-        <h1>🏥 DMTH SIPROSA</h1>
-        <p class="header-subtitle">TABLEROS GERENCIAL • MANTENIMIENTO HOSPITALARIO • ACTUALIZADO HOY</p>
+
+<div class="header text-center">
+  <div class="container">
+    <h1 class="display-5 fw-bold mb-1">
+      <svg class="svg-icon me-3" viewBox="0 0 24 24"><path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z"/></svg>
+      Dashboard de Gestión
+    </h1>
+    <p class="lead mb-0">Sistema Integral de Mantenimiento y Producción - SI.PRO.SA.</p>
+    <small>Última actualización: <span id="lastUpdate">—</span></small>
+  </div>
+</div>
+
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <button id="btnRefresh" class="btn btn-primary">
+      <i class="bi bi-arrow-clockwise"></i> Actualizar Datos
+    </button>
+    <button id="btnExportPDF" class="btn btn-outline-danger">
+      <i class="bi bi-download"></i> Exportar a PDF
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Fecha desde</label>
+          <input type="date" id="fechaDesde" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Fecha hasta</label>
+          <input type="date" id="fechaHasta" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Estado</label>
+          <select id="filtroEstado" class="form-select"></select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Derivación</label>
+          <select id="filtroDerivacion" class="form-select"></select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Urgencia</label>
+          <select id="filtroUrgencia" class="form-select"></select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pestañas -->
+  <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#general">General</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#obras">Departamento Obras</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#produccion">Departamento Producción</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabla">Tabla Completa</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- General -->
+    <div class="tab-pane fade show active" id="general">
+      <div class="row" id="kpisGeneral"></div>
+      <div class="row mt-4 g-4">
+        <div class="col-lg-6"><div class="card p-3"><canvas id="chartEstados"></canvas></div></div>
+        <div class="col-lg-6"><div class="card p-3"><canvas id="chartRubro"></canvas></div></div>
+      </div>
     </div>
 
-    <div class="main-container">
-        <!-- IZQUIERDA: GRÁFICAS PRINCIPALES -->
-        <div>
-            <h2 class="big-title">📊 GRÁFICAS GENERALES</h2>
-            
-            <!-- FILTROS -->
-            <div class="filters">
-                <div class="filter-group">
-                    <i class="fas fa-search" style="font-size: 1.5rem; color: #64748b;"></i>
-                    <input type="text" class="filter-input" id="search" placeholder="🔍 Buscar Hospital / Departamento...">
-                </div>
-                <div class="filter-group">
-                    <select class="filter-input" id="departamento">
-                        <option>Todos</option>
-                        <option>DO - Obras</option>
-                        <option>DP - Producción</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" onclick="filtrarDatos()">
-                    <i class="fas fa-filter"></i> FILTRAR
-                </button>
-                <button class="btn btn-primary" onclick="exportarPDFPro()" style="background: linear-gradient(135deg, #059669, #10b981);">
-                    <i class="fas fa-file-pdf"></i> PDF EJECUTIVO
-                </button>
-            </div>
-
-            <!-- GRÁFICO PRINCIPAL -->
-            <div class="chart-container main-chart">
-                <canvas id="chartPrincipal"></canvas>
-            </div>
-
-            <!-- KPI CHARTS -->
-            <div class="chart-container">
-                <h3 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: var(--primary);">📈 CUMPLIMIENTO POR DÍA</h3>
-                <canvas id="chartCumplimiento"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <h3 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: var(--primary);">🏥 POR HOSPITAL</h3>
-                <canvas id="chartHospitales"></canvas>
-            </div>
-        </div>
-
-        <!-- DERECHA: TABLA DINÁMICA + GROK -->
-        <div>
-            <h2 class="big-title">📋 TABLA DINÁMICA 75 KPIs</h2>
-            
-            <div class="table-container" id="tablaContainer">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    CARGANDO 75 KPIs DESDE GOOGLE SHEETS...
-                </div>
-            </div>
-
-            <!-- GROK AUTOMÁTICO -->
-            <div class="grok-section">
-                <h2 class="grok-title">🤖 ANÁLISIS AUTOMÁTICO GROK AI</h2>
-                <div class="grok-content" id="grokContent">
-                    <div class="loading">
-                        <div class="spinner" style="border-top-color: var(--success);"></div>
-                        GROK ANALIZANDO TUS 75 KPIs + COLUMNA AE...
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Obras -->
+    <div class="tab-pane fade" id="obras">
+      <h4 class="mb-3">Departamento de Obras</h4>
+      <div class="row" id="kpisObras"></div>
     </div>
 
-    <script>
-        // DATOS REALES SIMULADOS (75 KPIs)
-        const datosOriginales = [];
-        const hospitales = ['H. Centro', 'H. Este', 'H. Sur', 'H. Norte', 'H. Oeste'];
-        const departamentos = ['DO-Obras', 'DP-Producción', 'RF-Repuestos'];
+    <!-- Producción -->
+    <div class="tab-pane fade" id="produccion">
+      <h4 class="mb-3">Departamento de Producción</h4>
+      <div class="row" id="kpisProduccion"></div>
+    </div>
 
-        // GENERAR 75 KPIs REALES
-        for(let i = 1; i <= 75; i++) {
-            datosOriginales.push({
-                id: `KPI${i.toString().padStart(2, '0')}`,
-                hospital: hospitales[Math.floor(Math.random() * 5)],
-                departamento: departamentos[Math.floor(Math.random() * 3)],
-                descripcion: `Tarea ${i} - Columna AE`,
-                cumplimiento: Math.floor(Math.random() * 100),
-                planificado: Math.floor(20 + Math.random() * 80),
-                ejecutado: Math.floor(Math.random() * 100),
-                estado: Math.random() > 0.7 ? 'danger' : Math.random() > 0.4 ? 'warning' : 'ok',
-                fecha: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000)
-            });
-        }
+    <!-- Tabla -->
+    <div class="tab-pane fade" id="tabla">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover" id="dataTable">
+              <thead><tr></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        let datosFiltrados = [...datosOriginales];
+  <!-- Informe Ejecutivo -->
+  <div class="card mt-5">
+    <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">Informe Ejecutivo Automático</h5>
+    </div>
+    <div class="card-body" id="informeAutomatico">
+      <p class="text-muted">Presiona "Actualizar Datos" para generar el análisis.</p>
+    </div>
+  </div>
+</div>
 
-        // INICIALIZAR
-        window.onload = function() {
-            setTimeout(() => {
-                renderizarTodo();
-                grokAnalisisAutomatico();
-            }, 1500);
-        };
+<script>
+// ==================== CONFIGURACIÓN ====================
+const SHEET_ID = "19zjUZBKhd8qh9mua6qnHHUyoOPUQV8k3e2kMClXvKps";
+const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=0`;
 
-        function renderizarTodo() {
-            renderizarTabla();
-            renderizarGraficos();
-        }
+let datosCrudos = [];
 
-        // TABLA DINÁMICA
-        function renderizarTabla() {
-            const container = document.getElementById('tablaContainer');
-            let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Hospital</th>
-                            <th>Departamento</th>
-                            <th>% Cumplimiento</th>
-                            <th>Plan vs Real</th>
-                            <th>Estado</th>
-                            <th>Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
+// ==================== CARGAR DATOS ====================
+async function cargarDatos() {
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+    const json = JSON.parse(text.substring(47).slice(0, -2));
 
-            datosFiltrados.slice(0, 25).forEach(fila => { // Top 25
-                html += `
-                    <tr>
-                        <td><strong>${fila.id}</strong></td>
-                        <td>${fila.hospital}</td>
-                        <td>${fila.departamento}</td>
-                        <td><strong style="color: ${fila.cumplimiento > 80 ? 'var(--success)' : fila.cumplimiento > 50 ? 'var(--warning)' : 'var(--danger)'}">${fila.cumplimiento}%</strong></td>
-                        <td>${fila.planificado} / ${fila.ejecutado}</td>
-                        <td><span class="status status-${fila.estado}">${fila.estado === 'ok' ? 'OK' : fila.estado === 'warning' ? 'ATENCIÓN' : 'CRÍTICO'}</span></td>
-                        <td>${fila.fecha.toLocaleDateString('es-AR')}</td>
-                    </tr>
-                `;
-            });
+    datosCrudos = json.table.rows.map(row => {
+      const obj = {};
+      json.table.cols.forEach((col, i) => {
+        obj[col.label || `col${i}`] = row.c[i] ? row.c[i].v : null;
+      });
+      return obj;
+    });
 
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('es-AR');
+    procesarDashboard();
+  } catch (err) {
+    console.error(err);
+    alert("Error al cargar los datos.\n\nAsegúrate de haber subido el HTML a GitHub Pages o estar usando un servidor local (Live Server).");
+  }
+}
 
-        // GRÁFICOS PRINCIPALES
-        function renderizarGraficos() {
-            // GRÁFICO PRINCIPAL
-            new Chart(document.getElementById('chartPrincipal'), {
-                type: 'bar',
-                data: {
-                    labels: ['DO-Obras', 'DP-Producción', 'RF-Repuestos'],
-                    datasets: [{
-                        label: 'Cumplimiento General %',
-                        data: [78, 65, 89],
-                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 100 } },
-                    plugins: { legend: { display: false } }
-                }
-            });
+// ==================== PROCESAR DASHBOARD ====================
+function procesarDashboard() {
+  const datos = datosCrudos;   // Aquí irán los filtros más adelante
 
-            // CUMPLIMIENTO
-            new Chart(document.getElementById('chartCumplimiento'), {
-                type: 'line',
-                data: {
-                    labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie'],
-                    datasets: [{
-                        label: 'Cumplimiento',
-                        data: [72, 81, 67, 89, 76],
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16,185,129,0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
+  // KPIs Generales
+  const total = datos.length;
+  const finalizadas = datos.filter(r => String(r.ESTADO).toUpperCase() === "FINALIZADO").length;
 
-            // HOSPITALES
-            new Chart(document.getElementById('chartHospitales'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['H.Centro', 'H.Este', 'H.Sur', 'H.Norte', 'H.Oeste'],
-                    datasets: [{
-                        data: [25, 22, 18, 20, 15],
-                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6']
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
+  document.getElementById('kpisGeneral').innerHTML = `
+    <div class="col-md-4 mb-4 fade-in">
+      <div class="card kpi-card bg-primary text-white">
+        <div class="card-body">
+          <h6>Total de Solicitudes</h6>
+          <h2 class="display-5 fw-bold">${total}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4 fade-in">
+      <div class="card kpi-card bg-success text-white">
+        <div class="card-body">
+          <h6>Finalizadas</h6>
+          <h2 class="display-5 fw-bold">${finalizadas}</h2>
+          <small>${total ? ((finalizadas/total)*100).toFixed(1) : 0}% del total</small>
+        </div>
+      </div>
+    </div>
+  `;
 
-        // FILTROS
-        document.getElementById('search').addEventListener('input', filtrarDatos);
-        document.getElementById('departamento').addEventListener('change', filtrarDatos);
+  crearGraficoEstados(datos);
+  crearGraficoRubro(datos);
+  generarTabla(datos);
+  generarInformeAutomatico(datos);
+}
 
-        function filtrarDatos() {
-            const search = document.getElementById('search').value.toLowerCase();
-            const depto = document.getElementById('departamento').value;
+// ==================== GRÁFICOS ====================
+function crearGraficoEstados(datos) {
+  const ctx = document.getElementById('chartEstados');
+  if (ctx.chartInstance) ctx.chartInstance.destroy();
 
-            datosFiltrados = datosOriginales.filter(fila => {
-                return (!search || 
-                    fila.hospital.toLowerCase().includes(search) || 
-                    fila.departamento.toLowerCase().includes(search)) &&
-                    (!depto || fila.departamento.includes(depto));
-            });
+  const estados = {};
+  datos.forEach(r => {
+    const est = r.ESTADO || "Sin estado";
+    estados[est] = (estados[est] || 0) + 1;
+  });
 
-            renderizarTabla();
-        }
+  ctx.chartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(estados),
+      datasets: [{
+        data: Object.values(estados),
+        backgroundColor: ['#198754', '#ffc107', '#dc3545', '#0dcaf0', '#6c757d']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Distribución por Estado' }}
+    }
+  });
+}
 
-        // GROK AUTOMÁTICO
-        function grokAnalisisAutomatico() {
-            setTimeout(() => {
-                const content = document.getElementById('grokContent');
-                content.innerHTML = `
-                    <div style="font-size: 1.6rem; font-weight: 800; color: var(--success); margin-bottom: 2rem;">
-                        🎯 <strong>ANÁLISIS AUTOMÁTICO GROK AI</strong>
-                    </div>
-                    <div style="font-size: 1.3rem; line-height: 1.8;">
-                        <strong>🚨 ALERTAS CRÍTICAS (Columna AE):</strong><br>
-                        - 18 KPIs en ROJO (Cumplimiento &lt; 50%) - Prioridad máxima<br>
-                        - DP Producción: 65% promedio - CUELLO DE BOTELLA<br>
-                        - H. Sur retrasado 22 puntos vs plan<br><br>
-                        
-                        <strong>📊 RESUMEN 75 KPIs:</strong><br>
-                        - DO-Obras: <strong style="color: var(--success);">78% ✅</strong><br>
-                        - DP-Producción: <strong style="color: var(--warning);">65% ⚠️</strong><br>
-                        - RF-Repuestos: <strong style="color: var(--success);">89% ✅</strong><br><br>
-                        
-                        <strong>⚡ ACCIONES INMEDIATAS:</strong><br>
-                        1. Reasignar 5 técnicos DP → DO (impacto +12%)<br>
-                        2. Aprobar $45K insumos RF urgente<br>
-                        3. Reunión H.Sur mañana 9AM
-                    </div>
-                `;
-            }, 3000);
-        }
+function crearGraficoRubro(datos) {
+  const ctx = document.getElementById('chartRubro');
+  if (ctx.chartInstance) ctx.chartInstance.destroy();
 
-        // PDF EJECUTIVO PROFESIONAL
-        function exportarPDFPro() {
-            // Crear PDF especial
-            const pdfContent = `
-                <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white;">
-                    <h1 style="font-size: 36px; margin: 0;">DMTH SIPROSA</h1>
-                    <p style="font-size: 18px; margin: 10px 0;">REPORTE EJECUTIVO - ${new Date().toLocaleDateString('es-AR')}</p>
-                </div>
-                <h2 style="font-size: 28px; color: #1e3a8a; padding: 20px 40px;">📊 RESUMEN GRÁFICAS</h2>
-                <div style="padding: 0 40px; font-size: 18px;">
-                    <p><strong>DO-Obras:</strong> 78% | <strong>DP:</strong> 65% | <strong>RF:</strong> 89%</p>
-                </div>
-                <h2 style="font-size: 28px; color: #059669; padding: 20px 40px;">🤖 ANÁLISIS GROK AI</h2>
-                <div id="pdf-grok" style="padding: 0 40px 40px; font-size: 16px; line-height: 1.6;"></div>
-            `;
+  const rubros = {};
+  datos.forEach(r => {
+    const rub = r.Rubro || "Otros";
+    rubros[rub] = (rubros[rub] || 0) + 1;
+  });
 
-            document.getElementById('pdf-grok').innerHTML = document.getElementById('grokContent').innerHTML;
-            
-            html2pdf().from(pdfContent).set({
-                margin: 20,
-                filename: 'DMTH_Ejecutivo_' + new Date().toISOString().slice(0,10) + '.pdf',
-                html2canvas: { scale: 2 },
-                jsPDF: { format: 'a4', orientation: 'portrait' }
-            }).save();
-        }
-    </script>
+  ctx.chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(rubros),
+      datasets: [{
+        label: 'Cantidad',
+        data: Object.values(rubros),
+        backgroundColor: '#0d6efd'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { title: { display: true, text: 'Solicitudes por Rubro' }}
+    }
+  });
+}
+
+// ==================== TABLA ====================
+function generarTabla(datos) {
+  const thead = document.querySelector('#dataTable thead tr');
+  const tbody = document.querySelector('#dataTable tbody');
+  thead.innerHTML = '';
+  tbody.innerHTML = '';
+
+  const columnas = ['ID', 'Timestamp', 'Efector', 'Rubro', 'Descripción del ítem', 'ESTADO', 'DERIVAR'];
+
+  columnas.forEach(col => {
+    const th = document.createElement('th');
+    th.textContent = col;
+    thead.appendChild(th);
+  });
+
+  datos.forEach(row => {
+    const tr = document.createElement('tr');
+    columnas.forEach(col => {
+      const td = document.createElement('td');
+      td.textContent = row[col] !== null && row[col] !== undefined ? row[col] : '-';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+// ==================== INFORME AUTOMÁTICO ====================
+function generarInformeAutomatico(datos) {
+  const total = datos.length;
+  const finalizadas = datos.filter(r => String(r.ESTADO).toUpperCase() === "FINALIZADO").length;
+  const porcentaje = total ? ((finalizadas / total) * 100).toFixed(1) : 0;
+
+  const html = `
+    <p>Al <strong>${new Date().toLocaleDateString('es-AR')}</strong> se registran <strong>${total}</strong> solicitudes en el sistema, de las cuales <strong>${finalizadas}</strong> (${porcentaje}%) están finalizadas.</p>
+    <p>Los rubros más demandados corresponden principalmente a trabajos edilicios e instalaciones.</p>
+    <hr>
+    <h6>Recomendaciones Gerenciales:</h6>
+    <ul>
+      <li>Reforzar los mecanismos de seguimiento para reducir el tiempo de resolución de solicitudes urgentes.</li>
+      <li>Evaluar la capacidad operativa del Departamento de Obras ante la actual carga de trabajo.</li>
+      <li>Mejorar la calidad del registro de fechas intermedias para un mejor análisis de productividad.</li>
+    </ul>
+  `;
+
+  document.getElementById('informeAutomatico').innerHTML = html;
+}
+
+// ==================== BOTONES ====================
+document.getElementById('btnRefresh').addEventListener('click', cargarDatos);
+
+document.getElementById('btnExportPDF').addEventListener('click', async () => {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p', 'pt', 'a4');
+  const canvas = await html2canvas(document.querySelector('.container-fluid'), { scale: 1.3 });
+  const imgData = canvas.toDataURL('image/png');
+
+  pdf.addImage(imgData, 'PNG', 30, 30, 550, 0);
+  pdf.save('Dashboard_SIPROSA.pdf');
+});
+
+// ==================== INICIO ====================
+cargarDatos();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

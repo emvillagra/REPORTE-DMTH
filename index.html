@@ -1074,19 +1074,42 @@ DATOS:
 
 Estructura: 1) Diagnóstico situación actual (2-3 oraciones directas), 2) Alertas críticas si las hay, 3) Análisis de tipos U/T/P y rubros prioritarios, 4) Recomendaciones concretas (3-4 numeradas), 5) Conclusión ejecutiva (1 párrafo). Sé conciso y orientado a directivos del sistema de salud provincial.`;
 
-  try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+  const acc=section==='g'?'var(--blue)':section==='do'?'var(--blue)':'#16a34a';
+  const statsHtml=`<div class="ai-stats-row">${[
+    {l:'Tasa Resolución',v:n?pc(ok,n)+'%':'—',n:`${ok} de ${n}`},
+    {l:'Alertas Activas',v:urg,n:urg>0?`${urg} urgentes`:'Sin alertas'},
+    {l:'Efectores',v:Object.keys(efCnt).length,n:'con solicitudes activas'},
+    {l:'Rubros',v:Object.keys(rbCnt).length,n:'categorías distintas'},
+  ].map(s=>`<div class="ai-stat"><div class="as-lbl">${s.l}</div><div class="as-val" style="color:${acc}">${s.v}</div><div class="as-note">${s.n}</div></div>`).join('')}</div>`;
+
+  // Llama al proxy Vercel /api/grok (evita CORS)
+  let text=null;
+  try{
+    const res=await fetch('/api/grok',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt})
+    });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const data=await res.json();
-    const text=data.content?.[0]?.text||'No se pudo generar análisis.';
-    const acc=section==='g'?'var(--blue)':section==='do'?'var(--blue)':'#16a34a';
-    document.getElementById(elId).innerHTML=text+`<div class="ai-stats-row">${[
-      {l:'Tasa Resolución',v:n?pc(ok,n)+'%':'—',n:`${ok} de ${n}`},
-      {l:'Alertas Activas',v:urg,n:urg>0?`${urg} urgentes`:'Sin alertas'},
-      {l:'Efectores',v:Object.keys(efCnt).length,n:'con solicitudes activas'},
-      {l:'Rubros',v:Object.keys(rbCnt).length,n:'categorías distintas'},
-    ].map(s=>`<div class="ai-stat"><div class="as-lbl">${s.l}</div><div class="as-val" style="color:${acc}">${s.v}</div><div class="as-note">${s.n}</div></div>`).join('')}</div>`;
-  } catch(e){ document.getElementById(elId).innerHTML=`<p style="color:var(--txt3)">No se pudo conectar con la API.</p>`; }
-  finally { if(btn){btn.disabled=false;btn.style.opacity='1';} }
+    text=data.text||null;
+  }catch(err){ console.warn('Grok proxy falló:',err.message); }
+
+  if(text){
+    document.getElementById(elId).innerHTML=text+statsHtml;
+  } else {
+    // Fallback: análisis local automático con los datos reales
+    const topDept=section==='g'?(curG.filter(r=>r.c[C.dv]?.v==='DO').length>=curG.filter(r=>r.c[C.dv]?.v==='DP').length?'Obras (DO)':'Producción (DP)'):'';
+    document.getElementById(elId).innerHTML=`
+      <p><strong>Situación actual:</strong> Se registran <strong>${n}</strong> solicitudes en ${deptLabel}. La tasa de resolución es del <strong>${pc(ok,n)}%</strong> (${ok} completadas).</p>
+      ${urg>0?`<p><strong>⚠️ Alertas críticas:</strong> Hay <strong>${urg} solicitudes urgentes/críticas</strong> que requieren atención inmediata.</p>`:'<p><strong>Sin alertas críticas</strong> activas en esta sección.</p>'}
+      ${section==='g'?`<p><strong>Distribución:</strong> DO: ${curG.filter(r=>r.c[C.dv]?.v==='DO').length} · DP: ${curG.filter(r=>r.c[C.dv]?.v==='DP').length} · RF: ${curG.filter(r=>r.c[C.dv]?.v==='RF').length}. Mayor carga en <strong>${topDept}</strong>.</p>`:''}
+      <p><strong>Rubros prioritarios:</strong> ${topRb}.</p>
+      <p><strong>Efectores con mayor demanda:</strong> ${topEf}.</p>
+      <p style="color:var(--txt3);font-size:12px;margin-top:8px"><em>Análisis local — proxy /api/grok no disponible. Verificá la configuración en Vercel.</em></p>
+    `+statsHtml;
+  }
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
 }
 
 // ══ PDF ══
@@ -1131,10 +1154,27 @@ ${buildDept('DO',doN,'#005696')}${buildDept('DP',dpN,'#16a34a')}${buildDept('RF'
 <div style="background:#f1f5f9;border-top:2px solid #e2e8f0;padding:9px 28px;display:flex;justify-content:space-between;font-size:9px;color:#94a3b8"><span>© 2026 SIPROSA · DGIME · Dirección de Mantenimiento Técnico Hospitalario · Tucumán</span><span>v7.0 · ${now}</span></div>
 </div>`;
 
-  const wrap=document.createElement('div');
-  wrap.innerHTML=html; wrap.style.cssText='position:fixed;left:-9999px;width:794px;background:#fff';
-  document.body.appendChild(wrap);
-  html2pdf().set({margin:[0,0,0,0],filename:`Informe_SIPROSA_${new Date().toISOString().slice(0,10)}.pdf`,image:{type:'jpeg',quality:.97},html2canvas:{scale:2,useCORS:true,logging:false,windowWidth:794,backgroundColor:'#fff'},jsPDF:{unit:'px',format:[794,1122],orientation:'portrait',hotfixes:['px_scaling']},pagebreak:{mode:['avoid-all','css']}}).from(wrap).save().then(()=>{ document.body.removeChild(wrap); toast('PDF generado ✓','✅'); });
+  // Abrimos en ventana nueva con @media print listo — confiable en todos los browsers
+  const win=window.open('','_blank','width=900,height=700');
+  win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+    <title>Informe SIPROSA ${new Date().toISOString().slice(0,10)}</title>
+    <style>
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{background:#fff;font-family:Helvetica,Arial,sans-serif;color:#1e293b}
+      @media print{
+        @page{size:A4 portrait;margin:0}
+        body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .no-print{display:none!important}
+      }
+      .print-btn{position:fixed;top:16px;right:16px;background:#005696;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(0,86,150,.3)}
+      .print-btn:hover{background:#0068b5}
+    </style>
+  </head><body>
+    <button class="print-btn no-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+    ${html}
+  </body></html>`);
+  win.document.close();
+  toast('Abrí la ventana y usá Ctrl+P → Guardar como PDF','📄');
 }
 
 // ══ UTILS ══

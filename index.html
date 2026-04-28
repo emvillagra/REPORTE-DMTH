@@ -733,6 +733,11 @@ const PAL=['#005696','#8DC63F','#d97706','#dc2626','#7c3aed','#ea580c','#0ea5e9'
 
 let raw=[], curG=[], curDO=[], curDP=[], charts={}, tblRows=[], sortD={};
 
+// ══ HELPERS (deben ir ANTES de fetchData) ══
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const ovMsg = t => { const el = document.getElementById('ovmsg'); if(el) el.textContent = t; };
+function hideOv(){ const el = document.getElementById('overlay'); if(!el) return; el.style.opacity='0'; setTimeout(()=>{ if(el.parentNode) el.style.display='none'; }, 500); }
+
 // ══ BOOT ══
 window.addEventListener('DOMContentLoaded', fetchData);
 
@@ -750,17 +755,13 @@ async function fetchData(){
     curDP=raw.filter(r=>r.c[C.dv]?.v==='DP');
     renderAll();
     ovMsg('Listo ✓'); await sleep(300); hideOv();
-    document.getElementById('tb-ts').textContent='Actualizado: '+new Date().toLocaleString('es-AR');
-    // Update sidebar badges
-    document.getElementById('sb-badge-gen').textContent=raw.length;
-    document.getElementById('sb-badge-do').textContent=curDO.length;
-    document.getElementById('sb-badge-dp').textContent=curDP.length;
+    const ts = document.getElementById('tb-ts'); if(ts) ts.textContent='Actualizado: '+new Date().toLocaleString('es-AR');
+    const bg = document.getElementById('sb-badge-gen'); if(bg) bg.textContent=raw.length;
+    const bd = document.getElementById('sb-badge-do');  if(bd) bd.textContent=curDO.length;
+    const bp = document.getElementById('sb-badge-dp');  if(bp) bp.textContent=curDP.length;
     setTimeout(()=>{ runAI('g'); runAI('do'); runAI('dp'); }, 1200);
-  } catch(e){ ovMsg('Error de conexión.'); setTimeout(hideOv,3500); console.error(e); }
+  } catch(e){ ovMsg('Error de conexión. Verificá el acceso a Sheets.'); console.error(e); setTimeout(hideOv,4000); }
 }
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const ovMsg=t=>{document.getElementById('ovmsg').textContent=t;};
-function hideOv(){ const el=document.getElementById('overlay'); el.style.opacity='0'; setTimeout(()=>el.style.display='none',500); }
 
 // ══ TABS ══
 const TITLES={general:['Dashboard General','Vista consolidada de todas las solicitudes'],obras:['Departamento de Obras (DO)','Infraestructura y Construcción'],prod:['Departamento de Producción (DP)','Mantenimiento y Producción'],tabla:['Tabla Completa','Consolidado de todos los registros']};
@@ -1137,10 +1138,10 @@ ${buildDept('DO',doN,'#005696')}${buildDept('DP',dpN,'#16a34a')}${buildDept('RF'
 }
 
 // ══ UTILS ══
-const pc=(v,t)=>t?Math.round(v/t*100):0;
-const st=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-const xe=s=>{if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');};
-const refreshData=()=>location.reload();
+function pc(v,t){ return t ? Math.round(v/t*100) : 0; }
+function st(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
+function xe(s){ if(s==null) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function refreshData(){ location.reload(); }
 function toast(msg,ico='ℹ️'){const el=document.createElement('div');el.className='toast';el.innerHTML=`<span>${ico}</span>${msg}`;document.body.appendChild(el);setTimeout(()=>{el.style.cssText+='opacity:0;transform:translateY(8px);transition:all .3s';setTimeout(()=>el.remove(),350);},3000);}
 </script>
 </body>

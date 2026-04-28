@@ -1,12 +1,12 @@
 // ═══════════════════════════════════════════════════════════════
-//  /api/grok.js  — Proxy Vercel para xAI Grok
+//  /api/grok.js  — Proxy Vercel para Groq API (groq.com)
 //  Resuelve CORS: el browser llama a /api/grok (mismo dominio),
-//  este proxy llama a api.x.ai desde el servidor.
+//  este proxy llama a api.groq.com desde el servidor.
 //
 //  SETUP EN VERCEL:
 //  1. Copiá este archivo como /api/grok.js en tu repo
 //  2. Vercel Dashboard → Settings → Environment Variables:
-//       XAI_API_KEY  =  xai-xxxxxxxxxxxxxxxxxxxx   (tu clave de console.x.ai)
+//       GROQ_API_KEY  =  gsk_xxxxxxxxxxxxxxxxxxxx   (tu clave de console.groq.com)
 //  3. Deploy → listo
 // ═══════════════════════════════════════════════════════════════
 
@@ -20,10 +20,10 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')   return res.status(405).json({ error: 'Method not allowed' });
 
-  const apiKey = process.env.XAI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     return res.status(500).json({
-      error: 'XAI_API_KEY no configurada. Agregala en Vercel → Settings → Environment Variables.'
+      error: 'GROQ_API_KEY no configurada. Agregala en Vercel → Settings → Environment Variables.'
     });
   }
 
@@ -31,14 +31,14 @@ export default async function handler(req, res) {
   if (!prompt) return res.status(400).json({ error: 'Falta el campo "prompt"' });
 
   try {
-    const response = await fetch('https://api.x.ai/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type':  'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model:       'grok-3-mini',   // modelos disponibles: grok-3, grok-3-mini, grok-2
+        model:       'llama-3.3-70b-versatile',  // rápido y muy capaz — alternativas: mixtral-8x7b-32768, gemma2-9b-it
         max_tokens:  1200,
         temperature: 0.4,
         messages: [
@@ -56,8 +56,8 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error('Grok API error:', response.status, errText);
-      return res.status(response.status).json({ error: `Grok API error ${response.status}: ${errText}` });
+      console.error('Groq API error:', response.status, errText);
+      return res.status(response.status).json({ error: `Groq API error ${response.status}: ${errText}` });
     }
 
     const data = await response.json();

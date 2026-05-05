@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIPROSA · Dashboard de Gestión</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23005696'/%3E%3Cpath d='M32 12v40M12 32h40' stroke='%238DC63F' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -717,6 +718,10 @@ tbody td:nth-child(2){color:var(--txt);font-weight:500}
 const SHEET_ID = '19zjUZBKhd8qh9mua6qnHHUyoOPUQV8k3e2kMClXvKps';
 const GID      = '2122917362';
 const SRC      = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
+
+// Si tenés configurado el proxy /api/grok en Vercel con API key válida, cambiá esto a true.
+// En false, el dashboard usa análisis local automático y evita errores HTTP 401.
+const USE_GROK_PROXY = false;
 // Columnas (0-based)
 const C = {
   tipo:0,    // A - ID tipo (U/T/P)
@@ -735,7 +740,7 @@ let raw=[], curG=[], curDO=[], curDP=[], charts={}, tblRows=[], sortD={};
 
 // ══ HELPERS (deben ir ANTES de fetchData) ══
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const ovMsg = t => { const el = document.getElementById('ovmsg'); if(el) el.textContent = t; };
+const ovMsg = t => { const el = document.getElementById('ov-msg'); if(el) el.textContent = t; };
 function hideOv(){ const el = document.getElementById('overlay'); if(!el) return; el.style.opacity='0'; setTimeout(()=>{ if(el.parentNode) el.style.display='none'; }, 500); }
 
 // ══ BOOT ══
@@ -795,28 +800,112 @@ function fillSel(id,set){ const el=document.getElementById(id); if(!el)return; e
 const gv=id=>{ const el=document.getElementById(id); return el?el.value:'all'; };
 
 // ══ APPLY/CLEAR FILTERS ══
+function parseSheetDate(cell){
+  if(!cell) return null;
+
+  const candidates = [];
+  if(cell.v !== undefined && cell.v !== null) candidates.push(cell.v);
+  if(cell.f !== undefined && cell.f !== null) candidates.push(cell.f);
+
+  for(const value of candidates){
+    if(value instanceof Date && !isNaN(value)) return value;
+
+    if(typeof value === 'number'){
+      // Serial de Google Sheets/Excel: días desde 1899-12-30.
+      const d = new Date((value - 25569) * 86400 * 1000);
+      if(!isNaN(d)) return d;
+    }
+
+    const s = String(value).trim();
+    if(!s) continue;
+
+    // Formato GViz: Date(2026,3,1,10,30,00). El mes viene base 0.
+    const mG = s.match(/Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})(?:,\s*(\d{1,2}),\s*(\d{1,2}),\s*(\d{1,2}))?/);
+    if(mG){
+      const y  = Number(mG[1]);
+      const mo = Number(mG[2]);
+      const da = Number(mG[3]);
+      const hh = Number(mG[4] || 0);
+      const mi = Number(mG[5] || 0);
+      const ss = Number(mG[6] || 0);
+      const d = new Date(y, mo, da, hh, mi, ss);
+      if(!isNaN(d)) return d;
+    }
+
+    // Formato argentino: 01/04/2026, 01-04-2026, con o sin hora.
+    const mAR = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+    if(mAR){
+      const da = Number(mAR[1]);
+      const mo = Number(mAR[2]) - 1;
+      const y  = Number(mAR[3]);
+      const hh = Number(mAR[4] || 0);
+      const mi = Number(mAR[5] || 0);
+      const ss = Number(mAR[6] || 0);
+      const d = new Date(y, mo, da, hh, mi, ss);
+      if(!isNaN(d)) return d;
+    }
+
+    // Formato ISO: 2026-04-01.
+    const mISO = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(mISO){
+      const y  = Number(mISO[1]);
+      const mo = Number(mISO[2]) - 1;
+      const da = Number(mISO[3]);
+      const d = new Date(y, mo, da);
+      if(!isNaN(d)) return d;
+    }
+
+    const d = new Date(s);
+    if(!isNaN(d)) return d;
+  }
+
+  return null;
+}
+
+function dateFromInput(value, endOfDay=false){
+  if(!value) return null;
+  const [y,m,d] = value.split('-').map(Number);
+  if(!y || !m || !d) return null;
+
+  return endOfDay
+    ? new Date(y, m - 1, d, 23, 59, 59, 999)
+    : new Date(y, m - 1, d, 0, 0, 0, 0);
+}
+
 function buildFilter(prefix, base){
-  const tipo=gv(`${prefix}-f-tipo`), area=gv(`${prefix}-f-area`),
-        rb=gv(`${prefix}-f-rubro`), es=gv(`${prefix}-f-estado`),
-        sub=gv(`${prefix}-f-sub`),
-        desde=gv(`${prefix}-f-desde`), hasta=gv(`${prefix}-f-hasta`),
-        desc=(document.getElementById(`${prefix}-f-desc`)?.value||'').toLowerCase();
+  const tipo  = gv(`${prefix}-f-tipo`);
+  const area  = gv(`${prefix}-f-area`);
+  const rb    = gv(`${prefix}-f-rubro`);
+  const es    = gv(`${prefix}-f-estado`);
+  const sub   = gv(`${prefix}-f-sub`);
+  const desde = gv(`${prefix}-f-desde`);
+  const hasta = gv(`${prefix}-f-hasta`);
+  const desc  = (document.getElementById(`${prefix}-f-desc`)?.value || '').toLowerCase();
+
+  const dDesde = dateFromInput(desde, false);
+  const dHasta = dateFromInput(hasta, true);
+
   return base.filter(r=>{
-    const rTipo=(r.c[C.tipo]?.v||'').toString().toUpperCase().charAt(0);
-    const rArea=r.c[C.area]?.v||'', rRb=r.c[C.rb]?.v||'',
-          rEs=r.c[C.es]?.v||'', rSub=r.c[C.sub]?.v||'',
-          rDe=(r.c[C.de]?.v||'').toLowerCase();
-    let rTs=null;
-    if(r.c[C.ts]?.v){ try{ rTs=new Date(r.c[C.ts].v); }catch(e){} }
-    const okTipo=tipo==='all'||rTipo===tipo;
-    const okArea=area==='all'||rArea===area;
-    const okRb=rb==='all'||rRb===rb;
-    const okEs=es==='all'||rEs===es;
-    const okSub=sub==='all'||rSub===sub;
-    const okDesde=!desde||!rTs||rTs>=new Date(desde);
-    const okHasta=!hasta||!rTs||rTs<=new Date(hasta+'T23:59:59');
-    const okDesc=!desc||rDe.includes(desc);
-    return okTipo&&okArea&&okRb&&okEs&&okSub&&okDesde&&okHasta&&okDesc;
+    const rTipo = (r.c[C.tipo]?.v || '').toString().toUpperCase().charAt(0);
+    const rArea = r.c[C.area]?.v || '';
+    const rRb   = r.c[C.rb]?.v || '';
+    const rEs   = r.c[C.es]?.v || '';
+    const rSub  = r.c[C.sub]?.v || '';
+    const rDe   = (r.c[C.de]?.v || '').toLowerCase();
+    const rTs   = parseSheetDate(r.c[C.ts]);
+
+    const okTipo = tipo === 'all' || rTipo === tipo;
+    const okArea = area === 'all' || rArea === area;
+    const okRb   = rb === 'all' || rRb === rb;
+    const okEs   = es === 'all' || rEs === es;
+    const okSub  = sub === 'all' || rSub === sub;
+    const okDesc = !desc || rDe.includes(desc);
+
+    // Si se filtra por fecha, el registro debe tener fecha válida.
+    const okDesde = !dDesde || (rTs && rTs >= dDesde);
+    const okHasta = !dHasta || (rTs && rTs <= dHasta);
+
+    return okTipo && okArea && okRb && okEs && okSub && okDesde && okHasta && okDesc;
   });
 }
 function applyFilters(prefix){
@@ -1082,18 +1171,23 @@ Estructura: 1) Diagnóstico situación actual (2-3 oraciones directas), 2) Alert
     {l:'Rubros',v:Object.keys(rbCnt).length,n:'categorías distintas'},
   ].map(s=>`<div class="ai-stat"><div class="as-lbl">${s.l}</div><div class="as-val" style="color:${acc}">${s.v}</div><div class="as-note">${s.n}</div></div>`).join('')}</div>`;
 
-  // Llama al proxy Vercel /api/grok (evita CORS)
+  // IA externa opcional vía proxy Vercel /api/grok.
+  // Por defecto está desactivada para evitar HTTP 401 si no hay API key configurada.
   let text=null;
-  try{
-    const res=await fetch('/api/grok',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({prompt})
-    });
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data=await res.json();
-    text=data.text||null;
-  }catch(err){ console.warn('Grok proxy falló:',err.message); }
+  if(USE_GROK_PROXY){
+    try{
+      const res=await fetch('/api/grok',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({prompt})
+      });
+      if(!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data=await res.json();
+      text=data.text||null;
+    }catch(err){
+      console.warn('Grok proxy no disponible. Se usa análisis local:',err.message);
+    }
+  }
 
   if(text){
     document.getElementById(elId).innerHTML=text+statsHtml;
@@ -1106,7 +1200,7 @@ Estructura: 1) Diagnóstico situación actual (2-3 oraciones directas), 2) Alert
       ${section==='g'?`<p><strong>Distribución:</strong> DO: ${curG.filter(r=>r.c[C.dv]?.v==='DO').length} · DP: ${curG.filter(r=>r.c[C.dv]?.v==='DP').length} · RF: ${curG.filter(r=>r.c[C.dv]?.v==='RF').length}. Mayor carga en <strong>${topDept}</strong>.</p>`:''}
       <p><strong>Rubros prioritarios:</strong> ${topRb}.</p>
       <p><strong>Efectores con mayor demanda:</strong> ${topEf}.</p>
-      <p style="color:var(--txt3);font-size:12px;margin-top:8px"><em>Análisis local — proxy /api/grok no disponible. Verificá la configuración en Vercel.</em></p>
+      <p style="color:var(--txt3);font-size:12px;margin-top:8px"><em>Análisis local automático. Para usar Grok, configurá el proxy /api/grok y cambiá USE_GROK_PROXY a true.</em></p>
     `+statsHtml;
   }
   if(btn){btn.disabled=false;btn.style.opacity='1';}

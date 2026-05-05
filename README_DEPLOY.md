@@ -1,49 +1,30 @@
-# Dashboard SIPROSA/DGIME - Deploy en Vercel
+# Dashboard SIPROSA - Deploy Vercel
 
-Estructura esperada del repo:
+Estructura compatible con Vercel cuando el Output Directory está configurado como `public`.
 
-```txt
-/
-├── api/
-│   └── grok.js
-├── index.html
-├── package.json
-├── vercel.json
-└── .env.example
+## Estructura
+
+```
+api/grok.js
+public/index.html
+package.json
+vercel.json
+.env.example
 ```
 
-## Deploy
+## Vercel
 
-1. Subir estos archivos a la raíz del repo en GitHub.
-2. En Vercel, importar el repo.
-3. Framework Preset: Other.
-4. Build Command: vacío.
-5. Output Directory: vacío.
-6. Root Directory: raíz del repo, salvo que hayas subido estos archivos dentro de una carpeta.
+- Framework Preset: Other
+- Build Command: `npm run build`
+- Output Directory: `public`
+- Install Command: `npm install` o vacío
 
-## IA Grok
+## Grok
 
-El dashboard viene con Grok apagado por defecto para que no se bloquee ni tire HTTP 401.
-En `index.html` está:
+El dashboard viene con Grok apagado por defecto en `public/index.html`:
 
 ```js
 const USE_GROK_PROXY = false;
 ```
 
-Si querés activar Grok:
-
-1. En Vercel > Project > Settings > Environment Variables agregar `GROK_API_KEY` con tu clave de xAI.
-2. Redeploy.
-3. Cambiar en `index.html`:
-
-```js
-const USE_GROK_PROXY = true;
-```
-
-Si la API key falla, el dashboard igual usa análisis local automático.
-
-## Google Sheets
-
-La hoja debe estar compartida como:
-
-Cualquier persona con el enlace -> Lector
+Cuando cargues la variable `GROK_API_KEY` en Vercel y redeployes, podés cambiarlo a `true`.

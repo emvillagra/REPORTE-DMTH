@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "echo Static site ready",
     "start": "vercel dev"
-  }
+  },
+  "dependencies": {}
 }

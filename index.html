@@ -743,14 +743,65 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const ovMsg = t => { const el = document.getElementById('ov-msg'); if(el) el.textContent = t; };
 function hideOv(){ const el = document.getElementById('overlay'); if(!el) return; el.style.opacity='0'; setTimeout(()=>{ if(el.parentNode) el.style.display='none'; }, 500); }
 
+function fetchWithTimeout(url, options = {}, timeoutMs = 15000){
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(timeout));
+}
+
+function parseGvizJSON(text){
+  // Google GViz devuelve algo tipo: google.visualization.Query.setResponse({...});
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if(start === -1 || end === -1 || end <= start){
+    throw new Error('Respuesta GViz inválida');
+  }
+  return JSON.parse(text.slice(start, end + 1));
+}
+
+function showLoadError(message){
+  const main = document.getElementById('main-content');
+  if(main){
+    main.insertAdjacentHTML('afterbegin', `
+      <div class="card" style="margin-bottom:16px;border-color:var(--rbrd);background:var(--rbg)">
+        <div class="card-title" style="color:var(--red);margin-bottom:6px">No se pudieron cargar los datos</div>
+        <div class="card-sub" style="color:var(--txt2)">${xe(message)}. Revisá que la hoja esté publicada/accesible y que el GID sea correcto.</div>
+      </div>
+    `);
+  }
+}
+
+// Seguridad: aunque algo externo falle, nunca deja la pantalla clavada en "Inicializando".
+setTimeout(() => {
+  const overlay = document.getElementById('overlay');
+  if(overlay && overlay.style.display !== 'none'){
+    ovMsg('Tiempo de carga agotado. Mostrando dashboard...');
+    hideOv();
+  }
+}, 18000);
+
+window.addEventListener('error', e => {
+  console.error('Error global:', e.message, e.error || '');
+  ovMsg('Se detectó un error de carga. Mostrando dashboard...');
+  setTimeout(hideOv, 1200);
+});
+window.addEventListener('unhandledrejection', e => {
+  console.error('Promesa rechazada:', e.reason);
+  ovMsg('Se detectó un error de conexión. Mostrando dashboard...');
+  setTimeout(hideOv, 1200);
+});
+
 // ══ BOOT ══
 window.addEventListener('DOMContentLoaded', fetchData);
 
 async function fetchData(){
   ovMsg('Conectando con Google Sheets...');
   try {
-    const t = await fetch(SRC).then(r=>r.text());
-    const j = JSON.parse(t.substr(47).slice(0,-2));
+    const res = await fetchWithTimeout(SRC, { cache: 'no-store' }, 15000);
+    if(!res.ok) throw new Error(`Google Sheets respondió HTTP ${res.status}`);
+    const t = await res.text();
+    const j = parseGvizJSON(t);
     raw = (j.table?.rows||[]).filter(r=>r.c&&r.c[C.ef]?.v);
     ovMsg('Procesando registros...');
     await sleep(350);
@@ -765,7 +816,12 @@ async function fetchData(){
     const bd = document.getElementById('sb-badge-do');  if(bd) bd.textContent=curDO.length;
     const bp = document.getElementById('sb-badge-dp');  if(bp) bp.textContent=curDP.length;
     setTimeout(()=>{ runAI('g'); runAI('do'); runAI('dp'); }, 1200);
-  } catch(e){ ovMsg('Error de conexión. Verificá el acceso a Sheets.'); console.error(e); setTimeout(hideOv,4000); }
+  } catch(e){
+    console.error(e);
+    ovMsg('Error de conexión. Mostrando dashboard sin datos...');
+    showLoadError(e.message || 'Error desconocido al conectar con Google Sheets');
+    setTimeout(hideOv,1500);
+  }
 }
 
 // ══ TABS ══

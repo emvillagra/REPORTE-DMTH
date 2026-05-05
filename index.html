@@ -480,10 +480,20 @@ table.dt tr:hover td{background:#F8FAFC}
 /* ============================================================
    CONFIG — Google Sheets IDs
 ============================================================ */
+// URLs directas de "Publicar en la web" — sin CORS
 const CONFIG = {
-  consolidado: { SHEET_ID:"19zjUZBKhd8qh9mua6qnHHUyoOPUQV8k3e2kMClXvKps", SHEET_NAME:"CONSOLIDADO", label:"CONSOLIDADO" },
-  soporte:     { SHEET_ID:"1n8QE2CURJ61OudPpbJk_xYq7VT6dDbHof9EgvgjD0e8", SHEET_NAME:"SOPORTE",      label:"SOPORTE" },
-  ordenes:     { SHEET_ID:"1POaf4O931YU-mJUmbmvYI8APi1dTACf9yJ6lhMvODaM", SHEET_NAME:"ORDENES",      label:"ORDENES" }
+  consolidado: {
+    label: "CONSOLIDADO",
+    CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTjKIJnzV8oxK7uDAxU9Jx4WJj8V6yLZhhJd6hiu7XHzhZoHInkgpJKpwknj5IXxNXH17is_mt0hpHj/pub?gid=2122917362&single=true&output=csv"
+  },
+  soporte: {
+    label: "SOPORTE",
+    CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUqoSjcVbfuIMs0sDlbFe8FmNNMBtKjM67T4FQIu_8wvIuRl4QqVcpEgvZ2Lrhk3lrHcOc_HlMA8vO/pub?gid=646917453&single=true&output=csv"
+  },
+  ordenes: {
+    label: "ORDENES",
+    CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDXSk7VpcFqTKJ9njjjSaxXwOhIV3_osFEr6cEU2qq6YVMpkZi3XidtubsWNx1Y7zDl_a9rOMOG2_V/pub?gid=805220081&single=true&output=csv"
+  }
 };
 
 const DERIVAR_MAP = {
@@ -569,20 +579,25 @@ async function refreshAll() {
 
 async function loadSource(key) {
   const cfg = CONFIG[key];
-  const url = `https://docs.google.com/spreadsheets/d/${cfg.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(cfg.SHEET_NAME)}&t=${Date.now()}`;
+  // Usamos la URL de "Publicar en la web" (pub CSV) que no tiene CORS
+  const url = cfg.CSV_URL + "&t=" + Date.now();
 
   try {
     const res = await fetch(url, { cache:"no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text();
+    // Si Google devuelve HTML (redirect a login), avisar
+    if (text.trim().startsWith("<!")) {
+      throw new Error("El Sheet no está publicado correctamente como CSV público");
+    }
     const rows = csvToObjects(text);
     S.raw[key] = rows.map(r => normalizeRow(r, key));
     S.lastRefresh[key] = new Date();
+    console.log(`[DGIME] ${cfg.label}: ${rows.length} filas cargadas`);
   } catch(e) {
     console.warn(`[DGIME] No se pudo leer ${key}:`, e.message);
-    // Mantener datos previos si existen
     S.raw[key] = S.raw[key] || [];
-    setStatus(`⚠ No se pudo conectar con ${cfg.label}. Verificar que el Sheet sea público.`, "amber");
+    setStatus(`⚠ ${cfg.label}: ${e.message}`, "amber");
   }
 }
 

@@ -2,10 +2,8 @@
   "name": "dashboard-siprosa-dgime",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "build": "echo Static site ready",
-    "start": "vercel dev"
+    "build": "echo Static site ready"
   },
   "dependencies": {}
 }

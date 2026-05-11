@@ -116,6 +116,31 @@ to{opacity:1;transform:translateY(0)}
 .summary-card ul{padding-left:18px;margin-top:8px}
 .summary-card strong{color:var(--text)}
 
+
+/* ─── VER · JUZGAR · ACTUAR / FODA ───────────────────────── */
+.analysis-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.analysis-card{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.96);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:all .22s ease;animation:fadeUp .42s ease both}
+.analysis-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.analysis-card .ac-label{font-size:9.8px;font-weight:950;text-transform:uppercase;letter-spacing:.65px;padding:5px 10px;border-radius:8px;display:inline-flex;align-items:center;gap:5px;margin-bottom:12px}
+.ac-ver{background:#EFF6FF;color:var(--blue)}
+.ac-juzgar{background:#FEF3C7;color:var(--amber)}
+.ac-actuar{background:#D1FAE5;color:var(--green)}
+.analysis-card h3{font-size:13.5px;font-weight:900;color:var(--text);margin-bottom:8px}
+.analysis-card p,.analysis-card li{font-size:12.6px;color:#374151;line-height:1.55}
+.analysis-card ul{padding-left:17px;margin-top:8px}
+.analysis-card li{margin-bottom:5px}
+
+.foda-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px}
+.foda-box{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.96);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:all .22s ease;animation:fadeUp .42s ease both}
+.foda-box:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.foda-box .foda-lbl{font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.55px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.foda-F{color:var(--green)}
+.foda-O{color:var(--blue)}
+.foda-D{color:var(--amber)}
+.foda-A{color:var(--red)}
+.foda-box li{font-size:12.3px;color:#374151;line-height:1.52;margin-bottom:6px;padding-left:2px}
+.foda-box ul{padding-left:18px}
+
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}
 .kpi-card{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.95);border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all .22s ease;animation:fadeUp .42s ease both}
 .kpi-card:nth-child(2){animation-delay:.03s}
@@ -186,6 +211,8 @@ table.dt tr:hover td{background:#F8FAFC}
 
 
 @media(max-width:1024px){.kpi-grid{grid-template-columns:repeat(2,1fr)}
+.analysis-grid{grid-template-columns:1fr}
+.foda-grid{grid-template-columns:1fr}
 .charts-grid{grid-template-columns:1fr}
 .insight-list{grid-template-columns:1fr}
 }
@@ -272,6 +299,12 @@ table.dt tr:hover td{background:#F8FAFC}
 
     <div class="section-hdr"><h2><span>📊</span> Indicadores principales</h2><span class="section-note">Cada tarjeta incluye qué mide y cómo leerla.</span></div>
     <div class="kpi-grid" id="kpi-container"></div>
+
+    <div class="section-hdr"><h2><span>🧭</span> Ver · Juzgar · Actuar</h2><span class="section-note">Lectura pastoral-operativa aplicada al informe de gestión.</span></div>
+    <div class="analysis-grid" id="vja-container"></div>
+
+    <div class="section-hdr"><h2><span>🔍</span> FODA ejecutivo</h2><span class="section-note">Fortalezas, oportunidades, debilidades y amenazas desde los datos filtrados.</span></div>
+    <div class="foda-grid" id="foda-container"></div>
 
     <div class="section-hdr"><h2><span>🧭</span> Lecturas rápidas</h2></div>
     <div class="insight-list" id="insights-container"></div>
@@ -412,7 +445,7 @@ function pct(a,b){return b?Math.round(a/b*1000)/10:0;}
 function topObj(obj,n=10){return Object.fromEntries(Object.entries(obj||{}).sort((a,b)=>b[1]-a[1]).slice(0,n));}
 
 
-function renderModule(){showLoading(true);const rows=getFilteredRows();const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderKPIs(m);renderInsights(m);renderCharts(rows,m);renderTable(rows);showLoading(false);setStatus(`${fmt(rows.length)} registros · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
+function renderModule(){showLoading(true);const rows=getFilteredRows();const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderCharts(rows,m);renderTable(rows);showLoading(false);setStatus(`${fmt(rows.length)} registros · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
 
 
 function renderSummary(m){const meta=TAB_META[m.tab]||TAB_META.general;document.getElementById('summary-container').innerHTML=`<h3>${esc(meta.title)}</h3><p>Este módulo analiza <strong>${fmt(m.total)}</strong> registros de la pestaña <strong>CONSOLIDADO</strong>${m.tab==='general'?'':' filtrados por la columna <strong>DERIVAR</strong>'}. La lectura separa conceptualmente <strong>Estado</strong> y <strong>Subestado</strong>: el primero muestra la situación general del pedido; el segundo muestra una condición o detalle asociado, sin mezclarlos en un mismo indicador.</p><ul><li>Rubro principal: <strong>${esc(m.topRub[0])}</strong> (${fmt(m.topRub[1])} registros).</li><li>Descripción / ítem más repetido: <strong>${esc(m.topItem[0])}</strong> (${fmt(m.topItem[1])} registros).</li><li>Estado dominante: <strong>${esc(m.topEst[0])}</strong>. Subestado dominante: <strong>${esc(m.topSub[0])}</strong>.</li></ul>`;}
@@ -434,6 +467,81 @@ const KPI_DEFS=m=>[
 
 
 function renderKPIs(m){document.getElementById('kpi-container').innerHTML=KPI_DEFS(m).map(k=>{const accent=COLOR_MAP[k.color]||'var(--blue2)';const deltaHtml=k.delta?`<span class="kpi-delta delta-${k.delta}">${k.delta==='up'?'↑ Bueno':k.delta==='dn'?'↓ Atención':'→ Normal'}</span>`:'';return`<div class="kpi-card"><div class="kpi-accent" style="background:${accent}"></div><div class="kpi-icon-wrap" style="background:${accent}22">${k.icon}</div><div class="kpi-label">${k.lbl}</div><div class="kpi-value">${esc(k.val)}</div><div class="kpi-sub">${k.sub}</div>${deltaHtml}<div class="kpi-help">${k.help}</div></div>`;}).join('');}
+
+
+
+function renderVJA(m){
+  const meta=TAB_META[m.tab]||TAB_META.general;
+  const focoEstado=esc(m.topEst[0]);
+  const focoSub=esc(m.topSub[0]);
+  const focoRubro=esc(m.topRub[0]);
+  const focoItem=esc(m.topItem[0]);
+  document.getElementById('vja-container').innerHTML=`
+    <div class="analysis-card">
+      <div class="ac-label ac-ver">👁 VER — Situación actual</div>
+      <h3>${esc(meta.title)}</h3>
+      <p>Se analizan <strong>${fmt(m.total)}</strong> registros del CONSOLIDADO${m.tab==='general'?'':' para este módulo'}. La mayor concentración por rubro aparece en <strong>${focoRubro}</strong> y el Estado dominante es <strong>${focoEstado}</strong>.</p>
+      <ul>
+        <li>Finalizados / cerrados: <strong>${fmt(m.finalizados)}</strong> (${m.compRate}%).</li>
+        <li>Pendientes activos: <strong>${fmt(m.pendientes)}</strong> (${m.pendRate}%).</li>
+        <li>Subestado dominante: <strong>${focoSub}</strong> (${fmt(m.topSub[1])} casos).</li>
+      </ul>
+    </div>
+    <div class="analysis-card">
+      <div class="ac-label ac-juzgar">⚖ JUZGAR — Lectura del dato</div>
+      <h3>Qué indican los registros</h3>
+      <p>La lectura debe separar <strong>Estado</strong> y <strong>Subestado</strong>: el Estado muestra la situación general; el Subestado ayuda a entender la causa, condición o instancia específica sin mezclar conceptos.</p>
+      <ul>
+        <li>Rubro principal: <strong>${focoRubro}</strong> (${fmt(m.topRub[1])}).</li>
+        <li>Descripción de ítem más repetida: <strong>${focoItem}</strong>.</li>
+        <li>Señales de criticidad: <strong>${fmt(m.criticos)}</strong> (${m.critRate}%).</li>
+        <li>Calidad de fechas: <strong>${m.dateRate}%</strong>.</li>
+      </ul>
+    </div>
+    <div class="analysis-card">
+      <div class="ac-label ac-actuar">⚡ ACTUAR — Decisiones sugeridas</div>
+      <h3>Acciones de gestión</h3>
+      <p>Conviene usar el tablero para ordenar prioridades, no para reemplazar la validación técnica. Los gráficos de Rubro e Ítem ayudan a detectar recurrencias y planificar respuestas por área.</p>
+      <ul>
+        <li>Revisar primero los pendientes del rubro <strong>${focoRubro}</strong>.</li>
+        <li>Validar los subestados más frecuentes antes de definir acciones.</li>
+        <li>Completar fechas en <strong>${fmt(m.sinFecha)}</strong> registros sin fecha válida.</li>
+        <li>Mejorar trazabilidad documental donde falte expediente o referencia.</li>
+      </ul>
+    </div>`;
+}
+
+
+function renderFODA(m){
+  const F=[
+    `Base consolidada única: ${fmt(m.total)} registros analizados desde CONSOLIDADO.`,
+    `Lectura separada de Estado y Subestado, evitando confusión conceptual.`,
+    `Identificación clara de rubro principal: ${esc(m.topRub[0])}.`
+  ];
+  const O=[
+    `Usar los gráficos de Rubro e Ítem para planificar compras, cuadrillas o respuestas recurrentes.`,
+    `Normalizar subestados para mejorar el seguimiento operativo.`,
+    `Convertir los pendientes activos en una agenda semanal de resolución.`
+  ];
+  const D=[
+    `${fmt(m.sinFecha)} registros sin fecha válida afectan la lectura mensual.`,
+    `Trazabilidad documental al ${m.expRate}%: puede requerir completar expedientes o referencias.`,
+    `El texto libre de Descripción del ítem puede generar dispersión si no se normaliza.`
+  ];
+  const A=[
+    `${fmt(m.pendientes)} pendientes activos pueden acumular demora si no se priorizan.`,
+    `Los subestados mal cargados pueden distorsionar el diagnóstico de gestión.`,
+    `La concentración en ${esc(m.topRub[0])} puede transformarse en cuello operativo si se repite mes a mes.`
+  ];
+  const boxes=[
+    ['F','💪 Fortalezas',F],['O','🌟 Oportunidades',O],['D','⚠️ Debilidades',D],['A','🔴 Amenazas',A]
+  ];
+  document.getElementById('foda-container').innerHTML=boxes.map(([k,lbl,items])=>`
+    <div class="foda-box">
+      <div class="foda-lbl foda-${k}">${lbl}</div>
+      <ul>${items.map(i=>`<li>${i}</li>`).join('')}</ul>
+    </div>`).join('');
+}
 
 
 function renderInsights(m){document.getElementById('insights-container').innerHTML=`<div class="insight-card"><div class="lbl">Lectura por rubro</div><div class="val">${esc(truncStr(m.topRub[0],26))}</div><p>Es la categoría que más concentra demanda. Conviene revisarla junto a Estado y Subestado.</p></div><div class="insight-card"><div class="lbl">Lectura por ítem</div><div class="val">${esc(truncStr(m.topItem[0],26))}</div><p>Es la descripción más repetida en columna O. Puede indicar una necesidad recurrente.</p></div><div class="insight-card"><div class="lbl">Estado / Subestado</div><div class="val">Separados</div><p>El tablero muestra ambos niveles por separado y también su cruce para evitar mezclas conceptuales.</p></div>`;}

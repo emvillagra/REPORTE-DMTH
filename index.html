@@ -1,629 +1,1084 @@
 <!DOCTYPE html>
-<!--
-  DGIME · Dashboard Ejecutivo Consolidado
-  Versión final corregida y legible.
-  Fuente única: pestaña CONSOLIDADO.
-  Módulos: General, DO, DP y RF filtrados por columna DERIVAR / AE.
--->
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DGIME · Dashboard Consolidado</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
-<style>
-:root{
-  --navy:#0D1B2A;--navy2:#162232;--blue:#1A56DB;--blue2:#2563EB;--teal:#0694A2;--teal2:#06B6D4;
-  --green:#057A55;--green2:#10B981;--amber:#B45309;--amber2:#F59E0B;--red:#C81E1E;--red2:#F05252;
-  --purple:#6C2BD9;--purple2:#8B5CF6;--bg:#F1F5F9;--card:#FFFFFF;--border:#E2E8F0;
-  --text:#1E293B;--muted:#64748B;--soft:#F8FAFC;--sidebar-w:226px;--radius:16px;
-  --shadow:0 2px 8px rgba(15,23,42,.045),0 10px 28px rgba(15,23,42,.07);
-  --shadow-lg:0 8px 20px rgba(15,23,42,.08),0 18px 46px rgba(15,23,42,.12);
-}
-
-*{box-sizing:border-box;margin:0;padding:0}
-
-html{scroll-behavior:smooth}
-
-body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:radial-gradient(circle at 20% 10%,#E0F2FE 0,#F1F5F9 34%,#F8FAFC 100%);color:var(--text);font-size:14px;display:flex;min-height:100vh;overflow-x:hidden}
-
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}
-to{opacity:1;transform:translateY(0)}
-}
-
-
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}
-50%{opacity:.45;transform:scale(.92)}
-}
-
-
-@keyframes softGlow{0%,100%{box-shadow:0 0 0 rgba(37,99,235,0)}
-50%{box-shadow:0 0 22px rgba(37,99,235,.13)}
-}
-
-.sidebar{width:var(--sidebar-w);flex-shrink:0;background:linear-gradient(180deg,var(--navy),#111827);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;box-shadow:10px 0 28px rgba(15,23,42,.16)}
-
-.sidebar-brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.075);display:flex;align-items:center;gap:11px}
-
-.brand-icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;animation:softGlow 4s ease-in-out infinite}
-
-.brand-text{font-size:13px;font-weight:900;color:white;letter-spacing:.45px;line-height:1.3}
-.brand-sub{font-size:10px;color:rgba(255,255,255,.42);font-weight:500}
-
-.nav{flex:1;padding:12px 10px;overflow-y:auto}
-.nav-label{font-size:9.5px;font-weight:800;color:rgba(255,255,255,.32);text-transform:uppercase;letter-spacing:.9px;padding:8px 8px 5px}
-
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;cursor:pointer;font-size:13px;font-weight:600;color:rgba(255,255,255,.58);transition:all .22s ease;margin-bottom:4px;border:none;background:none;width:100%;text-align:left}
-
-.nav-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9);transform:translateX(2px)}
-.nav-item.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;font-weight:800;box-shadow:0 8px 18px rgba(26,86,219,.30)}
-
-.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.75}
-.nav-item.active svg{opacity:1}
-.nav-badge{margin-left:auto;font-size:10px;font-weight:900;background:rgba(255,255,255,.12);color:rgba(255,255,255,.74);padding:2px 7px;border-radius:7px}
-.nav-item.active .nav-badge{background:rgba(255,255,255,.2);color:white}
-
-.sidebar-bottom{padding:12px 10px;border-top:1px solid rgba(255,255,255,.075)}
-.sidebar-user{display:flex;align-items:center;gap:10px;padding:8px}
-.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white}
-.user-name{font-size:12px;font-weight:700;color:rgba(255,255,255,.86)}
-.user-role{font-size:10px;color:rgba(255,255,255,.38)}
-
-.topbar{position:fixed;top:0;left:var(--sidebar-w);right:0;height:62px;z-index:90;background:rgba(248,250,252,.86);backdrop-filter:blur(16px);border-bottom:1px solid rgba(226,232,240,.86);display:flex;align-items:center;padding:0 24px;gap:16px}
-.topbar-title{font-size:15px;font-weight:800;color:var(--text)}
-.topbar-sub{font-size:11.5px;color:var(--muted);margin-top:1px}
-.topbar-spacer{flex:1}
-.topbar-badge{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);color:var(--blue);border:1px solid #BFDBFE}
-.topbar-time{font-size:11px;color:var(--muted);padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:0 1px 8px rgba(15,23,42,.035)}
-
-.main{margin-left:var(--sidebar-w);margin-top:62px;flex:1;padding:22px 25px 34px;min-height:calc(100vh - 62px)}
-
-.toolbar-card{background:rgba(255,255,255,.92);border:1px solid rgba(226,232,240,.9);border-radius:var(--radius);padding:15px 18px;margin-bottom:18px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;animation:fadeUp .35s ease both}
-.field{display:flex;flex-direction:column;gap:5px;min-width:150px;flex:1;max-width:220px}
-.field label{font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.45px}
-.field input,.field select{border:1px solid var(--border);border-radius:10px;padding:8px 11px;font-size:13px;color:var(--text);background:var(--soft);outline:none;transition:all .18s ease}
-.field input:focus,.field select:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(37,99,235,.11);background:white}
-.toolbar-sep{width:1px;height:38px;background:var(--border);flex-shrink:0;align-self:center}
-.status-pill{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);padding:7px 12px;background:var(--soft);border:1px solid var(--border);border-radius:10px;flex-shrink:0;white-space:nowrap}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green2);flex-shrink:0;animation:pulse 2s infinite}
-
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:10px;border:none;font-size:12.5px;font-weight:800;cursor:pointer;transition:all .2s ease;white-space:nowrap}
-.btn-primary{background:var(--blue2);color:white;box-shadow:0 4px 12px rgba(37,99,235,.24)}
-.btn-primary:hover{background:var(--blue);transform:translateY(-1px);box-shadow:0 8px 18px rgba(37,99,235,.28)}
-.btn-teal{background:var(--teal);color:white;box-shadow:0 4px 12px rgba(6,148,162,.22)}
-.btn-teal:hover{background:#057080;transform:translateY(-1px)}
-.btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border)}
-.btn-ghost:hover{background:var(--soft);border-color:#CBD5E1;transform:translateY(-1px)}
-.btn svg{width:14px;height:14px;flex-shrink:0}
-
-.loading-bar{height:3px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--purple),var(--blue));background-size:220% 100%;animation:loading 1.4s linear infinite;border-radius:2px;margin-bottom:16px}
-
-@keyframes loading{0%{background-position:0% 0}
-100%{background-position:220% 0}
-}
-
-.section-hdr{display:flex;align-items:center;justify-content:space-between;margin:21px 0 12px;animation:fadeUp .35s ease both}
-.section-hdr h2{font-size:15px;font-weight:900;color:var(--text);display:flex;align-items:center;gap:8px}
-.section-hdr h2 span{font-size:20px}
-.section-hdr-right{display:flex;gap:8px;align-items:center}
-.section-note{font-size:11.5px;color:var(--muted)}
-
-.summary-card{background:rgba(255,255,255,.95);border:1px solid rgba(226,232,240,.95);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:18px;animation:fadeUp .4s ease both}
-.summary-card h3{font-size:14px;font-weight:900;margin-bottom:8px}
-.summary-card p,.summary-card li{font-size:12.9px;line-height:1.58;color:#374151}
-.summary-card ul{padding-left:18px;margin-top:8px}
-.summary-card strong{color:var(--text)}
-
-
-/* ─── VER · JUZGAR · ACTUAR / FODA ───────────────────────── */
-.analysis-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
-.analysis-card{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.96);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:all .22s ease;animation:fadeUp .42s ease both}
-.analysis-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.analysis-card .ac-label{font-size:9.8px;font-weight:950;text-transform:uppercase;letter-spacing:.65px;padding:5px 10px;border-radius:8px;display:inline-flex;align-items:center;gap:5px;margin-bottom:12px}
-.ac-ver{background:#EFF6FF;color:var(--blue)}
-.ac-juzgar{background:#FEF3C7;color:var(--amber)}
-.ac-actuar{background:#D1FAE5;color:var(--green)}
-.analysis-card h3{font-size:13.5px;font-weight:900;color:var(--text);margin-bottom:8px}
-.analysis-card p,.analysis-card li{font-size:12.6px;color:#374151;line-height:1.55}
-.analysis-card ul{padding-left:17px;margin-top:8px}
-.analysis-card li{margin-bottom:5px}
-
-.foda-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px}
-.foda-box{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.96);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:all .22s ease;animation:fadeUp .42s ease both}
-.foda-box:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.foda-box .foda-lbl{font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.55px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.foda-F{color:var(--green)}
-.foda-O{color:var(--blue)}
-.foda-D{color:var(--amber)}
-.foda-A{color:var(--red)}
-.foda-box li{font-size:12.3px;color:#374151;line-height:1.52;margin-bottom:6px;padding-left:2px}
-.foda-box ul{padding-left:18px}
-
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}
-.kpi-card{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.95);border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all .22s ease;animation:fadeUp .42s ease both}
-.kpi-card:nth-child(2){animation-delay:.03s}
-.kpi-card:nth-child(3){animation-delay:.06s}
-.kpi-card:nth-child(4){animation-delay:.09s}
-.kpi-card:nth-child(5){animation-delay:.12s}
-.kpi-card:nth-child(6){animation-delay:.15s}
-.kpi-card:nth-child(7){animation-delay:.18s}
-.kpi-card:nth-child(8){animation-delay:.21s}
-.kpi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-.kpi-accent{position:absolute;top:0;left:0;right:0;height:3px}
-.kpi-icon-wrap{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:17px}
-.kpi-label{font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.55px;margin-bottom:4px}
-.kpi-value{font-size:24px;font-weight:950;color:var(--text);line-height:1;letter-spacing:-.5px}
-.kpi-sub{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.38}
-.kpi-help{font-size:11.2px;color:#475569;margin-top:9px;line-height:1.42;border-top:1px dashed #E2E8F0;padding-top:8px}
-.kpi-delta{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:6px;margin-top:7px}
-.delta-up{background:#D1FAE5;color:#065F46}
-.delta-dn{background:#FEE2E2;color:#991B1B}
-.delta-neu{background:#EFF6FF;color:#1D4ED8}
-
-.charts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px}
-.chart-card{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.96);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:all .22s ease;animation:fadeUp .42s ease both}
-.chart-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.chart-card.wide{grid-column:1/-1}
-.chart-title{font-size:13px;font-weight:850;color:var(--text);margin-bottom:2px}
-.chart-subtitle{font-size:11.5px;color:var(--muted);margin-bottom:14px;line-height:1.45}
-.chart-box{position:relative;height:252px}
-.chart-box-sm{height:210px}
-.chart-box-lg{height:310px}
-.insight-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
-.insight-card{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.96);border-radius:var(--radius);padding:15px;box-shadow:var(--shadow);animation:fadeUp .4s ease both}
-.insight-card .lbl{font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.insight-card .val{font-size:17px;font-weight:950;color:var(--text);line-height:1.2}
-.insight-card p{font-size:11.5px;color:#475569;line-height:1.42;margin-top:6px}
-
-.table-card{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.96);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px;animation:fadeUp .42s ease both}
-.table-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.table-header h3{font-size:13px;font-weight:850;color:var(--text)}
-.table-wrap{overflow-x:auto}
-table.dt{width:100%;min-width:1180px;border-collapse:collapse}
-table.dt th{background:#F8FAFC;color:var(--muted);font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.4px;padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
-table.dt td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text);vertical-align:middle}
-table.dt tr:last-child td{border-bottom:none}
-table.dt tr:hover td{background:#F8FAFC}
-.badge{display:inline-flex;align-items:center;gap:4px;border-radius:7px;padding:3px 9px;font-size:10.5px;font-weight:850;white-space:nowrap}
-.badge-blue{background:#DBEAFE;color:#1D4ED8}
-.badge-green{background:#D1FAE5;color:#065F46}
-.badge-amber{background:#FEF3C7;color:#92400E}
-.badge-red{background:#FEE2E2;color:#991B1B}
-.badge-gray{background:#F1F5F9;color:var(--muted)}
-.badge-purple{background:#EDE9FE;color:#6D28D9}
-.badge-teal{background:#CCFBF1;color:#0F766E}
-
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:58px 20px;gap:12px;color:var(--muted)}
-.empty-state .es-icon{font-size:40px;opacity:.45}
-.empty-state h3{font-size:15px;font-weight:850;color:var(--text);opacity:.6}
-.empty-state p{font-size:13px;text-align:center;max-width:360px;line-height:1.5;opacity:.72}
-
-.toast{position:fixed;bottom:22px;right:22px;z-index:200;background:var(--navy);color:white;padding:12px 18px;border-radius:13px;font-size:13px;font-weight:750;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow-lg);transform:translateY(90px);opacity:0;transition:all .28s ease}
-.toast.show{transform:translateY(0);opacity:1}
-
-
-@media(max-width:1280px){.kpi-grid{grid-template-columns:repeat(3,1fr)}
-.insight-list{grid-template-columns:1fr 1fr}
-.charts-grid{grid-template-columns:1fr 1fr}
-}
-
-
-@media(max-width:1024px){.kpi-grid{grid-template-columns:repeat(2,1fr)}
-.analysis-grid{grid-template-columns:1fr}
-.foda-grid{grid-template-columns:1fr}
-.charts-grid{grid-template-columns:1fr}
-.insight-list{grid-template-columns:1fr}
-}
-
-
-@media(max-width:768px){.sidebar{transform:translateX(-100%)}
-.main,.topbar{margin-left:0;left:0}
-.kpi-grid{grid-template-columns:1fr}
-.toolbar-card{align-items:stretch}
-.field{max-width:none}
-.topbar-time{display:none}
-}
-
-
-@media print{body{background:white}
-.sidebar,.topbar,.toolbar-card,.btn,.toast{display:none!important}
-.main{margin:0;padding:12px}
-.kpi-grid{grid-template-columns:repeat(2,1fr)}
-.charts-grid{grid-template-columns:1fr}
-.chart-card,.kpi-card,.summary-card,.table-card,.insight-card{box-shadow:none;break-inside:avoid}
-.chart-card.wide{grid-column:auto}
-}
-
-</style>
+  <style>
+    :root{
+      
+      --navy:#0D1B2A;
+      --navy2:#162232;
+      --blue:#1A56DB;
+      --blue2:#2563EB;
+      --teal:#0694A2;
+      --teal2:#06B6D4;
+      
+      --green:#057A55;
+      --green2:#10B981;
+      --amber:#B45309;
+      --amber2:#F59E0B;
+      --red:#C81E1E;
+      --red2:#F05252;
+      
+      --purple:#6C2BD9;
+      --purple2:#8B5CF6;
+      --bg:#F1F5F9;
+      --card:#FFFFFF;
+      --border:#E2E8F0;
+      --soft:#F8FAFC;
+      
+      --text:#1E293B;
+      --muted:#64748B;
+      --sidebar-w:232px;
+      --radius:16px;
+      
+      --shadow:0 4px 18px rgba(15,23,42,.07);
+      --shadow-lg:0 12px 34px rgba(15,23,42,.12);
+      
+    
+    }
+    
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0
+    }
+    
+    html{
+      scroll-behavior:smooth
+    }
+    
+    body{
+      font-family:'Segoe UI',system-ui,Arial,sans-serif;
+      background:linear-gradient(135deg,#F8FAFC,#EEF5FB);
+      color:var(--text);
+      font-size:14px;
+      display:flex;
+      min-height:100vh;
+      overflow-x:hidden
+    }
+    
+    .sidebar{
+      width:var(--sidebar-w);
+      background:linear-gradient(180deg,var(--navy),var(--navy2));
+      position:fixed;
+      top:0;
+      left:0;
+      bottom:0;
+      z-index:100;
+      display:flex;
+      flex-direction:column;
+      box-shadow:8px 0 22px rgba(15,23,42,.16)
+    }
+    
+    .sidebar-brand{
+      padding:21px 18px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      gap:11px
+    }
+    
+    .brand-icon{
+      width:38px;
+      height:38px;
+      border-radius:13px;
+      background:linear-gradient(135deg,var(--blue),var(--teal));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:19px;
+      box-shadow:0 12px 24px rgba(6,148,162,.22)
+    }
+    
+    .brand-text{
+      color:white;
+      font-weight:900;
+      font-size:14px;
+      line-height:1.2;
+      letter-spacing:.4px
+    }
+    .brand-sub{
+      font-size:10px;
+      color:rgba(255,255,255,.48);
+      font-weight:500;
+      margin-top:2px
+    }
+    
+    .nav{
+      padding:12px 10px;
+      flex:1;
+      overflow:auto
+    }
+    .nav-label{
+      font-size:9.5px;
+      font-weight:800;
+      color:rgba(255,255,255,.32);
+      text-transform:uppercase;
+      letter-spacing:.9px;
+      padding:9px 9px 5px
+    }
+    
+    .nav-item{
+      width:100%;
+      border:0;
+      background:transparent;
+      color:rgba(255,255,255,.62);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      text-align:left;
+      padding:10px 11px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:650;
+      margin-bottom:3px;
+      transition:all .18s ease
+    }
+    
+    .nav-item:hover{
+      background:rgba(255,255,255,.07);
+      color:rgba(255,255,255,.92);
+      transform:translateX(2px)
+    }
+    
+    .nav-item.active{
+      background:linear-gradient(135deg,var(--blue),var(--blue2));
+      color:#fff;
+      box-shadow:0 8px 20px rgba(37,99,235,.32)
+    }
+    
+    .nav-item svg{
+      width:16px;
+      height:16px;
+      opacity:.8
+    }
+    .nav-badge{
+      margin-left:auto;
+      font-size:10px;
+      background:rgba(255,255,255,.14);
+      padding:2px 7px;
+      border-radius:999px;
+      font-weight:900
+    }
+    .nav-item.active .nav-badge{
+      background:rgba(255,255,255,.24)
+    }
+    
+    .sidebar-bottom{
+      padding:13px 11px;
+      border-top:1px solid rgba(255,255,255,.08)
+    }
+    .sidebar-user{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:8px
+    }
+    .user-avatar{
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:linear-gradient(135deg,var(--teal),var(--blue));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:900
+    }
+    .user-name{
+      font-size:12px;
+      color:rgba(255,255,255,.86);
+      font-weight:800
+    }
+    .user-role{
+      font-size:10px;
+      color:rgba(255,255,255,.42)
+    }
+    
+    .topbar{
+      position:fixed;
+      top:0;
+      left:var(--sidebar-w);
+      right:0;
+      height:62px;
+      z-index:90;
+      background:rgba(248,250,252,.88);
+      backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:0 25px
+    }
+    .topbar-title{
+      font-weight:900;
+      font-size:15px
+    }
+    .topbar-sub{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:2px
+    }
+    .topbar-spacer{
+      flex:1
+    }
+    .topbar-badge{
+      font-size:11px;
+      font-weight:800;
+      color:var(--blue);
+      background:#EFF6FF;
+      border:1px solid #BFDBFE;
+      border-radius:10px;
+      padding:7px 11px
+    }
+    .topbar-time{
+      font-size:11px;
+      color:var(--muted);
+      background:white;
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:7px 10px;
+      box-shadow:var(--shadow)
+    }
+    
+    .main{
+      margin-left:var(--sidebar-w);
+      margin-top:62px;
+      padding:22px 25px 38px;
+      min-height:calc(100vh - 62px);
+      flex:1
+    }
+    .toolbar-card,.summary-card,.chart-card,.table-card,.analysis-card,.foda-box,.tipo-card{
+      background:rgba(255,255,255,.95);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      animation:fadeUp .34s ease both
+    }
+    .toolbar-card{
+      padding:15px 18px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:flex-end;
+      margin-bottom:18px
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+      min-width:148px;
+      flex:1;
+      max-width:230px
+    }
+    .field label{
+      font-size:10.5px;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:.45px
+    }
+    .field input,.field select{
+      border:1px solid var(--border);
+      border-radius:11px;
+      padding:9px 11px;
+      background:#F8FAFC;
+      color:var(--text);
+      outline:none;
+      font-size:13px;
+      transition:all .15s ease
+    }
+    .field input:focus,.field select:focus{
+      border-color:var(--blue2);
+      box-shadow:0 0 0 3px rgba(37,99,235,.11);
+      background:white
+    }
+    .toolbar-sep{
+      width:1px;
+      height:38px;
+      background:var(--border);
+      align-self:center
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      border:0;
+      border-radius:11px;
+      padding:9px 14px;
+      font-weight:900;
+      font-size:12.5px;
+      cursor:pointer;
+      transition:.16s ease;
+      white-space:nowrap
+    }
+    .btn svg{
+      width:14px;
+      height:14px
+    }
+    .btn-primary{
+      background:var(--blue2);
+      color:#fff;
+      box-shadow:0 8px 18px rgba(37,99,235,.24)
+    }
+    .btn-primary:hover,.btn-teal:hover,.btn-green:hover{
+      transform:translateY(-1px);
+      box-shadow:var(--shadow-lg)
+    }
+    .btn-ghost{
+      background:white;
+      color:var(--text);
+      border:1px solid var(--border)
+    }
+    .btn-teal{
+      background:var(--teal);
+      color:white
+    }
+    .status-pill{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      font-size:11px;
+      color:var(--muted);
+      padding:7px 12px;
+      background:#F8FAFC;
+      border:1px solid var(--border);
+      border-radius:10px
+    }
+    .status-dot{
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      animation:pulse 1.8s infinite
+    }
+    @keyframes pulse{
+      50%{
+      opacity:.35
+    }
+    
+    }
+    
+    .section-hdr{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin:21px 0 12px;
+      gap:10px
+    }
+    .section-hdr h2{
+      font-size:16px;
+      font-weight:950;
+      display:flex;
+      align-items:center;
+      gap:8px
+    }
+    .section-note{
+      font-size:11px;
+      color:var(--muted)
+    }
+    
+    .summary-card{
+      padding:18px 20px;
+      border-left:4px solid var(--blue)
+    }
+    .summary-card h3{
+      font-size:15px;
+      margin-bottom:8px
+    }
+    .summary-card p,.summary-card li{
+      font-size:13px;
+      line-height:1.6;
+      color:#334155
+    }
+    .summary-card ul{
+      padding-left:18px;
+      margin-top:8px
+    }
+    .summary-pill-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px
+    }
+    .summary-pill{
+      font-size:11px;
+      font-weight:850;
+      border-radius:999px;
+      padding:6px 10px;
+      background:#EFF6FF;
+      color:#1D4ED8;
+      border:1px solid #BFDBFE
+    }
+    
+    .kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:13px
+    }
+    .kpi-card{
+      background:white;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+      transition:all .18s ease;
+      animation:fadeUp .36s ease both
+    }
+    .kpi-card:hover,.chart-card:hover,.analysis-card:hover,.foda-box:hover,.tipo-card:hover{
+      transform:translateY(-2px);
+      box-shadow:var(--shadow-lg)
+    }
+    .kpi-accent{
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:3px
+    }
+    .kpi-icon-wrap{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      margin-bottom:10px
+    }
+    .kpi-label{
+      font-size:10px;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:950;
+      letter-spacing:.5px
+    }
+    .kpi-value{
+      font-size:25px;
+      line-height:1;
+      font-weight:950;
+      margin-top:5px;
+      letter-spacing:-.7px
+    }
+    .kpi-sub{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:7px;
+      line-height:1.35
+    }
+    .kpi-help{
+      font-size:11px;
+      line-height:1.45;
+      color:#475569;
+      margin-top:9px;
+      padding-top:9px;
+      border-top:1px dashed #E2E8F0
+    }
+    .kpi-delta{
+      display:inline-flex;
+      margin-top:7px;
+      font-size:10.5px;
+      font-weight:900;
+      border-radius:7px;
+      padding:3px 7px
+    }
+    .delta-up{
+      background:#D1FAE5;
+      color:#065F46
+    }
+    .delta-dn{
+      background:#FEE2E2;
+      color:#991B1B
+    }
+    .delta-neu{
+      background:#EFF6FF;
+      color:#1D4ED8
+    }
+    
+    .tipo-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px
+    }
+    .tipo-card{
+      padding:17px
+    }
+    .tipo-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:10px
+    }
+    .tipo-title{
+      font-size:13px;
+      font-weight:950
+    }
+    .tipo-badge{
+      font-size:10px;
+      font-weight:950;
+      border-radius:999px;
+      padding:4px 8px;
+      background:#EEF2FF;
+      color:#4338CA
+    }
+    .tipo-stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:8px
+    }
+    .tipo-stat{
+      background:#F8FAFC;
+      border:1px solid #E2E8F0;
+      border-radius:12px;
+      padding:9px
+    }
+    .tipo-stat b{
+      display:block;
+      font-size:17px
+    }
+    .tipo-stat span{
+      font-size:10px;
+      color:var(--muted);
+      font-weight:800;
+      text-transform:uppercase
+    }
+    
+    .analysis-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px
+    }
+    .analysis-card{
+      padding:18px
+    }
+    .ac-label{
+      font-size:10px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      border-radius:8px;
+      padding:5px 10px;
+      display:inline-flex;
+      margin-bottom:12px
+    }
+    .ac-ver{
+      background:#EFF6FF;
+      color:var(--blue)
+    }
+    .ac-juzgar{
+      background:#FEF3C7;
+      color:var(--amber)
+    }
+    .ac-actuar{
+      background:#D1FAE5;
+      color:var(--green)
+    }
+    .analysis-card p,.analysis-card li,.foda-box li{
+      font-size:12.5px;
+      line-height:1.58;
+      color:#334155
+    }
+    .analysis-card ul,.foda-box ul{
+      padding-left:18px;
+      margin-top:8px
+    }
+    .analysis-card li,.foda-box li{
+      margin-bottom:5px
+    }
+    
+    .foda-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px
+    }
+    .foda-box{
+      padding:18px
+    }
+    .foda-lbl{
+      font-size:10.5px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      margin-bottom:10px
+    }
+    .foda-F{
+      color:var(--green)
+    }
+    .foda-O{
+      color:var(--blue)
+    }
+    .foda-D{
+      color:var(--amber)
+    }
+    .foda-A{
+      color:var(--red)
+    }
+    
+    .insight-list{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px
+    }
+    .insight{
+      background:white;
+      border:1px solid var(--border);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      padding:14px 15px;
+      font-size:12.5px;
+      color:#334155;
+      line-height:1.5;
+      animation:fadeUp .34s ease both
+    }
+    .insight strong{
+      color:var(--text)
+    }
+    
+    .charts-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px
+    }
+    .chart-card{
+      padding:18px
+    }
+    .chart-card.wide{
+      grid-column:1/-1
+    }
+    .chart-title{
+      font-size:13px;
+      font-weight:950;
+      margin-bottom:3px
+    }
+    .chart-subtitle{
+      font-size:11.5px;
+      color:var(--muted);
+      line-height:1.45;
+      margin-bottom:13px
+    }
+    .chart-box{
+      height:252px;
+      position:relative
+    }
+    .chart-box-sm{
+      height:190px
+    }
+    .chart-box-lg{
+      height:320px
+    }
+    
+    .table-card{
+      overflow:hidden
+    }
+    .table-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:15px 18px;
+      border-bottom:1px solid var(--border)
+    }
+    .table-header h3{
+      font-size:13px;
+      font-weight:950
+    }
+    .table-wrap{
+      overflow:auto
+    }
+    table.dt{
+      width:100%;
+      min-width:1180px;
+      border-collapse:collapse
+    }
+    table.dt th{
+      background:#F8FAFC;
+      color:var(--muted);
+      font-size:10.5px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.35px;
+      text-align:left;
+      padding:10px 13px;
+      border-bottom:1px solid var(--border);
+      white-space:nowrap
+    }
+    table.dt td{
+      font-size:12.5px;
+      color:var(--text);
+      padding:10px 13px;
+      border-bottom:1px solid var(--border);
+      vertical-align:middle
+    }
+    table.dt tr:hover td{
+      background:#F8FAFC
+    }
+    .badge{
+      display:inline-flex;
+      border-radius:8px;
+      padding:4px 8px;
+      font-size:10.5px;
+      font-weight:900;
+      white-space:nowrap
+    }
+    .badge-blue{
+      background:#DBEAFE;
+      color:#1D4ED8
+    }
+    .badge-green{
+      background:#D1FAE5;
+      color:#065F46
+    }
+    .badge-amber{
+      background:#FEF3C7;
+      color:#92400E
+    }
+    .badge-red{
+      background:#FEE2E2;
+      color:#991B1B
+    }
+    .badge-gray{
+      background:#F1F5F9;
+      color:#64748B
+    }
+    .badge-purple{
+      background:#EDE9FE;
+      color:#6D28D9
+    }
+    .badge-teal{
+      background:#CCFBF1;
+      color:#0F766E
+    }
+    .badge-orange{
+      background:#FFEDD5;
+      color:#C2410C
+    }
+    
+    .empty-state{
+      padding:58px;
+      text-align:center;
+      color:var(--muted)
+    }
+    .empty-state .es-icon{
+      font-size:40px;
+      opacity:.45
+    }
+    .loading-bar{
+      height:3px;
+      background:linear-gradient(90deg,var(--blue),var(--teal),var(--purple));
+      background-size:200% 100%;
+      animation:loading 1.3s linear infinite;
+      border-radius:999px;
+      margin-bottom:16px
+    }
+    @keyframes loading{
+      to{
+      background-position:200% 0
+    }
+    
+    }
+    .toast{
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      z-index:300;
+      background:var(--navy);
+      color:white;
+      border-radius:14px;
+      padding:12px 17px;
+      font-weight:850;
+      font-size:13px;
+      box-shadow:var(--shadow-lg);
+      transform:translateY(90px);
+      transition:.25s ease
+    }
+    .toast.show{
+      transform:translateY(0)
+    }
+    @keyframes fadeUp{
+      from{
+      opacity:0;
+      transform:translateY(7px)
+    }
+    to{
+      opacity:1;
+      transform:translateY(0)
+    }
+    
+    }
+    
+    @media(max-width:1360px){
+      .kpi-grid{
+      grid-template-columns:repeat(3,1fr)
+    }
+    .tipo-grid{
+      grid-template-columns:1fr
+    }
+    .insight-list{
+      grid-template-columns:1fr 1fr
+    }
+    
+    }
+    @media(max-width:1050px){
+      .charts-grid,.analysis-grid,.foda-grid{
+      grid-template-columns:1fr
+    }
+    .kpi-grid{
+      grid-template-columns:repeat(2,1fr)
+    }
+    
+    }
+    @media(max-width:760px){
+      .sidebar{
+      transform:translateX(-100%)
+    }
+    .topbar{
+      left:0
+    }
+    .main{
+      margin-left:0
+    }
+    .kpi-grid{
+      grid-template-columns:1fr
+    }
+    .insight-list{
+      grid-template-columns:1fr
+    }
+    .toolbar-card{
+      display:block
+    }
+    .field{
+      max-width:none;
+      margin-bottom:10px
+    }
+    .btn{
+      margin:4px 4px 4px 0
+    }
+    
+    }
+    
+    @media print{
+      .sidebar,.topbar,.toolbar-card,.toast{
+      display:none!important
+    }
+    .main{
+      margin:0;
+      padding:10px
+    }
+    .chart-card,.kpi-card,.analysis-card,.foda-box{
+      break-inside:avoid
+    }
+    .charts-grid{
+      grid-template-columns:1fr
+    }
+    .kpi-grid{
+      grid-template-columns:repeat(3,1fr)
+    }
+    
+    }
+    
+  </style>
 </head>
 <body>
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-brand">
-    <div class="brand-icon">⚙</div>
-    <div><div class="brand-text">DGIME</div><div class="brand-sub">Tablero ejecutivo · CONSOLIDADO</div></div>
-  </div>
-  <nav class="nav">
-    <div class="nav-label">Módulos</div>
-    <button class="nav-item active" data-tab="general" onclick="switchTab('general',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      General <span class="nav-badge" id="badge-general">—</span>
-    </button>
-    <button class="nav-item" data-tab="obras" onclick="switchTab('obras',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V5a2 2 0 012-2h9a2 2 0 012 2v16"/><path d="M9 21v-5h3v5"/><path d="M8 7h1M12 7h1M8 11h1M12 11h1"/><path d="M17 9h1a2 2 0 012 2v10"/></svg>
-      Dpto. Obras <span class="nav-badge" id="badge-obras">—</span>
-    </button>
-    <button class="nav-item" data-tab="produccion" onclick="switchTab('produccion',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l6 4V9l6 4V7l6 4v10H3z"/><path d="M7 17h2M12 17h2M17 17h2"/></svg>
-      Dpto. Producción <span class="nav-badge" id="badge-produccion">—</span>
-    </button>
-    <button class="nav-item" data-tab="rf" onclick="switchTab('rf',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6V5a2 2 0 012-2h0a2 2 0 012 2v1"/><path d="M3 7h18v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 12h18M10 12v2h4v-2"/></svg>
-      Recursos Físicos <span class="nav-badge" id="badge-rf">—</span>
-    </button>
-    <div class="nav-label" style="margin-top:14px">Acciones</div>
-    <button class="nav-item" onclick="showSourceStatus()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h10M4 18h6"/></svg>
-      Estado de datos
-    </button>
-    <button class="nav-item" onclick="refreshAll()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-15.5 6.2"/><path d="M3 12A9 9 0 0118.5 5.8"/><path d="M18 3v4h4M6 21v-4H2"/></svg>
-      Refrescar consolidado
-    </button>
-  </nav>
-  <div class="sidebar-bottom"><div class="sidebar-user"><div class="user-avatar">DG</div><div><div class="user-name">Dirección</div><div class="user-role">Gestión consolidada</div></div></div></div>
-</aside>
-<header class="topbar">
-  <div><div class="topbar-title" id="topbar-title">Dashboard General Consolidado</div><div class="topbar-sub" id="topbar-sub">Pestaña CONSOLIDADO analizada como conjunto</div></div>
-  <div class="topbar-spacer"></div><div class="topbar-badge" id="topbar-refresh-status">Cargando...</div><div class="topbar-time" id="topbar-time">—</div>
-</header>
-<main class="main" id="main-content">
-  <div class="toolbar-card" id="toolbar-area">
-    <div class="field"><label>Fecha desde</label><input type="date" id="g-from" value="2026-01-01"></div>
-    <div class="field"><label>Fecha hasta</label><input type="date" id="g-to" value="2026-04-30"></div>
-    <div class="field"><label>Estado</label><select id="g-estado"><option value="">Todos</option></select></div>
-    <div class="field"><label>Subestado</label><select id="g-subestado"><option value="">Todos</option></select></div>
-    <div class="field"><label>Rubro</label><select id="g-rubro"><option value="">Todos</option></select></div>
-    <div class="field"><label>Búsqueda libre</label><input type="text" id="g-search" placeholder="Efector, sector, ítem, ID..."></div>
-    <div class="toolbar-sep"></div>
-    <button class="btn btn-primary" onclick="applyFilters()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>Aplicar</button>
-    <button class="btn btn-ghost" onclick="clearFilters()">Limpiar</button>
-    <button class="btn btn-teal" onclick="exportPDF()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Exportar PDF</button>
-    <div class="status-pill" id="status-pill"><div class="status-dot" style="background:var(--amber2)"></div><span id="status-text">Cargando CONSOLIDADO...</span></div>
-  </div>
-  <div class="loading-bar" id="loading-bar" style="display:none"></div>
-  <div id="export-area">
-    <div class="section-hdr"><h2><span>📌</span> Resumen ejecutivo</h2></div>
-    <div class="summary-card" id="summary-container"></div>
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="brand-icon">⚙</div><div><div class="brand-text">DGIME</div><div class="brand-sub">SIPROSA · Consolidado</div></div></div>
+    <nav class="nav">
+      <div class="nav-label">Módulos</div>
+      <button class="nav-item active" data-tab="general" onclick="switchTab('general',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>General <span class="nav-badge" id="badge-general">—</span></button>
+      <button class="nav-item" data-tab="obras" onclick="switchTab('obras',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V5a2 2 0 012-2h9a2 2 0 012 2v16"/><path d="M9 21v-5h3v5"/><path d="M8 7h1M12 7h1M8 11h1M12 11h1"/><path d="M17 9h1a2 2 0 012 2v10"/></svg>Dpto. Obras <span class="nav-badge" id="badge-obras">—</span></button>
+      <button class="nav-item" data-tab="produccion" onclick="switchTab('produccion',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l6 4V9l6 4V7l6 4v10H3z"/><path d="M7 17h2M12 17h2M17 17h2"/></svg>Dpto. Producción <span class="nav-badge" id="badge-produccion">—</span></button>
+      <button class="nav-item" data-tab="rf" onclick="switchTab('rf',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6V5a2 2 0 012-2h0a2 2 0 012 2v1"/><path d="M3 7h18v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 12h18M10 12v2h4v-2"/></svg>Recursos Físicos <span class="nav-badge" id="badge-rf">—</span></button>
+      <div class="nav-label" style="margin-top:14px">Acciones</div>
+      <button class="nav-item" onclick="showSourceStatus()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h10M4 18h6"/></svg>Estado de datos</button>
+      <button class="nav-item" onclick="refreshAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-15.5 6.2"/><path d="M3 12A9 9 0 0118.5 5.8"/><path d="M18 3v4h4M6 21v-4H2"/></svg>Refrescar consolidado</button>
+    </nav>
+    <div class="sidebar-bottom"><div class="sidebar-user"><div class="user-avatar">DG</div><div><div class="user-name">Dirección</div><div class="user-role">Gestión consolidada</div></div></div></div>
+  </aside>
+  <header class="topbar">
+    <div><div class="topbar-title" id="topbar-title">Dashboard General Consolidado</div><div class="topbar-sub" id="topbar-sub">Pestaña CONSOLIDADO analizada como conjunto</div></div>
+    <div class="topbar-spacer"></div><div class="topbar-badge" id="topbar-refresh-status">Cargando...</div><div class="topbar-time" id="topbar-time">—</div>
+  </header>
+  <main class="main">
+    <div class="toolbar-card">
+      <div class="field"><label>Fecha desde</label><input type="date" id="g-from" value="2026-01-01"></div>
+      <div class="field"><label>Fecha hasta</label><input type="date" id="g-to" value="2026-04-30"></div>
+      <div class="field"><label>Tipo de solicitud</label><select id="g-tipo"><option value="">Todos</option></select></div>
+      <div class="field"><label>Estado</label><select id="g-estado"><option value="">Todos</option></select></div>
+      <div class="field"><label>Subestado</label><select id="g-subestado"><option value="">Todos</option></select></div>
+      <div class="field"><label>Rubro</label><select id="g-rubro"><option value="">Todos</option></select></div>
+      <div class="field"><label>Búsqueda libre</label><input type="text" id="g-search" placeholder="Efector, sector, ítem, ID..."></div>
+      <div class="toolbar-sep"></div>
+      <button class="btn btn-primary" onclick="applyFilters()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>Aplicar</button>
+      <button class="btn btn-ghost" onclick="clearFilters()">Limpiar</button>
+      <button class="btn btn-teal" onclick="exportPDF()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Exportar PDF</button>
+      <div class="status-pill" id="status-pill"><div class="status-dot" style="background:var(--amber2)"></div><span id="status-text">Cargando CONSOLIDADO...</span></div>
+    </div>
+    <div class="loading-bar" id="loading-bar" style="display:none"></div>
+    <div id="export-area">
+      <div class="section-hdr"><h2><span>📌</span> Resumen ejecutivo</h2></div>
+      <div class="summary-card" id="summary-container"></div>
+      <div class="section-hdr"><h2><span>🧩</span> Tipo de solicitud · AK</h2><span class="section-note">Urgencia, Mantenimiento y Pedido de Insumos se cruzan con todos los análisis.</span></div>
+      <div class="tipo-grid" id="tipo-container"></div>
+      <div class="section-hdr"><h2><span>📊</span> Indicadores principales</h2><span class="section-note">Cada tarjeta explica qué mide y cómo leerla.</span></div>
+      <div class="kpi-grid" id="kpi-container"></div>
+      <div class="section-hdr"><h2><span>🧭</span> Ver · Juzgar · Actuar</h2><span class="section-note">Lectura ejecutiva-operativa aplicada al informe.</span></div>
+      <div class="analysis-grid" id="vja-container"></div>
+      <div class="section-hdr"><h2><span>🔍</span> FODA ejecutivo</h2><span class="section-note">Fortalezas, oportunidades, debilidades y amenazas desde los datos filtrados.</span></div>
+      <div class="foda-grid" id="foda-container"></div>
+      <div class="section-hdr"><h2><span>🧭</span> Lecturas rápidas</h2></div>
+      <div class="insight-list" id="insights-container"></div>
+      <div class="section-hdr"><h2><span>📈</span> Visualizaciones del consolidado</h2><div class="section-hdr-right"><span id="chart-count" style="font-size:11px;color:var(--muted)"></span></div></div>
+      <div class="charts-grid" id="charts-container"></div>
+      <div class="section-hdr"><h2><span>📋</span> Muestra de registros</h2></div>
+      <div class="table-card" id="table-container"></div>
+    </div>
+  </main>
+  <div class="toast" id="toast"></div>
 
-    <div class="section-hdr"><h2><span>📊</span> Indicadores principales</h2><span class="section-note">Cada tarjeta incluye qué mide y cómo leerla.</span></div>
-    <div class="kpi-grid" id="kpi-container"></div>
-
-    <div class="section-hdr"><h2><span>🧭</span> Ver · Juzgar · Actuar</h2><span class="section-note">Lectura pastoral-operativa aplicada al informe de gestión.</span></div>
-    <div class="analysis-grid" id="vja-container"></div>
-
-    <div class="section-hdr"><h2><span>🔍</span> FODA ejecutivo</h2><span class="section-note">Fortalezas, oportunidades, debilidades y amenazas desde los datos filtrados.</span></div>
-    <div class="foda-grid" id="foda-container"></div>
-
-    <div class="section-hdr"><h2><span>🧭</span> Lecturas rápidas</h2></div>
-    <div class="insight-list" id="insights-container"></div>
-
-    <div class="section-hdr"><h2><span>📈</span> Visualizaciones del consolidado</h2><div class="section-hdr-right"><span id="chart-count" style="font-size:11px;color:var(--muted)"></span></div></div>
-    <div class="charts-grid" id="charts-container"></div>
-
-    <div class="section-hdr"><h2><span>📋</span> Muestra de registros</h2></div>
-    <div class="table-card" id="table-container"></div>
-  </div>
-</main>
-<div class="toast" id="toast"></div>
 <script>
 'use strict';
 
+/* ============================================================
+   CONFIGURACIÓN GENERAL
+   Fuente única: CONSOLIDADO.
+   Columnas clave: N Rubro, O Descripción del ítem, AE Derivar, AK Tipo de solicitud.
+============================================================ */
 
-const CONFIG={
-  consolidado:{
-    label:'CONSOLIDADO',
-    CSV_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjKIJnzV8oxK7uDAxU9Jx4WJj8V6yLZhhJd6hiu7XHzhZoHInkgpJKpwknj5IXxNXH17is_mt0hpHj/pub?gid=2122917362&single=true&output=csv'
-  }
-};
-
-
-
-const DERIVAR_MAP={
-  'DO':'Dpto. Obras','D.O.':'Dpto. Obras','OBRAS':'Dpto. Obras',
-  'DP':'Dpto. Producción','D.P.':'Dpto. Producción','PRODUCCION':'Dpto. Producción','PRODUCCIÓN':'Dpto. Producción',
-  'RF':'Recursos Físicos','R.F.':'Recursos Físicos','RECURSOS FISICOS':'Recursos Físicos','RECURSOS FÍSICOS':'Recursos Físicos'
-};
-
-
-
-const TAB_META={
-  general:{title:'Dashboard General Consolidado',sub:'Pestaña CONSOLIDADO analizada como conjunto',filter:null},
-  obras:{title:'Módulo Dpto. Obras',sub:'CONSOLIDADO filtrado por columna DERIVAR = DO',filter:['DO','D.O.','OBRAS']},
-  produccion:{title:'Módulo Dpto. Producción',sub:'CONSOLIDADO filtrado por columna DERIVAR = DP',filter:['DP','D.P.','PRODUCCION','PRODUCCIÓN']},
-  rf:{title:'Módulo Recursos Físicos',sub:'CONSOLIDADO filtrado por columna DERIVAR = RF',filter:['RF','R.F.','RECURSOS FISICOS','RECURSOS FÍSICOS']}
-};
-
-
-
+const CONFIG={consolidado:{label:'CONSOLIDADO',CSV_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjKIJnzV8oxK7uDAxU9Jx4WJj8V6yLZhhJd6hiu7XHzhZoHInkgpJKpwknj5IXxNXH17is_mt0hpHj/pub?gid=2122917362&single=true&output=csv'}};
+const DERIVAR_MAP={'DO':'Dpto. Obras','D.O.':'Dpto. Obras','OBRAS':'Dpto. Obras','DP':'Dpto. Producción','D.P.':'Dpto. Producción','PRODUCCION':'Dpto. Producción','PRODUCCIÓN':'Dpto. Producción','RF':'Recursos Físicos','R.F.':'Recursos Físicos','RECURSOS FISICOS':'Recursos Físicos','RECURSOS FÍSICOS':'Recursos Físicos'};
+const TIPO_MAP={'URGENCIA':'Urgencia','URGENTE':'Urgencia','EMERGENCIA':'Urgencia','MANTENIMIENTO':'Mantenimiento','MANT.':'Mantenimiento','MANT':'Mantenimiento','PEDIDOS DE INSUMOS':'Pedidos de insumos','PEDIDO DE INSUMOS':'Pedidos de insumos','INSUMOS':'Pedidos de insumos','PEDIDO INSUMOS':'Pedidos de insumos','PEDIDOS INSUMOS':'Pedidos de insumos'};
+const TIPO_ORDER=['Urgencia','Mantenimiento','Pedidos de insumos','Sin tipo'];
+const TAB_META={general:{title:'Dashboard General Consolidado',sub:'Pestaña CONSOLIDADO analizada como conjunto',filter:null},obras:{title:'Módulo Dpto. Obras',sub:'CONSOLIDADO filtrado por columna DERIVAR = DO',filter:['DO','D.O.','OBRAS']},produccion:{title:'Módulo Dpto. Producción',sub:'CONSOLIDADO filtrado por columna DERIVAR = DP',filter:['DP','D.P.','PRODUCCION','PRODUCCIÓN']},rf:{title:'Módulo Recursos Físicos',sub:'CONSOLIDADO filtrado por columna DERIVAR = RF',filter:['RF','R.F.','RECURSOS FISICOS','RECURSOS FÍSICOS']}};
 const PALETTE=['#1A56DB','#0694A2','#10B981','#F59E0B','#8B5CF6','#F05252','#0EA5E9','#84CC16','#EC4899','#F97316','#14B8A6','#6366F1','#64748B','#0F766E','#7C3AED'];
-
-
-const STOPWORDS=new Set(['DE','DEL','LA','LAS','EL','LOS','Y','EN','A','AL','CON','POR','PARA','UNA','UNO','UN','QUE','SE','SU','SUS','SIN','SOBRE','ENTRE','O','U','E','NRO','Nº','NO','SI','ES','SON','DEL','DESDE','HASTA','AREA','SECTOR','SOLICITA','SOLICITAN','REALIZAR','TRABAJO','TRABAJOS','SERVICIO','PEDIDO','REPARACION','ARREGLO','COLOCACION','CAMBIO','CONTROL','REVISION','MANTENIMIENTO','GENERAL']);
+const STOPWORDS=new Set(['DE','DEL','LA','LAS','EL','LOS','Y','EN','A','AL','CON','POR','PARA','UNA','UNO','UN','QUE','SE','SU','SUS','SIN','SOBRE','ENTRE','O','U','E','NRO','Nº','NO','SI','ES','SON','DESDE','HASTA','AREA','SECTOR','SOLICITA','SOLICITAN','REALIZAR','TRABAJO','TRABAJOS','SERVICIO','PEDIDO','PEDIDOS','REPARACION','ARREGLO','COLOCACION','CAMBIO','CONTROL','REVISION','MANTENIMIENTO','GENERAL','ITEM','DESCRIPCION']);
 const S={raw:{consolidado:[]},charts:{},activeTab:'general',lastRefresh:null,headers:[]};
 
-
-
 document.addEventListener('DOMContentLoaded',async()=>{updateClock();setInterval(updateClock,30000);await refreshAll();});
-
-
 function updateClock(){const now=new Date();document.getElementById('topbar-time').textContent=now.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
-
-
 function switchTab(tab,btnEl){S.activeTab=tab;document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));if(btnEl)btnEl.classList.add('active');const meta=TAB_META[tab]||TAB_META.general;document.getElementById('topbar-title').textContent=meta.title;document.getElementById('topbar-sub').textContent=meta.sub;populateFilters();renderModule();}
-
-
 async function refreshAll(){showLoading(true);setStatus('⏳ Conectando con la pestaña CONSOLIDADO...','amber');await loadConsolidado();populateFilters();renderModule();updateBadges();showLoading(false);setStatus(`Datos actualizados · ${new Date().toLocaleString('es-AR')}`,'green');document.getElementById('topbar-refresh-status').textContent='✓ Consolidado listo';}
-
-
 async function loadConsolidado(){const url=CONFIG.consolidado.CSV_URL+'&t='+Date.now();try{const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);const text=await res.text();if(text.trim().startsWith('<!'))throw new Error('El Sheet no está publicado correctamente como CSV público');const rows=csvToObjects(text);S.raw.consolidado=rows.map(r=>normalizeRow(r));S.lastRefresh=new Date();console.log(`[DGIME] CONSOLIDADO: ${rows.length} filas cargadas`);}catch(e){console.warn('[DGIME] No se pudo leer CONSOLIDADO:',e.message);S.raw.consolidado=[];setStatus(`⚠ CONSOLIDADO: ${e.message}`,'amber');}}
 
-
 function csvToObjects(csvText){const rows=parseCSV(csvText);if(rows.length<2)return[];const headers=rows[0].map(h=>String(h||'').trim().replace(/^\uFEFF/,'').replace(/\s+/g,' '));S.headers=headers;return rows.slice(1).filter(r=>r.some(c=>String(c||'').trim())).map(row=>{const obj={__cells:row};headers.forEach((h,i)=>{obj[h||`COL_${i+1}`]=row[i]??'';});return obj;});}
-
-
 function parseCSV(text){const rows=[];let row=[];let cell='';let inQ=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(c==='"'&&inQ&&n==='"'){cell+='"';i++;}else if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){row.push(cell);cell='';}else if((c==='\n'||c==='\r')&&!inQ){if(c==='\r'&&n==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}else{cell+=c;}}if(cell||row.length){row.push(cell);rows.push(row);}return rows;}
 
-
-function normalizeRow(row){const out={...row,__source:'consolidado',__sourceLabel:'CONSOLIDADO'};const derivarRaw=getField(row,['DERIVAR','Derivar','derivar','Área derivada','Area derivada'])||getCell(row,30);out.__derivarRaw=String(derivarRaw||'').trim();out.__derivar=DERIVAR_MAP[normText(out.__derivarRaw)]||out.__derivarRaw||'Sin derivación';out.__estado=getField(row,['ESTADO','Estado','estado','Situación','SITUACION'])||'Sin estado';out.__subestado=getField(row,['SUBESTADO','Subestado','subestado','SUB ESTADO','Sub Estado','SUB-ESTADO','Sub-estado','MOTIVO ESTADO','Motivo estado','Detalle estado'])||'Sin subestado';out.__rubro=getField(row,['RUBRO','Rubro','rubro'])||getCell(row,13)||'Sin rubro';out.__item=getField(row,['DESCRIPCION DEL ITEM','DESCRIPCIÓN DEL ITEM','Descripcion del item','Descripción del item','ITEM','Item','DESCRIPCION','DESCRIPCIÓN','Detalle','DETALLE'])||getCell(row,14)||'Sin descripción';out.__fecha=parseDateFlex(getField(row,['Timestamp','Marca temporal','FECHA','Fecha','fecha','FECHA DE PROGRAMACIÓN','FECHA DE PROGRAMACION','FECHA INICIO TAREAS','FECHA FINALIZACIÓN','FECHA FINALIZACION','Fecha de salida','Fecha OC','FECHA DE ORDEN DE TRABAJO']));out.__efector=getField(row,['Efector','EFECTOR','Establecimiento','ESTABLECIMIENTO','DESTINO','ORIGEN'])||'Sin identificar';out.__sector=getField(row,['SECTOR SOLICITANTE','Sector solicitante','Sector','SECTOR','Área operativa / programática','Area operativa / programatica','Operativa','Programática','Programatica','CUADRILLA'])||'Sin sector';out.__expediente=getField(row,['Nº de expediente','N° de expediente','Nº DE EXPEDIENTE','N° DE EXPEDIENTE','Expediente','EXPEDIENTE','Generó expediente (Sí / No)','Genero expediente (Si / No)'])||'';out.__monto=parseMoney(getField(row,['Monto Contrato','Pres. Oficial','Pres. Actual','Costo Directo + IVA','A. Financiero','TOTAL','Monto','Importe']));out.__texto=Object.values(row).filter(v=>!Array.isArray(v)).join(' ').toLowerCase();return out;}
-
-
-function getCell(row,index){return Array.isArray(row.__cells)?(row.__cells[index]??''):'';}
-
-
+function normalizeRow(row){
+  const out={...row,__source:'consolidado',__sourceLabel:'CONSOLIDADO'};
+  const derivarRaw=getField(row,['DERIVAR','Derivar','derivar','Área derivada','Area derivada'])||getCell(row,30);
+  out.__derivarRaw=String(derivarRaw||'').trim();
+  out.__derivar=DERIVAR_MAP[normText(out.__derivarRaw)]||out.__derivarRaw||'Sin derivación';
+  const tipoRaw=getField(row,['TIPO DE SOLICITUD','Tipo de solicitud','tipo de solicitud','TIPO SOLICITUD','Tipo solicitud','TIPO','Tipo'])||getCell(row,36);
+  out.__tipoRaw=String(tipoRaw||'').trim();
+  out.__tipo=TIPO_MAP[normText(out.__tipoRaw)]||out.__tipoRaw||'Sin tipo';
+  out.__estado=getField(row,['ESTADO','Estado','estado','Situación','SITUACION'])||'Sin estado';
+  out.__subestado=getField(row,['SUBESTADO','Subestado','subestado','SUB ESTADO','Sub Estado','SUB-ESTADO','Sub-estado','MOTIVO ESTADO','Motivo estado','Detalle estado'])||'Sin subestado';
+  out.__rubro=getField(row,['RUBRO','Rubro','rubro'])||getCell(row,13)||'Sin rubro';
+  out.__item=getField(row,['DESCRIPCION DEL ITEM','DESCRIPCIÓN DEL ITEM','Descripcion del item','Descripción del item','ITEM','Item','DESCRIPCION','DESCRIPCIÓN','Detalle','DETALLE'])||getCell(row,14)||'Sin descripción';
+  out.__fecha=parseDateFlex(getField(row,['Timestamp','Marca temporal','FECHA','Fecha','fecha','FECHA DE PROGRAMACIÓN','FECHA DE PROGRAMACION','FECHA INICIO TAREAS','FECHA FINALIZACIÓN','FECHA FINALIZACION','Fecha de salida','Fecha OC','FECHA DE ORDEN DE TRABAJO']));
+  out.__efector=getField(row,['Efector','EFECTOR','Establecimiento','ESTABLECIMIENTO','DESTINO','ORIGEN'])||'Sin identificar';
+  out.__sector=getField(row,['SECTOR SOLICITANTE','Sector solicitante','Sector','SECTOR','Área operativa / programática','Area operativa / programatica','Operativa','Programática','Programatica','CUADRILLA'])||'Sin sector';
+  out.__expediente=getField(row,['Nº de expediente','N° de expediente','Nº DE EXPEDIENTE','N° DE EXPEDIENTE','Expediente','EXPEDIENTE','Generó expediente (Sí / No)','Genero expediente (Si / No)'])||'';
+  out.__monto=parseMoney(getField(row,['Monto Contrato','Pres. Oficial','Pres. Actual','Costo Directo + IVA','A. Financiero','TOTAL','Monto','Importe']));
+  out.__texto=Object.values(row).filter(v=>!Array.isArray(v)).join(' ').toLowerCase();
+  return out;
+}
 function getField(row,names){const keys=Object.keys(row).filter(k=>k!=='__cells');for(const name of names){const n=normText(name);const found=keys.find(k=>normText(k)===n);if(found!==undefined)return row[found];}return'';}
-
-
+function getCell(row,idx){return Array.isArray(row.__cells)?(row.__cells[idx]??''):'';}
 function normText(v){return String(v||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').toUpperCase();}
-
-
-function parseDateFlex(v){if(!v)return null;const s=String(v).trim();if(!s)return null;if(!isNaN(+s)&&+s>20000&&+s<70000)return new Date(Date.UTC(1899,11,30)+(+s)*86400000);const m1=s.split(' ')[0].match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);if(m1){let y=+m1[3];if(y<100)y+=2000;return new Date(y,+m1[2]-1,+m1[1]);}const d=new Date(s.split(' ')[0]);return isNaN(d)?null:d;}
-
-
+function parseDateFlex(v){if(!v)return null;const s=String(v).trim();if(!s)return null;if(!isNaN(+s)&&+s>20000&&+s<70000)return new Date(Date.UTC(1899,11,30)+(+s)*86400000);const m=s.split(' ')[0].match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,+m[2]-1,+m[1]);}const d=new Date(s.split(' ')[0]);return isNaN(d)?null:d;}
 function parseMoney(v){const s=String(v||'').replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.').replace(/[^\d.-]/g,'');const n=Number(s);return isNaN(n)?0:n;}
 
-
 function getBaseRows(tab){const con=S.raw.consolidado||[];const meta=TAB_META[tab]||TAB_META.general;if(!meta.filter)return con;const allowed=meta.filter.map(normText);return con.filter(r=>allowed.includes(normText(r.__derivarRaw)));}
-
-
-function getFilteredRows(){const rows=getBaseRows(S.activeTab);const from=document.getElementById('g-from')?.value;const to=document.getElementById('g-to')?.value;const estado=document.getElementById('g-estado')?.value;const subestado=document.getElementById('g-subestado')?.value;const rubro=document.getElementById('g-rubro')?.value;const search=String(document.getElementById('g-search')?.value||'').toLowerCase().trim();const fromD=from?new Date(from+'T00:00:00'):null;const toD=to?new Date(to+'T23:59:59'):null;return rows.filter(r=>{if(fromD&&r.__fecha&&r.__fecha<fromD)return false;if(toD&&r.__fecha&&r.__fecha>toD)return false;if(estado&&r.__estado!==estado)return false;if(subestado&&r.__subestado!==subestado)return false;if(rubro&&r.__rubro!==rubro)return false;if(search&&!r.__texto.includes(search))return false;return true;});}
-
-
-function populateFilters(){const rows=getBaseRows(S.activeTab);fillSel('g-estado',[...new Set(rows.map(r=>r.__estado).filter(v=>v&&v!=='Sin estado'))].sort());fillSel('g-subestado',[...new Set(rows.map(r=>r.__subestado).filter(v=>v&&v!=='Sin subestado'))].sort());fillSel('g-rubro',[...new Set(rows.map(r=>r.__rubro).filter(v=>v&&v!=='Sin rubro'))].sort());}
-
-
+function getFilteredRows(){const rows=getBaseRows(S.activeTab);const from=document.getElementById('g-from')?.value;const to=document.getElementById('g-to')?.value;const tipo=document.getElementById('g-tipo')?.value;const estado=document.getElementById('g-estado')?.value;const subestado=document.getElementById('g-subestado')?.value;const rubro=document.getElementById('g-rubro')?.value;const search=String(document.getElementById('g-search')?.value||'').toLowerCase().trim();const fromD=from?new Date(from+'T00:00:00'):null;const toD=to?new Date(to+'T23:59:59'):null;return rows.filter(r=>{if(fromD&&r.__fecha&&r.__fecha<fromD)return false;if(toD&&r.__fecha&&r.__fecha>toD)return false;if(tipo&&r.__tipo!==tipo)return false;if(estado&&r.__estado!==estado)return false;if(subestado&&r.__subestado!==subestado)return false;if(rubro&&r.__rubro!==rubro)return false;if(search&&!r.__texto.includes(search))return false;return true;});}
+function populateFilters(){const rows=getBaseRows(S.activeTab);fillSel('g-tipo',sortTipo([...new Set(rows.map(r=>r.__tipo).filter(Boolean))]));fillSel('g-estado',[...new Set(rows.map(r=>r.__estado).filter(v=>v&&v!=='Sin estado'))].sort());fillSel('g-subestado',[...new Set(rows.map(r=>r.__subestado).filter(v=>v&&v!=='Sin subestado'))].sort());fillSel('g-rubro',[...new Set(rows.map(r=>r.__rubro).filter(v=>v&&v!=='Sin rubro'))].sort());}
 function fillSel(id,vals){const el=document.getElementById(id);if(!el)return;const cur=el.value;el.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');if(vals.includes(cur))el.value=cur;}
-
-
+function sortTipo(vals){return vals.sort((a,b)=>{const ia=TIPO_ORDER.indexOf(a),ib=TIPO_ORDER.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b);});}
 function applyFilters(){renderModule();}
-
-
-function clearFilters(){['g-from','g-to','g-estado','g-subestado','g-rubro','g-search'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});renderModule();}
-
+function clearFilters(){['g-from','g-to','g-tipo','g-estado','g-subestado','g-rubro','g-search'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});renderModule();}
 
 function isFin(e){const s=normText(e);return['FINALIZADO','FINALIZADA','CERRADO','CERRADA','RESUELTO','RESUELTA','COMPLETADO','COMPLETADA','TERMINADO','TERMINADA'].some(x=>s.includes(x));}
+function isPend(e){const s=normText(e);return!isFin(e)&&!['NO CALIFICA','ANULADO','ANULADA','CANCELADO','CANCELADA','MAL CARGADO','MAL CARGADA'].some(x=>s.includes(x));}
+function isCrit(r){const hay=[r.__tipo,r.__estado,r.__subestado,r.__rubro,r.__item].map(normText).join(' ');return['URGENCIA','URGENTE','CRITICO','CRITICA','DEMOR','VENC','EMERGENCIA','PRIORIDAD','GUARDIA'].some(x=>hay.includes(x));}
+function countBy(rows,key){const o={};rows.forEach(r=>{const v=String(r[key]||'Sin dato').trim()||'Sin dato';o[v]=(o[v]||0)+1;});return o;}
+function countByNormalized(rows,key,maxWords=18){const o={};rows.forEach(r=>{let v=String(r[key]||'Sin dato').trim().replace(/\s+/g,' ');if(!v)v='Sin dato';if(v.length>90)v=v.slice(0,90).trim()+'…';o[v]=(o[v]||0)+1;});return o;}
+function countFiltered(rows,pred,key){const o={};rows.filter(pred).forEach(r=>{const v=String(r[key]||'Sin dato').trim()||'Sin dato';o[v]=(o[v]||0)+1;});return o;}
+function topObj(obj,n=10){return Object.fromEntries(Object.entries(obj||{}).sort((a,b)=>Number(b[1])-Number(a[1])).slice(0,n));}
+function topEntry(obj){return Object.entries(obj||{}).sort((a,b)=>Number(b[1])-Number(a[1]))[0]||['Sin dato',0];}
+function pct(a,b){return b?Math.round((a/b)*1000)/10:0;}
+function groupTipoStats(rows){return sortTipo([...new Set(rows.map(r=>r.__tipo||'Sin tipo'))]).map(tipo=>{const rs=rows.filter(r=>r.__tipo===tipo);const fin=rs.filter(r=>isFin(r.__estado)).length;const pen=rs.filter(r=>isPend(r.__estado)).length;const crit=rs.filter(isCrit).length;return{tipo,total:rs.length,finalizados:fin,pendientes:pen,criticos:crit,resolucion:pct(fin,rs.length),topRubro:topEntry(countBy(rs,'__rubro')),topEstado:topEntry(countBy(rs,'__estado'))};});}
+function calcMetrics(rows,tab){const total=rows.length;const estados=countBy(rows,'__estado'),subestados=countBy(rows,'__subestado'),tipos=countBy(rows,'__tipo'),rubros=countBy(rows,'__rubro'),items=countByNormalized(rows,'__item'),sectores=countBy(rows,'__sector'),efectores=countBy(rows,'__efector'),derivs=countBy(rows,'__derivar');const finalizados=rows.filter(r=>isFin(r.__estado)).length;const pendientes=rows.filter(r=>isPend(r.__estado)).length;const criticos=rows.filter(isCrit).length;const conFecha=rows.filter(r=>r.__fecha).length;const conExp=rows.filter(r=>String(r.__expediente||'').trim()).length;const conSub=rows.filter(r=>r.__subestado&&r.__subestado!=='Sin subestado').length;const conItem=rows.filter(r=>r.__item&&r.__item!=='Sin descripción').length;const tipoStats=groupTipoStats(rows);return{tab,total,estados,subestados,tipos,rubros,items,sectores,efectores,derivs,tipoStats,finalizados,pendientes,criticos,conFecha,sinFecha:total-conFecha,conExp,conSub,conItem,topTipo:topEntry(tipos),topEst:topEntry(estados),topSub:topEntry(subestados),topRub:topEntry(rubros),topItem:topEntry(items),topSec:topEntry(sectores),topEf:topEntry(efectores),compRate:pct(finalizados,total),pendRate:pct(pendientes,total),critRate:pct(criticos,total),dateRate:pct(conFecha,total),expRate:pct(conExp,total),subRate:pct(conSub,total),itemRate:pct(conItem,total)};}
 
-
-function isNoGestion(e){const s=normText(e);return['NO CALIFICA','ANULADO','ANULADA','CANCELADO','CANCELADA','MAL CARGADO','MAL CARGADA'].some(x=>s.includes(x));}
-
-
-function isPend(e){return !isFin(e)&&!isNoGestion(e);}
-
-
-function isCrit(r){const hay=[r.__estado,r.__subestado,r.__rubro,r.__item].map(normText).join(' ');return['URGENTE','CRITICO','CRITICA','DEMOR','VENC','EMERGENCIA','PRIORIDAD','GUARDIA'].some(x=>hay.includes(x));}
-
-
-function calcMetrics(rows,tab){const total=rows.length;const estados=countBy(rows,'__estado'),subestados=countBy(rows,'__subestado'),rubros=countBy(rows,'__rubro'),items=countByNormalized(rows,'__item',20),sectores=countBy(rows,'__sector'),efectores=countBy(rows,'__efector'),derivs=countBy(rows,'__derivar');const finalizados=rows.filter(r=>isFin(r.__estado)).length;const pendientes=rows.filter(r=>isPend(r.__estado)).length;const criticos=rows.filter(isCrit).length;const conFecha=rows.filter(r=>r.__fecha).length;const conExp=rows.filter(r=>String(r.__expediente||'').trim()).length;const conSub=rows.filter(r=>r.__subestado&&r.__subestado!=='Sin subestado').length;const conItem=rows.filter(r=>r.__item&&r.__item!=='Sin descripción').length;const montoT=rows.reduce((s,r)=>s+(r.__monto||0),0);return{tab,total,estados,subestados,rubros,items,sectores,efectores,derivs,finalizados,pendientes,criticos,conFecha,sinFecha:total-conFecha,conExp,conSub,conItem,montoT,topEst:topEntry(estados),topSub:topEntry(subestados),topRub:topEntry(rubros),topItem:topEntry(items),topSec:topEntry(sectores),topEf:topEntry(efectores),compRate:pct(finalizados,total),pendRate:pct(pendientes,total),critRate:pct(criticos,total),dateRate:pct(conFecha,total),expRate:pct(conExp,total),subRate:pct(conSub,total),itemRate:pct(conItem,total)};}
-
-
-function countBy(rows,k){const o={};rows.forEach(r=>{const v=String(r[k]||'Sin dato').trim()||'Sin dato';o[v]=(o[v]||0)+1;});return o;}
-
-
-function countByNormalized(rows,k,maxLen=40){const o={};rows.forEach(r=>{let v=cleanLabel(r[k],maxLen)||'Sin dato';o[v]=(o[v]||0)+1;});return o;}
-
-
-function cleanLabel(v,maxLen=40){let s=String(v||'').trim().replace(/\s+/g,' ');if(!s)return'';return s.length>maxLen?s.slice(0,maxLen-1)+'…':s;}
-
-
-function topEntry(obj){return Object.entries(obj||{}).sort((a,b)=>b[1]-a[1])[0]||['Sin dato',0];}
-
-
-function pct(a,b){return b?Math.round(a/b*1000)/10:0;}
-
-
-function topObj(obj,n=10){return Object.fromEntries(Object.entries(obj||{}).sort((a,b)=>b[1]-a[1]).slice(0,n));}
-
-
-function renderModule(){showLoading(true);const rows=getFilteredRows();const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderCharts(rows,m);renderTable(rows);showLoading(false);setStatus(`${fmt(rows.length)} registros · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
-
-
-function renderSummary(m){const meta=TAB_META[m.tab]||TAB_META.general;document.getElementById('summary-container').innerHTML=`<h3>${esc(meta.title)}</h3><p>Este módulo analiza <strong>${fmt(m.total)}</strong> registros de la pestaña <strong>CONSOLIDADO</strong>${m.tab==='general'?'':' filtrados por la columna <strong>DERIVAR</strong>'}. La lectura separa conceptualmente <strong>Estado</strong> y <strong>Subestado</strong>: el primero muestra la situación general del pedido; el segundo muestra una condición o detalle asociado, sin mezclarlos en un mismo indicador.</p><ul><li>Rubro principal: <strong>${esc(m.topRub[0])}</strong> (${fmt(m.topRub[1])} registros).</li><li>Descripción / ítem más repetido: <strong>${esc(m.topItem[0])}</strong> (${fmt(m.topItem[1])} registros).</li><li>Estado dominante: <strong>${esc(m.topEst[0])}</strong>. Subestado dominante: <strong>${esc(m.topSub[0])}</strong>.</li></ul>`;}
+function renderModule(){showLoading(true);const rows=getFilteredRows();const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderTipoCards(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderCharts(rows,m);renderTable(rows);showLoading(false);setStatus(`${fmt(rows.length)} registros · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
+function renderSummary(m){const meta=TAB_META[m.tab]||TAB_META.general;document.getElementById('summary-container').innerHTML=`<h3>${esc(meta.title)}</h3><p>Este módulo analiza <strong>${fmt(m.total)}</strong> registros de la pestaña <strong>CONSOLIDADO</strong>${m.tab==='general'?'':' filtrados por la columna <strong>DERIVAR</strong>'}. La columna <strong>AK · Tipo de solicitud</strong> se incorpora como eje transversal: permite distinguir <strong>Urgencias</strong>, <strong>Mantenimiento</strong> y <strong>Pedidos de insumos</strong> en los indicadores, gráficos, FODA y Ver–Juzgar–Actuar.</p><ul><li>Tipo de solicitud dominante: <strong>${esc(m.topTipo[0])}</strong> (${fmt(m.topTipo[1])} registros).</li><li>Rubro principal: <strong>${esc(m.topRub[0])}</strong> (${fmt(m.topRub[1])} registros).</li><li>Estado dominante: <strong>${esc(m.topEst[0])}</strong>. Subestado dominante: <strong>${esc(m.topSub[0])}</strong>.</li><li>Descripción / ítem más repetido: <strong>${esc(m.topItem[0])}</strong> (${fmt(m.topItem[1])} registros).</li></ul><div class="summary-pill-row"><span class="summary-pill">Estado ≠ Subestado</span><span class="summary-pill">Rubro N</span><span class="summary-pill">Descripción O</span><span class="summary-pill">Tipo AK</span><span class="summary-pill">Derivar AE</span></div>`;}
+function renderTipoCards(m){const stats=m.tipoStats.filter(t=>t.total>0);document.getElementById('tipo-container').innerHTML=stats.length?stats.map(t=>`<div class="tipo-card"><div class="tipo-head"><div class="tipo-title">${esc(t.tipo)}</div><div class="tipo-badge">${t.resolucion}% resuelto</div></div><div class="tipo-stats"><div class="tipo-stat"><b>${fmt(t.total)}</b><span>Total</span></div><div class="tipo-stat"><b>${fmt(t.finalizados)}</b><span>Final.</span></div><div class="tipo-stat"><b>${fmt(t.pendientes)}</b><span>Pend.</span></div><div class="tipo-stat"><b>${fmt(t.criticos)}</b><span>Señales</span></div></div><p style="font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:10px">Rubro principal: <strong>${esc(t.topRubro[0])}</strong>. Estado dominante: <strong>${esc(t.topEstado[0])}</strong>.</p></div>`).join(''):`<div class="empty-state"><h3>Sin datos de tipo de solicitud</h3><p>Revisá la columna AK / Tipo de solicitud.</p></div>`;}
 const COLOR_MAP={blue:'var(--blue2)',green:'var(--green2)',amber:'var(--amber2)',red:'var(--red2)',purple:'var(--purple2)',teal:'var(--teal2)'};
-const KPI_DEFS=m=>[
-  {lbl:'Registros analizados',val:fmt(m.total),sub:'Total incluido por módulo y filtros.',help:'Mide la cantidad de filas del CONSOLIDADO consideradas en esta vista. Cambia al filtrar por fechas, estado, subestado, rubro o búsqueda.',icon:'📊',color:'blue'},
-  {lbl:'Finalizados / cerrados',val:fmt(m.finalizados),sub:`${m.compRate}% del total analizado.`,help:'Cuenta los registros cuyo Estado indica cierre, resolución o finalización. No usa el Subestado para no mezclar conceptos.',icon:'✅',color:'green',delta:m.compRate>=70?'up':m.compRate>=40?'neu':'dn'},
-  {lbl:'Pendientes activos',val:fmt(m.pendientes),sub:`${m.pendRate}% requieren seguimiento.`,help:'Agrupa los registros que todavía no aparecen como finalizados, anulados, cancelados o no califican. Sirve para ver carga activa.',icon:'⏳',color:'amber',delta:m.pendRate<=30?'up':m.pendRate<=55?'neu':'dn'},
-  {lbl:'Señales de criticidad',val:fmt(m.criticos),sub:`${m.critRate}% con términos de prioridad.`,help:'Detecta menciones de urgencia, demora, vencimiento, emergencia o prioridad en Estado, Subestado, Rubro o Descripción del ítem.',icon:'🚨',color:'red',delta:m.critRate===0?'up':m.critRate<10?'neu':'dn'},
-  {lbl:'Indicador de Estado',val:truncStr(m.topEst[0],18),sub:`Estado más frecuente: ${fmt(m.topEst[1])} casos.`,help:'El Estado muestra la situación general del pedido. Este indicador no debe confundirse con el Subestado.',icon:'🎯',color:'blue'},
-  {lbl:'Indicador de Subestado',val:truncStr(m.topSub[0],18),sub:`Subestado más frecuente: ${fmt(m.topSub[1])} casos.`,help:'El Subestado explica una condición específica asociada al Estado. Se analiza aparte para evitar interpretaciones mezcladas.',icon:'🧩',color:'purple',delta:m.subRate>=70?'up':m.subRate>=40?'neu':'dn'},
-  {lbl:'Rubro principal',val:truncStr(m.topRub[0],18),sub:`${fmt(m.topRub[1])} registros.`,help:'Identifica la categoría técnica o tipo de demanda más repetida según la columna Rubro, columna N.',icon:'🔧',color:'teal'},
-  {lbl:'Descripción del ítem',val:truncStr(m.topItem[0],18),sub:`${fmt(m.topItem[1])} repeticiones.`,help:'Resume la demanda textual de la columna Descripción del ítem, columna O. Ayuda a detectar pedidos recurrentes.',icon:'📝',color:'amber'},
-  {lbl:'Calidad de fechas',val:`${m.dateRate}%`,sub:`${fmt(m.sinFecha)} registros sin fecha válida.`,help:'Mide cuántos registros tienen fecha interpretable para poder analizarlos por mes o período.',icon:'📅',color:'purple',delta:m.dateRate>=80?'up':m.dateRate>=60?'neu':'dn'},
-  {lbl:'Trazabilidad documental',val:`${m.expRate}%`,sub:`${fmt(m.conExp)} con expediente o referencia.`,help:'Mide cuántos registros poseen expediente o referencia documental cargada. No significa cierre, solo respaldo documental.',icon:'📄',color:'teal',delta:m.expRate>=60?'up':m.expRate>=35?'neu':'dn'},
-  {lbl:'Sector más demandante',val:truncStr(m.topSec[0],18),sub:`${fmt(m.topSec[1])} registros.`,help:'Muestra el sector o área solicitante que concentra más demanda en el período analizado.',icon:'🏥',color:'blue'},
-  {lbl:'Efector destacado',val:truncStr(m.topEf[0],18),sub:`${fmt(m.topEf[1])} registros.`,help:'Identifica el efector, establecimiento o destino con mayor cantidad de registros asociados.',icon:'📍',color:'green'}
-];
-
-
-function renderKPIs(m){document.getElementById('kpi-container').innerHTML=KPI_DEFS(m).map(k=>{const accent=COLOR_MAP[k.color]||'var(--blue2)';const deltaHtml=k.delta?`<span class="kpi-delta delta-${k.delta}">${k.delta==='up'?'↑ Bueno':k.delta==='dn'?'↓ Atención':'→ Normal'}</span>`:'';return`<div class="kpi-card"><div class="kpi-accent" style="background:${accent}"></div><div class="kpi-icon-wrap" style="background:${accent}22">${k.icon}</div><div class="kpi-label">${k.lbl}</div><div class="kpi-value">${esc(k.val)}</div><div class="kpi-sub">${k.sub}</div>${deltaHtml}<div class="kpi-help">${k.help}</div></div>`;}).join('');}
-
-
-
-function renderVJA(m){
-  const meta=TAB_META[m.tab]||TAB_META.general;
-  const focoEstado=esc(m.topEst[0]);
-  const focoSub=esc(m.topSub[0]);
-  const focoRubro=esc(m.topRub[0]);
-  const focoItem=esc(m.topItem[0]);
-  document.getElementById('vja-container').innerHTML=`
-    <div class="analysis-card">
-      <div class="ac-label ac-ver">👁 VER — Situación actual</div>
-      <h3>${esc(meta.title)}</h3>
-      <p>Se analizan <strong>${fmt(m.total)}</strong> registros del CONSOLIDADO${m.tab==='general'?'':' para este módulo'}. La mayor concentración por rubro aparece en <strong>${focoRubro}</strong> y el Estado dominante es <strong>${focoEstado}</strong>.</p>
-      <ul>
-        <li>Finalizados / cerrados: <strong>${fmt(m.finalizados)}</strong> (${m.compRate}%).</li>
-        <li>Pendientes activos: <strong>${fmt(m.pendientes)}</strong> (${m.pendRate}%).</li>
-        <li>Subestado dominante: <strong>${focoSub}</strong> (${fmt(m.topSub[1])} casos).</li>
-      </ul>
-    </div>
-    <div class="analysis-card">
-      <div class="ac-label ac-juzgar">⚖ JUZGAR — Lectura del dato</div>
-      <h3>Qué indican los registros</h3>
-      <p>La lectura debe separar <strong>Estado</strong> y <strong>Subestado</strong>: el Estado muestra la situación general; el Subestado ayuda a entender la causa, condición o instancia específica sin mezclar conceptos.</p>
-      <ul>
-        <li>Rubro principal: <strong>${focoRubro}</strong> (${fmt(m.topRub[1])}).</li>
-        <li>Descripción de ítem más repetida: <strong>${focoItem}</strong>.</li>
-        <li>Señales de criticidad: <strong>${fmt(m.criticos)}</strong> (${m.critRate}%).</li>
-        <li>Calidad de fechas: <strong>${m.dateRate}%</strong>.</li>
-      </ul>
-    </div>
-    <div class="analysis-card">
-      <div class="ac-label ac-actuar">⚡ ACTUAR — Decisiones sugeridas</div>
-      <h3>Acciones de gestión</h3>
-      <p>Conviene usar el tablero para ordenar prioridades, no para reemplazar la validación técnica. Los gráficos de Rubro e Ítem ayudan a detectar recurrencias y planificar respuestas por área.</p>
-      <ul>
-        <li>Revisar primero los pendientes del rubro <strong>${focoRubro}</strong>.</li>
-        <li>Validar los subestados más frecuentes antes de definir acciones.</li>
-        <li>Completar fechas en <strong>${fmt(m.sinFecha)}</strong> registros sin fecha válida.</li>
-        <li>Mejorar trazabilidad documental donde falte expediente o referencia.</li>
-      </ul>
-    </div>`;
-}
-
-
-function renderFODA(m){
-  const F=[
-    `Base consolidada única: ${fmt(m.total)} registros analizados desde CONSOLIDADO.`,
-    `Lectura separada de Estado y Subestado, evitando confusión conceptual.`,
-    `Identificación clara de rubro principal: ${esc(m.topRub[0])}.`
-  ];
-  const O=[
-    `Usar los gráficos de Rubro e Ítem para planificar compras, cuadrillas o respuestas recurrentes.`,
-    `Normalizar subestados para mejorar el seguimiento operativo.`,
-    `Convertir los pendientes activos en una agenda semanal de resolución.`
-  ];
-  const D=[
-    `${fmt(m.sinFecha)} registros sin fecha válida afectan la lectura mensual.`,
-    `Trazabilidad documental al ${m.expRate}%: puede requerir completar expedientes o referencias.`,
-    `El texto libre de Descripción del ítem puede generar dispersión si no se normaliza.`
-  ];
-  const A=[
-    `${fmt(m.pendientes)} pendientes activos pueden acumular demora si no se priorizan.`,
-    `Los subestados mal cargados pueden distorsionar el diagnóstico de gestión.`,
-    `La concentración en ${esc(m.topRub[0])} puede transformarse en cuello operativo si se repite mes a mes.`
-  ];
-  const boxes=[
-    ['F','💪 Fortalezas',F],['O','🌟 Oportunidades',O],['D','⚠️ Debilidades',D],['A','🔴 Amenazas',A]
-  ];
-  document.getElementById('foda-container').innerHTML=boxes.map(([k,lbl,items])=>`
-    <div class="foda-box">
-      <div class="foda-lbl foda-${k}">${lbl}</div>
-      <ul>${items.map(i=>`<li>${i}</li>`).join('')}</ul>
-    </div>`).join('');
-}
-
-
-function renderInsights(m){document.getElementById('insights-container').innerHTML=`<div class="insight-card"><div class="lbl">Lectura por rubro</div><div class="val">${esc(truncStr(m.topRub[0],26))}</div><p>Es la categoría que más concentra demanda. Conviene revisarla junto a Estado y Subestado.</p></div><div class="insight-card"><div class="lbl">Lectura por ítem</div><div class="val">${esc(truncStr(m.topItem[0],26))}</div><p>Es la descripción más repetida en columna O. Puede indicar una necesidad recurrente.</p></div><div class="insight-card"><div class="lbl">Estado / Subestado</div><div class="val">Separados</div><p>El tablero muestra ambos niveles por separado y también su cruce para evitar mezclas conceptuales.</p></div>`;}
-
+function kpiTipo(m,tipo){const stat=m.tipoStats.find(x=>x.tipo===tipo)||{total:0,finalizados:0,pendientes:0,resolucion:0,topRubro:['Sin dato',0]};return stat;}
+function KPI_DEFS(m){const urg=kpiTipo(m,'Urgencia'),man=kpiTipo(m,'Mantenimiento'),ins=kpiTipo(m,'Pedidos de insumos');return[
+  {lbl:'Registros analizados',val:fmt(m.total),sub:'Total incluido por módulo y filtros.',help:'Cantidad de filas del CONSOLIDADO consideradas en esta vista. Cambia al filtrar por fecha, tipo de solicitud, estado, subestado, rubro o búsqueda.',icon:'📊',color:'blue'},
+  {lbl:'Tipo dominante',val:truncStr(m.topTipo[0],20),sub:`${fmt(m.topTipo[1])} registros.`,help:'Muestra qué tipo de solicitud pesa más en el módulo actual: Urgencia, Mantenimiento o Pedidos de insumos.',icon:'🧩',color:'purple'},
+  {lbl:'Finalizados totales',val:fmt(m.finalizados),sub:`${m.compRate}% de resolución global.`,help:'Casos cuyo Estado indica cierre o resolución. Se complementa con las tarjetas por tipo de solicitud para no mezclar urgencias, mantenimiento e insumos.',icon:'✅',color:'green',delta:m.compRate>=70?'up':m.compRate>=45?'neu':'dn'},
+  {lbl:'Pendientes activos',val:fmt(m.pendientes),sub:`${m.pendRate}% del total.`,help:'Registros que aún requieren seguimiento. No mezcla subestado: el motivo específico se analiza en su propio indicador y gráficos.',icon:'⏳',color:'amber',delta:m.pendRate<=30?'up':m.pendRate<=55?'neu':'dn'},
+  {lbl:'Urgencias finalizadas',val:fmt(urg.finalizados),sub:`${urg.resolucion}% de ${fmt(urg.total)} urgencias.`,help:'Permite leer la resolución específica de las solicitudes clasificadas como Urgencia en la columna AK.',icon:'🚨',color:'red',delta:urg.resolucion>=70?'up':urg.resolucion>=45?'neu':'dn'},
+  {lbl:'Mantenimientos finalizados',val:fmt(man.finalizados),sub:`${man.resolucion}% de ${fmt(man.total)} mantenimientos.`,help:'Mide cuántas solicitudes de Mantenimiento fueron finalizadas, sin mezclarlas con urgencias ni pedidos de insumos.',icon:'🛠️',color:'teal',delta:man.resolucion>=70?'up':man.resolucion>=45?'neu':'dn'},
+  {lbl:'Insumos finalizados',val:fmt(ins.finalizados),sub:`${ins.resolucion}% de ${fmt(ins.total)} pedidos.`,help:'Mide la resolución específica de Pedidos de insumos. Es clave para separar compras/abastecimiento de mantenimiento operativo.',icon:'📦',color:'purple',delta:ins.resolucion>=70?'up':ins.resolucion>=45?'neu':'dn'},
+  {lbl:'Señales de criticidad',val:fmt(m.criticos),sub:`${m.critRate}% con términos de prioridad.`,help:'Detecta menciones de urgencia, demora, vencimiento, emergencia o prioridad en Tipo, Estado, Subestado, Rubro o Descripción del ítem.',icon:'⚠️',color:'red',delta:m.critRate===0?'up':m.critRate<10?'neu':'dn'},
+  {lbl:'Estado dominante',val:truncStr(m.topEst[0],20),sub:`${fmt(m.topEst[1])} registros.`,help:'Situación general del pedido. No debe confundirse con Subestado, que explica una condición más específica.',icon:'🎯',color:'blue'},
+  {lbl:'Subestado dominante',val:truncStr(m.topSub[0],20),sub:`${fmt(m.topSub[1])} registros.`,help:'Detalle asociado al Estado. Se mide separado para no mezclar situación general con causa, motivo o instancia del trámite.',icon:'🧷',color:'purple'},
+  {lbl:'Rubro principal',val:truncStr(m.topRub[0],18),sub:`${fmt(m.topRub[1])} registros.`,help:'Categoría técnica o tipo de demanda más repetida según Rubro / columna N. Se cruza con Tipo de solicitud en gráficos específicos.',icon:'🔧',color:'teal'},
+  {lbl:'Descripción del ítem',val:truncStr(m.topItem[0],18),sub:`${fmt(m.topItem[1])} repeticiones.`,help:'Resumen de la demanda textual de Descripción del ítem / columna O. Se analiza por frecuencia y palabras repetidas.',icon:'📝',color:'amber'}
+];}
+function renderKPIs(m){document.getElementById('kpi-container').innerHTML=KPI_DEFS(m).map(k=>{const accent=COLOR_MAP[k.color]||'var(--blue2)';const delta=k.delta?`<span class="kpi-delta delta-${k.delta}">${k.delta==='up'?'↑ Bueno':k.delta==='dn'?'↓ Atención':'→ Normal'}</span>`:'';return`<div class="kpi-card"><div class="kpi-accent" style="background:${accent}"></div><div class="kpi-icon-wrap" style="background:${accent}22">${k.icon}</div><div class="kpi-label">${k.lbl}</div><div class="kpi-value">${esc(k.val)}</div><div class="kpi-sub">${k.sub}</div>${delta}<div class="kpi-help">${k.help}</div></div>`;}).join('');}
+function renderVJA(m){const focoTipo=esc(m.topTipo[0]),focoRubro=esc(m.topRub[0]),focoEstado=esc(m.topEst[0]),focoSub=esc(m.topSub[0]),focoItem=esc(m.topItem[0]);document.getElementById('vja-container').innerHTML=`<div class="analysis-card"><div class="ac-label ac-ver">👁 VER — Situación actual</div><p>Se analizan <strong>${fmt(m.total)}</strong> registros del CONSOLIDADO${m.tab==='general'?'':' para este módulo'}. La lectura incorpora <strong>Tipo de solicitud</strong> como eje central: el tipo dominante es <strong>${focoTipo}</strong>.</p><ul><li>Finalizados: <strong>${fmt(m.finalizados)}</strong> (${m.compRate}%).</li><li>Pendientes activos: <strong>${fmt(m.pendientes)}</strong> (${m.pendRate}%).</li><li>Rubro principal: <strong>${focoRubro}</strong>.</li><li>Estado dominante: <strong>${focoEstado}</strong>; Subestado dominante: <strong>${focoSub}</strong>.</li></ul></div><div class="analysis-card"><div class="ac-label ac-juzgar">⚖ JUZGAR — Lectura de gestión</div><p>La diferencia entre <strong>Urgencia</strong>, <strong>Mantenimiento</strong> y <strong>Pedidos de insumos</strong> permite interpretar mejor los resultados: un pendiente de urgencia no significa lo mismo que un pedido de insumos pendiente.</p><ul><li>Descripción de ítem más repetida: <strong>${focoItem}</strong>.</li><li>Señales de criticidad: <strong>${fmt(m.criticos)}</strong> (${m.critRate}%).</li><li>Calidad de fechas: <strong>${m.dateRate}%</strong>.</li><li>Subestados cargados: <strong>${m.subRate}%</strong>.</li></ul></div><div class="analysis-card"><div class="ac-label ac-actuar">⚡ ACTUAR — Decisiones sugeridas</div><p>Conviene ordenar la intervención cruzando <strong>Tipo de solicitud + Rubro + Estado + Subestado</strong>, priorizando primero urgencias pendientes y luego mantenimiento o insumos según impacto operativo.</p><ul><li>Revisar urgencias pendientes por rubro.</li><li>Identificar si <strong>${focoRubro}</strong> aparece como urgencia, mantenimiento o insumo.</li><li>Normalizar subestados para mejorar el seguimiento.</li><li>Usar Descripción del ítem para detectar demandas repetidas.</li></ul></div>`;}
+function renderFODA(m){const urg=kpiTipo(m,'Urgencia'),man=kpiTipo(m,'Mantenimiento'),ins=kpiTipo(m,'Pedidos de insumos');const items={F:[`Base consolidada única con ${fmt(m.total)} registros filtrables por área y tipo de solicitud.`,`Separación conceptual de Tipo, Estado, Subestado, Rubro e Ítem.`,`Resolución global del ${m.compRate}% y lectura por Urgencia, Mantenimiento e Insumos.`],O:[`Usar los cruces Tipo + Rubro para planificar cuadrillas, compras o respuestas recurrentes.`,`Priorizar urgencias pendientes sin confundirlas con mantenimiento programable o pedidos de insumos.`,`Normalizar descripciones del ítem para detectar patrones repetidos.`],D:[`Hay ${fmt(m.sinFecha)} registros sin fecha válida para análisis temporal.`,`Si los subestados no están normalizados, puede distorsionarse el diagnóstico de pendientes.`,`El texto libre en Descripción del ítem puede dispersar el análisis si no se agrupa.`],A:[`${fmt(m.pendientes)} pendientes activos pueden acumularse si no se segmentan por tipo de solicitud.`,`Pedidos de insumos pendientes pueden leerse erróneamente como mantenimiento no resuelto si no se separa la columna AK.`,`Urgencias con estado o subestado mal cargado pueden ocultar criticidad real.`]};const icons={F:'💪',O:'🌟',D:'⚠️',A:'🔴'},labels={F:'Fortalezas',O:'Oportunidades',D:'Debilidades',A:'Amenazas'};document.getElementById('foda-container').innerHTML=Object.entries(items).map(([k,list])=>`<div class="foda-box"><div class="foda-lbl foda-${k}">${icons[k]} ${labels[k]}</div><ul>${list.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('');}
+function renderInsights(m){const stats=m.tipoStats.filter(t=>t.total>0);const topPendingTipo=[...stats].sort((a,b)=>b.pendientes-a.pendientes)[0]||{tipo:'Sin dato',pendientes:0};const topResTipo=[...stats].sort((a,b)=>b.resolucion-a.resolucion)[0]||{tipo:'Sin dato',resolucion:0};document.getElementById('insights-container').innerHTML=`<div class="insight"><strong>Tipo con más pendientes:</strong> ${esc(topPendingTipo.tipo)} concentra ${fmt(topPendingTipo.pendientes)} pendientes activos.</div><div class="insight"><strong>Mejor resolución por tipo:</strong> ${esc(topResTipo.tipo)} alcanza ${topResTipo.resolucion}% de finalización.</div><div class="insight"><strong>Rubro principal:</strong> ${esc(m.topRub[0])} aparece ${fmt(m.topRub[1])} veces; conviene revisarlo cruzado con Tipo de solicitud.</div><div class="insight"><strong>Estado y Subestado:</strong> se muestran separados para no confundir situación general con causa o instancia específica.</div><div class="insight"><strong>Descripción del ítem:</strong> ${esc(m.topItem[0])} es la descripción más repetida dentro de los filtros actuales.</div><div class="insight"><strong>Lectura recomendada:</strong> priorizar Tipo + Estado + Rubro antes de tomar decisiones operativas.</div>`;}
 
 function destroyCharts(){Object.values(S.charts).forEach(c=>{try{c.destroy();}catch(e){}});S.charts={};}
-
-
-function renderCharts(rows,m){destroyCharts();const specs=buildChartSpecs(rows,m).filter(Boolean);document.getElementById('chart-count').textContent=`${specs.length} gráficos`;const container=document.getElementById('charts-container');container.innerHTML=specs.map((sp,i)=>`<div class="chart-card${sp.wide?' wide':''}"><div class="chart-title">${sp.title}</div><div class="chart-subtitle">${sp.subtitle}</div><div class="chart-box${sp.large?' chart-box-lg':sp.small?' chart-box-sm':''}"><canvas id="chart-${i}"></canvas></div></div>`).join('');specs.forEach((sp,i)=>{const ctx=document.getElementById(`chart-${i}`);if(!ctx)return;S.charts[`chart-${i}`]=new Chart(ctx,makeChartConfig(sp));});}
-
-
-function makeChartConfig(sp){const isPie=sp.type==='pie'||sp.type==='doughnut';const colors=(sp.labels||[]).map((_,j)=>PALETTE[j%PALETTE.length]);const common={responsive:true,maintainAspectRatio:false,animation:{duration:900,easing:'easeOutQuart'},plugins:{legend:{display:isPie||sp.showLegend,position:'bottom',labels:{font:{size:10},boxWidth:10,padding:9}},tooltip:{callbacks:{label:ctx=>{const v=Number(ctx.raw||0);if(sp.formatMoney)return` ${fmtM(v)}`;const values=ctx.dataset?.data||sp.values||[];const tot=values.reduce((a,b)=>a+Number(b||0),0);return` ${fmt(v)} (${tot?(v/tot*100).toFixed(1):0}%)`;}}}}};if(sp.customData){return{type:sp.type,data:sp.customData,options:{...common,indexAxis:sp.horizontal?'y':'x',scales:sp.scales||defaultScales(sp.horizontal,sp.stacked)}};}return{type:sp.type,data:{labels:sp.labels,datasets:[{label:sp.title,data:sp.values,backgroundColor:isPie?colors:colors.map(c=>c+'CC'),borderColor:isPie?colors:colors,borderWidth:isPie?1:0,borderRadius:isPie?0:7,tension:.35,fill:sp.type==='line'?true:false,pointRadius:sp.type==='line'?3:undefined}]},options:{...common,indexAxis:sp.horizontal?'y':'x',scales:isPie?{}:defaultScales(sp.horizontal,false)}};}
-
-
+function renderCharts(rows,m){destroyCharts();const specs=buildChartSpecs(rows,m).filter(Boolean);document.getElementById('chart-count').textContent=`${specs.length} gráficos`;const container=document.getElementById('charts-container');container.innerHTML=specs.map((sp,i)=>`<div class="chart-card${sp.wide?' wide':''}"><div class="chart-title">${sp.title}</div><div class="chart-subtitle">${sp.subtitle}</div><div class="chart-box${sp.large?' chart-box-lg':sp.small?' chart-box-sm':''}"><canvas id="chart-${i}"></canvas></div></div>`).join('');specs.forEach((sp,i)=>{const ctx=document.getElementById(`chart-${i}`);if(ctx)S.charts[`chart-${i}`]=new Chart(ctx,makeChartConfig(sp));});}
+function makeChartConfig(sp){const isPie=sp.type==='pie'||sp.type==='doughnut';const colors=(sp.labels||[]).map((_,j)=>PALETTE[j%PALETTE.length]);const common={responsive:true,maintainAspectRatio:false,animation:{duration:900,easing:'easeOutQuart'},plugins:{legend:{display:isPie||sp.showLegend,position:'bottom',labels:{font:{size:10},boxWidth:10,padding:9}},tooltip:{callbacks:{label:ctx=>{const v=Number(ctx.raw||0);const values=ctx.dataset?.data||sp.values||[];const tot=values.reduce((a,b)=>a+Number(b||0),0);return` ${fmt(v)} (${tot?(v/tot*100).toFixed(1):0}%)`;}}}}};if(sp.customData)return{type:sp.type,data:sp.customData,options:{...common,indexAxis:sp.horizontal?'y':'x',scales:sp.scales||defaultScales(sp.horizontal,sp.stacked)}};return{type:sp.type,data:{labels:sp.labels,datasets:[{label:sp.title,data:sp.values,backgroundColor:isPie?colors:colors.map(c=>c+'CC'),borderColor:isPie?colors:colors,borderWidth:isPie?1:0,borderRadius:isPie?0:7,tension:.35,fill:sp.type==='line',pointRadius:sp.type==='line'?3:undefined}]},options:{...common,indexAxis:sp.horizontal?'y':'x',scales:isPie?{}:defaultScales(sp.horizontal,false)}};}
 function defaultScales(horizontal=false,stacked=false){return{x:{stacked,grid:{color:'#EEF2F7'},ticks:{color:'#64748B',font:{size:10},maxRotation:horizontal?0:35}},y:{stacked,beginAtZero:true,grid:{color:'#EEF2F7'},ticks:{color:'#64748B',font:{size:10}}}};}
-
-
 function buildChartSpecs(rows,m){return[
+  mkChart('Distribución por Tipo de solicitud · AK','Peso relativo de Urgencia, Mantenimiento y Pedidos de insumos.','doughnut',topObj(m.tipos,8)),
+  mkCrossChart(rows,'__tipo','__estado','Tipo de solicitud por Estado','Permite leer finalizados, pendientes u otros estados por cada tipo de solicitud.',false,true),
+  mkCrossChart(rows,'__tipo','__subestado','Tipo de solicitud por Subestado','Motivos o instancias específicas separados por tipo de solicitud.',false,true),
+  mkCrossChart(rows,'__rubro','__tipo','Rubro por Tipo de solicitud','Ejemplo: problemas eléctricos como urgencia, mantenimiento o pedido de insumos.',true,true),
+  mkCrossChart(rows,'__item','__tipo','Descripción del ítem por Tipo','Top descripciones de la columna O cruzadas con Tipo de solicitud.',true,true,8),
   mkChart('Distribución por Estado','Situación general de los registros. No se mezcla con Subestado.','doughnut',topObj(m.estados,9)),
   mkChart('Distribución por Subestado','Detalle asociado al Estado. Se analiza como dimensión propia.','doughnut',topObj(m.subestados,9)),
   mkChart('Top Rubros · columna N','Rubros con mayor cantidad de registros en el período seleccionado.','bar',topObj(m.rubros,12),true),
   mkChart('Top Descripción del ítem · columna O','Descripciones más repetidas; útil para detectar demandas recurrentes.','bar',topObj(m.items,12),true),
-  mkMonthly(rows,'Evolución mensual de registros','Cantidad de registros por mes según la fecha detectada.'),
-  mkChart('Finalizados vs Pendientes vs Señales críticas','Comparativo operativo básico del módulo actual.','bar',{'Finalizados':m.finalizados,'Pendientes activos':m.pendientes,'Señales críticas':m.criticos}),
-  mkCrossChart(rows,'__rubro','__estado','Rubro por Estado','Top rubros distribuidos por Estado.',true),
-  mkCrossChart(rows,'__rubro','__subestado','Rubro por Subestado','Top rubros distribuidos por Subestado.',true),
-  mkCrossChart(rows,'__estado','__subestado','Estado vs Subestado','Cruce para leer ambos niveles sin entreverarlos.',false,true),
-  mkChart('Top sectores solicitantes','Sectores o áreas con mayor volumen de pedidos.','bar',topObj(m.sectores,10),true),
-  mkChart('Top efectores / establecimientos','Efectores o destinos con mayor concentración de registros.','bar',topObj(m.efectores,10),true),
+  mkMonthly(rows,'Evolución mensual por registros','Cantidad de registros por mes según la fecha detectada.'),
+  mkCrossChart(rows,'__rubro','__estado','Rubro por Estado','Top rubros distribuidos por Estado.',true,true),
+  mkCrossChart(rows,'__rubro','__subestado','Rubro por Subestado','Top rubros distribuidos por Subestado.',true,true),
+  mkChart('Urgencias por rubro','Rubros que aparecen dentro de solicitudes tipo Urgencia.','bar',topObj(countFiltered(rows,r=>r.__tipo==='Urgencia','__rubro'),10),true),
+  mkChart('Mantenimiento por rubro','Rubros que aparecen dentro de solicitudes tipo Mantenimiento.','bar',topObj(countFiltered(rows,r=>r.__tipo==='Mantenimiento','__rubro'),10),true),
+  mkChart('Pedidos de insumos por rubro','Rubros que aparecen dentro de solicitudes tipo Pedidos de insumos.','bar',topObj(countFiltered(rows,r=>r.__tipo==='Pedidos de insumos','__rubro'),10),true),
   mkChart('Palabras frecuentes en Descripción del ítem','Términos técnicos repetidos en la columna O, filtrando palabras comunes.','bar',topObj(extractKeywords(rows),12),true),
-  mkChart('Rubros con pendientes activos','Rubros con registros no finalizados que requieren seguimiento.','bar',topObj(countFiltered(rows,r=>isPend(r.__estado),'__rubro'),10),true),
-  mkChart('Rubros finalizados','Rubros con registros cerrados o resueltos.','bar',topObj(countFiltered(rows,r=>isFin(r.__estado),'__rubro'),10),true)
-].filter(Boolean).slice(0,16);}
-
-
+  mkChart('Top sectores solicitantes','Sectores o áreas con mayor volumen de pedidos.','bar',topObj(m.sectores,10),true),
+  mkChart('Top efectores / establecimientos','Efectores o destinos con mayor concentración de registros.','bar',topObj(m.efectores,10),true)
+].filter(Boolean).slice(0,18);}
 function mkChart(title,subtitle,type,obj,horizontal=false,opts={}){const entries=Object.entries(obj||{}).filter(([,v])=>Number(v)>0).sort((a,b)=>b[1]-a[1]).slice(0,12);if(!entries.length)return null;return{title,subtitle,type,horizontal,labels:entries.map(e=>e[0]),values:entries.map(e=>e[1]),...opts};}
-
-
 function mkMonthly(rows,title,subtitle){const obj={};rows.forEach(r=>{if(!r.__fecha)return;const k=`${r.__fecha.getFullYear()}-${String(r.__fecha.getMonth()+1).padStart(2,'0')}`;obj[k]=(obj[k]||0)+1;});const sorted=Object.entries(obj).sort((a,b)=>a[0].localeCompare(b[0]));if(!sorted.length)return null;return{title,subtitle,type:'line',wide:true,large:true,labels:sorted.map(e=>e[0]),values:sorted.map(e=>e[1])};}
+function mkCrossChart(rows,primaryKey,secondaryKey,title,subtitle,horizontal=true,wide=false,limitPrimary=8){const topPrim=Object.keys(topObj(countBy(rows,primaryKey),limitPrimary));const topSec=Object.keys(topObj(countBy(rows,secondaryKey),6));if(!topPrim.length||!topSec.length)return null;const datasets=topSec.map((sec,i)=>({label:sec,data:topPrim.map(p=>rows.filter(r=>String(r[primaryKey]||'Sin dato')===p&&String(r[secondaryKey]||'Sin dato')===sec).length),backgroundColor:PALETTE[i%PALETTE.length]+'CC',borderRadius:6}));return{title,subtitle,type:'bar',horizontal,wide,showLegend:true,stacked:true,customData:{labels:topPrim,datasets},scales:defaultScales(horizontal,true)};}
+function extractKeywords(rows){const o={};rows.forEach(r=>{const text=normText(r.__item||'').replace(/[^A-Z0-9Ñ ]/g,' ');text.split(/\s+/).filter(w=>w.length>=4&&!STOPWORDS.has(w)&&!/^[0-9]+$/.test(w)).forEach(w=>{o[w]=(o[w]||0)+1;});});return o;}
 
-
-function mkCrossChart(rows,primaryKey,secondaryKey,title,subtitle,horizontal=true,wide=false){const topPrim=Object.keys(topObj(countBy(rows,primaryKey),8));const topSec=Object.keys(topObj(countBy(rows,secondaryKey),5));if(!topPrim.length||!topSec.length)return null;const datasets=topSec.map((sec,i)=>({label:sec,data:topPrim.map(p=>rows.filter(r=>String(r[primaryKey]||'Sin dato')===p&&String(r[secondaryKey]||'Sin dato')===sec).length),backgroundColor:PALETTE[i%PALETTE.length]+'CC',borderRadius:6}));return{title,subtitle,type:'bar',horizontal,wide,showLegend:true,stacked:true,customData:{labels:topPrim,datasets},scales:defaultScales(horizontal,true)};}
-
-
-function countFiltered(rows,pred,key){const o={};rows.filter(pred).forEach(r=>{const v=String(r[key]||'Sin dato').trim()||'Sin dato';o[v]=(o[v]||0)+1;});return o;}
-
-
-function extractKeywords(rows){const o={};rows.forEach(r=>{const text=normText(r.__item||'').replace(/[^A-Z0-9Ñ ]/g,' ');text.split(/\s+/).filter(w=>w.length>=4&&!STOPWORDS.has(w)&&!/^\d+$/.test(w)).forEach(w=>{o[w]=(o[w]||0)+1;});});return o;}
-
-
-function renderTable(rows){const sample=rows.slice(0,35);const cont=document.getElementById('table-container');if(!sample.length){cont.innerHTML=`<div class="empty-state"><div class="es-icon">🔍</div><h3>Sin resultados</h3><p>No hay registros con los filtros actuales. Ajustá el período o eliminá filtros.</p></div>`;return;}const BADGE={'FINALIZADO':'badge-green','FINALIZADA':'badge-green','EN PROCESO':'badge-blue','RECIBIDO':'badge-amber','NO CALIFICA':'badge-gray','MAL CARGADO':'badge-gray','ANULADO':'badge-gray','CANCELADO':'badge-gray'};cont.innerHTML=`<div class="table-header"><h3>Muestra de registros (${sample.length} de ${fmt(rows.length)})</h3><span style="font-size:11px;color:var(--muted)">Estado y Subestado se muestran en columnas separadas</span></div><div class="table-wrap"><table class="dt"><thead><tr><th>Fecha</th><th>Derivar</th><th>Estado</th><th>Subestado</th><th>Rubro</th><th>Descripción del ítem</th><th>Sector / Área</th><th>Efector</th><th>Expediente</th><th>Monto</th></tr></thead><tbody>${sample.map(r=>{const badgeCls=BADGE[normText(r.__estado)]||'badge-gray';return`<tr><td style="white-space:nowrap">${r.__fecha?r.__fecha.toLocaleDateString('es-AR'):'—'}</td><td><span class="badge badge-blue">${esc(r.__derivar)}</span></td><td><span class="badge ${badgeCls}">${esc(r.__estado)}</span></td><td><span class="badge badge-purple">${esc(r.__subestado)}</span></td><td>${esc(truncStr(r.__rubro,32))}</td><td>${esc(truncStr(r.__item,46))}</td><td>${esc(truncStr(r.__sector,25))}</td><td>${esc(truncStr(r.__efector,28))}</td><td>${r.__expediente?`<span class="badge badge-teal">${esc(r.__expediente)}</span>`:'—'}</td><td style="white-space:nowrap">${r.__monto?fmtM(r.__monto):'—'}</td></tr>`;}).join('')}</tbody></table></div>`;}
-
-
+function renderTable(rows){const sample=rows.slice(0,40);const cont=document.getElementById('table-container');if(!sample.length){cont.innerHTML=`<div class="empty-state"><div class="es-icon">🔍</div><h3>Sin resultados</h3><p>No hay registros con los filtros actuales. Ajustá el período o eliminá filtros.</p></div>`;return;}const BADGE={'FINALIZADO':'badge-green','FINALIZADA':'badge-green','EN PROCESO':'badge-blue','RECIBIDO':'badge-amber','NO CALIFICA':'badge-gray','MAL CARGADO':'badge-gray','ANULADO':'badge-gray','CANCELADO':'badge-gray'};cont.innerHTML=`<div class="table-header"><h3>Muestra de registros (${sample.length} de ${fmt(rows.length)})</h3><span style="font-size:11px;color:var(--muted)">Tipo, Estado y Subestado se muestran separados</span></div><div class="table-wrap"><table class="dt"><thead><tr><th>Fecha</th><th>Derivar</th><th>Tipo solicitud</th><th>Estado</th><th>Subestado</th><th>Rubro</th><th>Descripción del ítem</th><th>Sector / Área</th><th>Efector</th><th>Expediente</th></tr></thead><tbody>${sample.map(r=>{const badgeCls=BADGE[normText(r.__estado)]||'badge-gray';const tipoCls=r.__tipo==='Urgencia'?'badge-red':r.__tipo==='Mantenimiento'?'badge-teal':r.__tipo==='Pedidos de insumos'?'badge-orange':'badge-gray';return`<tr><td style="white-space:nowrap">${r.__fecha?r.__fecha.toLocaleDateString('es-AR'):'—'}</td><td><span class="badge badge-blue">${esc(r.__derivar)}</span></td><td><span class="badge ${tipoCls}">${esc(r.__tipo)}</span></td><td><span class="badge ${badgeCls}">${esc(r.__estado)}</span></td><td><span class="badge badge-purple">${esc(r.__subestado)}</span></td><td>${esc(truncStr(r.__rubro,32))}</td><td>${esc(truncStr(r.__item,52))}</td><td>${esc(truncStr(r.__sector,25))}</td><td>${esc(truncStr(r.__efector,28))}</td><td>${r.__expediente?`<span class="badge badge-teal">${esc(r.__expediente)}</span>`:'—'}</td></tr>`;}).join('')}</tbody></table></div>`;}
 function updateBadges(){['general','obras','produccion','rf'].forEach(t=>{const el=document.getElementById(`badge-${t}`);if(el)el.textContent=fmt(getBaseRows(t).length);});}
-
-
 function showSourceStatus(){const ts=S.lastRefresh?S.lastRefresh.toLocaleTimeString('es-AR'):'no cargado';toast(`📊 CONSOLIDADO: ${fmt(S.raw.consolidado.length)} registros · ${ts}`,4000);}
-
-
 function exportPDF(){toast('⏳ Generando PDF...');const el=document.getElementById('export-area');const tab=TAB_META[S.activeTab]?.title||S.activeTab;html2pdf().set({margin:[8,8,8,8],filename:`DGIME_${tab.replace(/\s+/g,'_')}.pdf`,image:{type:'jpeg',quality:.97},html2canvas:{scale:2,useCORS:true,logging:false},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['avoid-all','css','legacy']}}).from(el).save().then(()=>toast('✓ PDF exportado correctamente'));}
-
-
 function showLoading(show){document.getElementById('loading-bar').style.display=show?'block':'none';}
-
-
 function setStatus(msg,type='green'){const dot=document.querySelector('#status-pill .status-dot');const txt=document.getElementById('status-text');if(dot)dot.style.background=type==='green'?'var(--green2)':type==='amber'?'var(--amber2)':'var(--red2)';if(txt)txt.textContent=msg;}
-let toastTimer;
-
-function toast(msg,duration=2600){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),duration);}
-
-
+let toastTimer;function toast(msg,duration=2600){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),duration);}
 function fmt(n){return new Intl.NumberFormat('es-AR').format(Number(n||0));}
-
-
 function fmtM(n){const v=Number(n||0);if(v===0)return'—';if(v>=1e9)return`$${(v/1e9).toFixed(1)}B`;if(v>=1e6)return`$${(v/1e6).toFixed(1)}M`;if(v>=1e3)return`$${(v/1e3).toFixed(0)}K`;return`$${fmt(v)}`;}
-
-
 function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');}
-
-
 function truncStr(s,n){s=String(s||'');return s.length>n?s.slice(0,n-1)+'…':s;}
 </script>
 </body>
 </html>
-<!-- test deploy -->

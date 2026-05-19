@@ -999,6 +999,30 @@
     .pdf-footer{position:absolute;left:34px;right:34px;bottom:14px;border-top:1px solid #E2E8F0;padding-top:7px;display:flex;justify-content:space-between;color:#64748B;font-size:9.5px}
     .pdf-section-tag{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:#1D4ED8;font-weight:950;margin-bottom:4px}
 
+    /* ── RECOMENDACIONES ESTRATÉGICAS ── */
+    .rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px}
+    .rec-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:15px 16px;position:relative;overflow:hidden;animation:fadeUp .34s ease both}
+    .rec-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+    .rec-rojo::before{background:linear-gradient(90deg,#C81E1E,#F05252)}
+    .rec-amarillo::before{background:linear-gradient(90deg,#B45309,#F59E0B)}
+    .rec-verde::before{background:linear-gradient(90deg,#057A55,#10B981)}
+    .rec-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .rec-semaforo{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+    .rec-rojo .rec-semaforo{background:#FEE2E2}
+    .rec-amarillo .rec-semaforo{background:#FEF3C7}
+    .rec-verde .rec-semaforo{background:#D1FAE5}
+    .rec-title{font-size:12px;font-weight:900;color:var(--text);line-height:1.2}
+    .rec-badge{font-size:9px;font-weight:900;border-radius:7px;padding:2px 7px;margin-top:3px;display:inline-block}
+    .rec-rojo .rec-badge{background:#FEE2E2;color:#991B1B}
+    .rec-amarillo .rec-badge{background:#FEF3C7;color:#92400E}
+    .rec-verde .rec-badge{background:#D1FAE5;color:#065F46}
+    .rec-body{font-size:11.5px;color:#334155;line-height:1.55}
+    .rec-body strong{color:var(--text)}
+    .rec-accion{margin-top:9px;padding-top:8px;border-top:1px dashed var(--border);font-size:11px;color:#475569;line-height:1.45}
+    .rec-accion::before{content:'▸ Acción: ';font-weight:900;color:var(--blue2)}
+    @media(max-width:1180px){.rec-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:760px){.rec-grid{grid-template-columns:1fr}}
+
     @media print{
       .sidebar,.topbar,.toolbar-card,.toast{
       display:none!important
@@ -1444,6 +1468,10 @@
       <div class="foda-grid" id="foda-container"></div>
       <div class="section-hdr"><h2><span>🧭</span> Lecturas rápidas</h2></div>
       <div class="insight-list" id="insights-container"></div>
+      <div class="section-hdr"><h2><span>📉</span> Análisis de Pareto</h2><span class="section-note">El 20% de las categorías que concentran el 80% de la carga — foco para la dirección.</span></div>
+      <div class="charts-grid" id="pareto-container"></div>
+      <div class="section-hdr"><h2><span>🎯</span> Recomendaciones estratégicas</h2><span class="section-note">Decisiones directivas basadas en los datos del período filtrado.</span></div>
+      <div id="recomendaciones-container"></div>
       <div class="section-hdr"><h2><span>📈</span> Visualizaciones del consolidado</h2><div class="section-hdr-right"><span id="chart-count" style="font-size:11px;color:var(--muted)"></span></div></div>
       <div class="charts-grid" id="charts-container"></div>
       <div class="section-hdr"><h2><span>📋</span> Muestra de registros</h2></div>
@@ -1548,7 +1576,226 @@ function uniqueVals(rows,key){return [...new Set(rows.map(r=>String(r[key]||'').
 function groupTipoStats(rows){const tasks=buildTasks(rows);return sortTipo([...new Set(tasks.map(r=>r.__tipo||'Sin tipo'))]).map(tipo=>{const ts=tasks.filter(r=>r.__tipo===tipo);const detail=rows.filter(r=>r.__tipo===tipo);const fin=ts.filter(r=>isFin(r.__estado)).length;const pen=ts.filter(r=>isPend(r.__estado)).length;const crit=ts.filter(r=>r.__critico||isCrit(r)).length;return{tipo,total:ts.length,filas:detail.length,finalizados:fin,pendientes:pen,criticos:crit,resolucion:pct(fin,ts.length),topRubro:topEntry(countUniqueBy(detail,'__rubro')),topEstado:topEntry(countBy(ts,'__estado'))};});}
 function calcMetrics(rows,tab){const tasks=buildTasks(rows);const total=tasks.length;const detailTotal=rows.length;const estados=countBy(tasks,'__estado'),subestados=countBy(tasks,'__subestado'),tipos=countBy(tasks,'__tipo'),sectores=countBy(tasks,'__sector'),efectores=countBy(tasks,'__efector'),derivs=countBy(tasks,'__derivar');const rubros=countUniqueBy(rows,'__rubro'),subrubros=countUniqueBy(rows,'__subrubro'),productos=countUniqueBy(rows,'__producto'),items=countUniqueBy(rows,'__item');const finalizados=tasks.filter(r=>isFin(r.__estado)).length;const pendientes=tasks.filter(r=>isPend(r.__estado)).length;const criticos=tasks.filter(r=>r.__critico||isCrit(r)).length;const conFecha=tasks.filter(r=>r.__fecha).length;const conExp=tasks.filter(r=>String(r.__expediente||'').trim()).length;const conSub=rows.filter(r=>r.__subestado&&r.__subestado!=='Sin subestado').length;const conItem=rows.filter(r=>r.__item&&r.__item!=='Sin descripción').length;const tipoStats=groupTipoStats(rows);return{tab,rows,tasks,total,detailTotal,filasAgrupadas:Math.max(0,detailTotal-total),estados,subestados,tipos,rubros,subrubros,productos,items,sectores,efectores,derivs,tipoStats,finalizados,pendientes,criticos,conFecha,sinFecha:total-conFecha,conExp,conSub,conItem,topTipo:topEntry(tipos),topEst:topEntry(estados),topSub:topEntry(subestados),topRub:topEntry(rubros),topSubrub:topEntry(subrubros),topProd:topEntry(productos),topItem:topEntry(items),topSec:topEntry(sectores),topEf:topEntry(efectores),compRate:pct(finalizados,total),pendRate:pct(pendientes,total),critRate:pct(criticos,total),dateRate:pct(conFecha,total),expRate:pct(conExp,total),subRate:pct(conSub,detailTotal),itemRate:pct(conItem,detailTotal)};}
 
-function renderModule(){showLoading(true);const rows=getFilteredRows();const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderTipoCards(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderCharts(rows,m);renderTable(rows,m);showLoading(false);setStatus(`${fmt(m.total)} tareas únicas · ${fmt(m.detailTotal)} filas detalle · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
+function renderModule(){showLoading(true);const rows=getFilteredRows();const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderTipoCards(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderPareto(rows,m);renderRecomendaciones(m);renderCharts(rows,m);renderTable(rows,m);showLoading(false);setStatus(`${fmt(m.total)} tareas únicas · ${fmt(m.detailTotal)} filas detalle · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
+
+/* ─── ANÁLISIS DE PARETO ─────────────────────────────── */
+function calcParetoData(obj, limit=15){
+  const entries=Object.entries(obj||{}).filter(([,v])=>Number(v)>0).sort((a,b)=>Number(b[1])-Number(a[1])).slice(0,limit);
+  const total=entries.reduce((s,[,v])=>s+Number(v),0);
+  let acc=0;
+  return entries.map(([label,val])=>{acc+=Number(val);return{label,val:Number(val),pct:Math.round(val/total*1000)/10,acum:Math.round(acc/total*1000)/10};});
+}
+function paretoVitalFew(data){
+  // cuántas categorías cubren el 80%
+  let count=0;for(const d of data){count++;if(d.acum>=80)break;}
+  return count;
+}
+function renderPareto(rows,m){
+  // Destruir charts de Pareto anteriores
+  ['pareto-rub','pareto-ef'].forEach(id=>{if(S.charts[id]){try{S.charts[id].destroy();}catch(e){}delete S.charts[id];}});
+  const cont=document.getElementById('pareto-container');
+  cont.innerHTML=`
+    <div class="chart-card">
+      <div class="chart-title">Pareto de Rubros · concentración de carga</div>
+      <div class="chart-subtitle">Rubros que acumulan el 80% de las tareas únicas · línea = % acumulado</div>
+      <div class="chart-box chart-box-lg"><canvas id="pareto-rub"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Pareto de Efectores · concentración por establecimiento</div>
+      <div class="chart-subtitle">Efectores que acumulan el 80% de las tareas · línea = % acumulado</div>
+      <div class="chart-box chart-box-lg"><canvas id="pareto-ef"></canvas></div>
+    </div>`;
+  const rubData=calcParetoData(m.rubros,14);
+  const efData=calcParetoData(m.efectores,14);
+  if(rubData.length) S.charts['pareto-rub']=mkParetoChart('pareto-rub',rubData,'Rubros');
+  if(efData.length)  S.charts['pareto-ef']=mkParetoChart('pareto-ef',efData,'Efectores');
+}
+function mkParetoChart(canvasId, data, dimensionLabel){
+  const ctx=document.getElementById(canvasId);if(!ctx)return null;
+  const labels=data.map(d=>truncStr(d.label,24));
+  const vals=data.map(d=>d.val);
+  const acums=data.map(d=>d.acum);
+  // Índice del 80%
+  const idx80=data.findIndex(d=>d.acum>=80);
+  const barColors=data.map((_,i)=>i<=idx80?'#1A56DBCC':'#CBD5E1CC');
+  return new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {type:'bar',label:dimensionLabel,data:vals,backgroundColor:barColors,borderColor:barColors.map(c=>c.replace('CC','FF')),borderWidth:0,borderRadius:6,yAxisID:'y'},
+        {type:'line',label:'% Acumulado',data:acums,borderColor:'#F59E0B',backgroundColor:'#F59E0B22',borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#F59E0B',tension:.3,fill:false,yAxisID:'y2'}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      animation:{duration:800,easing:'easeOutQuart'},
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:10,padding:8}},
+        tooltip:{callbacks:{
+          label:ctx=>{
+            if(ctx.datasetIndex===0)return ` ${ctx.dataset.label}: ${fmt(ctx.raw)} tareas`;
+            return ` % Acumulado: ${ctx.raw}%`;
+          },
+          afterBody:(items)=>{
+            const i=items[0]?.dataIndex??0;
+            if(i===idx80)return['── Punto 80% de la carga ──'];
+            return[];
+          }
+        }},
+        annotation:{
+          annotations:{
+            line80:{type:'line',yScaleID:'y2',yMin:80,yMax:80,borderColor:'#C81E1E',borderWidth:1.5,borderDash:[6,4],label:{content:'80%',enabled:true,position:'end',font:{size:10,weight:'bold'},color:'#C81E1E',backgroundColor:'transparent'}}
+          }
+        }
+      },
+      scales:{
+        x:{grid:{color:'#EEF2F7'},ticks:{color:'#64748B',font:{size:9.5},maxRotation:38}},
+        y:{beginAtZero:true,grid:{color:'#EEF2F7'},ticks:{color:'#64748B',font:{size:10}},title:{display:true,text:'Tareas únicas',font:{size:10},color:'#64748B'}},
+        y2:{position:'right',min:0,max:100,grid:{drawOnChartArea:false},ticks:{color:'#B45309',font:{size:10},callback:v=>v+'%'},title:{display:true,text:'% Acumulado',font:{size:10},color:'#B45309'}}
+      }
+    }
+  });
+}
+
+/* ─── RECOMENDACIONES ESTRATÉGICAS ──────────────────── */
+function renderRecomendaciones(m){
+  const cont=document.getElementById('recomendaciones-container');
+  const recs=buildRecomendaciones(m);
+  cont.innerHTML=`<div class="rec-grid">${recs.map(r=>`
+    <div class="rec-card rec-${r.nivel}">
+      <div class="rec-header">
+        <div class="rec-semaforo">${r.icono}</div>
+        <div>
+          <div class="rec-title">${esc(r.titulo)}</div>
+          <span class="rec-badge">${r.nivel==='rojo'?'🔴 Atención urgente':r.nivel==='amarillo'?'🟡 Monitorear':r.nivel==='verde'?'🟢 En buen camino':''}</span>
+        </div>
+      </div>
+      <div class="rec-body">${r.cuerpo}</div>
+      <div class="rec-accion">${esc(r.accion)}</div>
+    </div>`).join('')}</div>`;
+}
+function buildRecomendaciones(m){
+  const recs=[];
+  const urg=m.tipoStats.find(x=>x.tipo==='Urgencia')||{total:0,finalizados:0,pendientes:0,resolucion:0};
+  const man=m.tipoStats.find(x=>x.tipo==='Mantenimiento')||{total:0,finalizados:0,pendientes:0,resolucion:0};
+  const ins=m.tipoStats.find(x=>x.tipo==='Pedidos de insumos')||{total:0,finalizados:0,pendientes:0,resolucion:0};
+  const rubPareto=calcParetoData(m.rubros,14);
+  const efPareto=calcParetoData(m.efectores,14);
+  const vfRub=paretoVitalFew(rubPareto);
+  const vfEf=paretoVitalFew(efPareto);
+
+  // 1. Resolución de urgencias
+  if(urg.total>0){
+    const pend=urg.pendientes;
+    const res=urg.resolucion;
+    recs.push({
+      nivel: res<50?'rojo':res<75?'amarillo':'verde',
+      icono: res<50?'🚨':res<75?'⚠️':'✅',
+      titulo:'Resolución de Urgencias',
+      cuerpo:`De <strong>${fmt(urg.total)}</strong> urgencias registradas, <strong>${fmt(pend)}</strong> siguen pendientes (${Math.round(100-res)}%). La tasa de resolución actual es <strong>${res}%</strong>.`,
+      accion: res<50
+        ?`Convocar revisión inmediata de las ${fmt(pend)} urgencias pendientes por efector y rubro. Definir responsable y plazo máximo de 72 h.`
+        :res<75?`Revisar semanalmente las urgencias abiertas. Priorizar por efector con mayor acumulación.`
+        :`Mantener el ritmo actual. Validar que los finalizados tengan cierre correcto en sistema.`
+    });
+  }
+
+  // 2. Tasa global de resolución
+  recs.push({
+    nivel: m.compRate>=70?'verde':m.compRate>=45?'amarillo':'rojo',
+    icono: m.compRate>=70?'✅':m.compRate>=45?'📊':'📉',
+    titulo:'Tasa de resolución global',
+    cuerpo:`El <strong>${m.compRate}%</strong> de las <strong>${fmt(m.total)}</strong> tareas únicas están finalizadas. Hay <strong>${fmt(m.pendientes)}</strong> pendientes activas (${m.pendRate}%).`,
+    accion: m.compRate<45
+      ?`Auditar los pendientes más antiguos. Establecer metas de cierre semanales por módulo.`
+      :m.compRate<70?`Implementar un reporte de pendientes semanal enviado a cada jefatura de departamento.`
+      :`Sostener el ritmo. Incorporar los pendientes en la agenda de la próxima reunión de dirección.`
+  });
+
+  // 3. Concentración Pareto de Rubros
+  if(rubPareto.length>0){
+    const top1=rubPareto[0];
+    recs.push({
+      nivel: vfRub<=3?'rojo':vfRub<=5?'amarillo':'verde',
+      icono:'🔧',
+      titulo:`Pareto de Rubros — ${vfRub} categoría${vfRub>1?'s':''} concentran el 80%`,
+      cuerpo:`Solo <strong>${vfRub} rubro${vfRub>1?'s':''}</strong> de ${rubPareto.length} concentran el 80% de la carga. El rubro dominante es <strong>${esc(top1.label)}</strong> con <strong>${fmt(top1.val)}</strong> tareas (${top1.pct}% del total).`,
+      accion: vfRub<=3
+        ?`Concentrar recursos humanos y técnicos en "${truncStr(top1.label,30)}". Evaluar si corresponde externalizar o reforzar cuadrillas.`
+        :`Revisar los top ${vfRub} rubros en el Pareto del dashboard. Asignar responsable por rubro prioritario.`
+    });
+  }
+
+  // 4. Concentración Pareto de Efectores
+  if(efPareto.length>0){
+    const top1ef=efPareto[0];
+    recs.push({
+      nivel: vfEf<=3?'rojo':vfEf<=5?'amarillo':'verde',
+      icono:'🏥',
+      titulo:`Pareto de Efectores — ${vfEf} establecimiento${vfEf>1?'s':''} concentran el 80%`,
+      cuerpo:`Solo <strong>${vfEf} efector${vfEf>1?'es':''}</strong> concentran el 80% de las solicitudes. El efector con mayor carga es <strong>${esc(top1ef.label)}</strong> con <strong>${fmt(top1ef.val)}</strong> tareas (${top1ef.pct}%).`,
+      accion: vfEf<=3
+        ?`Realizar visita técnica prioritaria a "${truncStr(top1ef.label,28)}". Revisar si hay demanda acumulada por falta de personal in situ.`
+        :`Hacer seguimiento quincenal a los efectores del Pareto. Informar a cada director de área.`
+    });
+  }
+
+  // 5. Señales críticas
+  if(m.criticos>0){
+    recs.push({
+      nivel: m.critRate>20?'rojo':m.critRate>10?'amarillo':'verde',
+      icono:'⚡',
+      titulo:`Señales críticas: ${m.critRate}% del total`,
+      cuerpo:`Se detectaron <strong>${fmt(m.criticos)}</strong> tareas con palabras clave de prioridad, demora o urgencia (${m.critRate}% del universo filtrado).`,
+      accion: m.critRate>20
+        ?`Revisar de inmediato el listado de críticos. Exportar CSV y auditar con cada jefatura en las próximas 48 h.`
+        :m.critRate>10?`Incorporar el monitoreo de críticos en la agenda de la reunión semanal de gestión.`
+        :`Nivel aceptable. Mantener la vigilancia mensual y validar el cierre correcto.`
+    });
+  }
+
+  // 6. Mantenimiento programable
+  if(man.total>0){
+    recs.push({
+      nivel: man.resolucion>=70?'verde':man.resolucion>=45?'amarillo':'rojo',
+      icono:'🛠️',
+      titulo:`Mantenimiento: ${man.resolucion}% resuelto`,
+      cuerpo:`De <strong>${fmt(man.total)}</strong> tareas de mantenimiento, <strong>${fmt(man.pendientes)}</strong> siguen abiertas. El rubro principal dentro de mantenimiento es <strong>${esc(man.topRubro?.[0]||'Sin dato')}</strong>.`,
+      accion: man.resolucion<45
+        ?`Separar el mantenimiento correctivo del preventivo. Planificar cronograma mensual de tareas programables para reducir los pendientes.`
+        :`Revisar el rubro dominante y evaluar si requiere mayor dotación técnica o contratación.`
+    });
+  }
+
+  // 7. Pedidos de insumos
+  if(ins.total>0 && ins.pendientes>0){
+    const pendPct=Math.round(ins.pendientes/ins.total*100);
+    recs.push({
+      nivel: pendPct>40?'rojo':pendPct>20?'amarillo':'verde',
+      icono:'📦',
+      titulo:`Pedidos de insumos: ${fmt(ins.pendientes)} pendientes`,
+      cuerpo:`De <strong>${fmt(ins.total)}</strong> pedidos de insumos, <strong>${fmt(ins.pendientes)}</strong> (${pendPct}%) no tienen cierre. El rubro más demandado es <strong>${esc(ins.topRubro?.[0]||'Sin dato')}</strong>.`,
+      accion: pendPct>40
+        ?`Activar proceso de compras para el rubro dominante. Verificar si hay expedientes trabados o sin autorización.`
+        :`Monitorear los pedidos sin respuesta. Cruzar con el área de abastecimiento para detectar demoras en el circuito.`
+    });
+  }
+
+  // 8. Cobertura de datos
+  if(m.dateRate<80){
+    recs.push({
+      nivel:'amarillo',
+      icono:'📅',
+      titulo:`Calidad de datos: ${m.dateRate}% con fecha válida`,
+      cuerpo:`<strong>${fmt(m.sinFecha)}</strong> tareas (${Math.round(100-m.dateRate)}%) no tienen fecha válida, lo que impide el análisis temporal y la trazabilidad histórica.`,
+      accion:`Instruir a los cargadores de datos para completar el campo de fecha en todas las tareas nuevas. Revisar las existentes para recuperar fechas.`
+    });
+  }
+
+  return recs.slice(0,9);
+}
 function renderSummary(m){const meta=TAB_META[m.tab]||TAB_META.general;document.getElementById('summary-container').innerHTML=`<h3>${esc(meta.title)}</h3><p>Este módulo analiza el <strong>conjunto de la pestaña CONSOLIDADO</strong>${m.tab==='general'?'':' filtrado por la columna <strong>DERIVAR</strong>'}. Para los indicadores principales se agrupan las filas por <strong>ID de tarea</strong>: ${fmt(m.total)} tareas únicas sobre ${fmt(m.detailTotal)} filas detalle. Las filas repetidas con el mismo ID se consideran parte de la misma tarea; los análisis de <strong>Rubro, Subrubro, Producto e Ítem</strong> se leen como detalle técnico de esas tareas.</p><ul><li>Tipo de solicitud dominante: <strong>${esc(m.topTipo[0])}</strong> (${fmt(m.topTipo[1])} tareas únicas).</li><li>Rubro principal: <strong>${esc(m.topRub[0])}</strong> (${fmt(m.topRub[1])} tareas únicas vinculadas).</li><li>Subrubro principal: <strong>${esc(m.topSubrub[0])}</strong>. Producto principal: <strong>${esc(m.topProd[0])}</strong>.</li><li>Estado dominante: <strong>${esc(m.topEst[0])}</strong>. Subestado dominante: <strong>${esc(m.topSub[0])}</strong>.</li></ul><div class="summary-pill-row"><span class="summary-pill">ID agrupado</span><span class="summary-pill">${fmt(m.filasAgrupadas)} filas agrupadas</span><span class="summary-pill">Rubro / Subrubro / Producto</span><span class="summary-pill">Tipo AK</span><span class="summary-pill">Filtro por Efector</span></div>`;}
 function renderTipoCards(m){const stats=m.tipoStats.filter(t=>t.total>0);document.getElementById('tipo-container').innerHTML=stats.length?stats.map(t=>`<div class="tipo-card"><div class="tipo-head"><div class="tipo-title">${esc(t.tipo)}</div><div class="tipo-badge">${t.resolucion}% resuelto</div></div><div class="tipo-stats"><div class="tipo-stat"><b>${fmt(t.total)}</b><span>Tareas</span></div><div class="tipo-stat"><b>${fmt(t.finalizados)}</b><span>Final.</span></div><div class="tipo-stat"><b>${fmt(t.pendientes)}</b><span>Pend.</span></div><div class="tipo-stat"><b>${fmt(t.filas)}</b><span>Filas</span></div></div><p style="font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:10px">Rubro principal: <strong>${esc(t.topRubro[0])}</strong>. Estado dominante: <strong>${esc(t.topEstado[0])}</strong>.</p></div>`).join(''):`<div class="empty-state"><h3>Sin datos de tipo de solicitud</h3><p>Revise la columna AK / Tipo de solicitud.</p></div>`;}
 const COLOR_MAP={blue:'var(--blue2)',green:'var(--green2)',amber:'var(--amber2)',red:'var(--red2)',purple:'var(--purple2)',teal:'var(--teal2)'};
@@ -1653,8 +1900,8 @@ function buildPrintReportHTML(rows,m,charts){
   const topRub=topEntries(m.rubros,6),topProd=topEntries(m.productos,6),topEf=topEntries(m.efectores,6);
   const sample=m.tasks.slice(0,16);
   const urg=m.tipoStats.find(x=>x.tipo==='Urgencia')||{total:0,finalizados:0,resolucion:0};
-  const man=m.tipoStats.find(x=>x.tipo==='Mantenimiento')||{total:0,finalizados:0,resolucion:0};
-  const ins=m.tipoStats.find(x=>x.tipo==='Pedidos de insumos')||{total:0,finalizados:0,resolucion:0};
+  const man=m.tipoStats.find(x=>x.tipo==='Mantenimiento')||{total:0,finalizados:0,pendientes:0,resolucion:0,topRubro:['—',0]};
+  const ins=m.tipoStats.find(x=>x.tipo==='Pedidos de insumos')||{total:0,finalizados:0,pendientes:0,resolucion:0,topRubro:['—',0]};
   const kpis=[
     {label:'Tareas únicas',value:fmt(m.total),note:`${fmt(m.detailTotal)} filas · ${fmt(m.filasAgrupadas)} agrupadas`,color:'#1A56DB'},
     {label:'Finalizadas',value:fmt(m.finalizados),note:`${m.compRate}% resolución global`,color:'#057A55'},
@@ -1665,7 +1912,17 @@ function buildPrintReportHTML(rows,m,charts){
     {label:'Insumos finalizados',value:fmt(ins.finalizados),note:`${ins.resolucion||0}% de ${fmt(ins.total||0)}`,color:'#1A56DB'},
     {label:'Rubro dominante',value:truncStr(m.topRub[0]||'—',18),note:`${fmt(m.topRub[1]||0)} tareas únicas`,color:'#057A55'}
   ];
-  const kpiHTML=kpis.map(k=>`<div class="kpi"><div class="kpi-bar" style="background:${k.color}"></div><div class="kpi-label">${esc(k.label)}</div><div class="kpi-value" style="color:${k.color}">${esc(k.value)}</div><div class="kpi-note">${esc(k.note)}</div></div>`).join('');
+  const kpiHTML=kpis.map(k=>`<div class="kpi"><div class="kpi-bar" style="background:${k.color};-webkit-print-color-adjust:exact;print-color-adjust:exact"></div><div class="kpi-label">${esc(k.label)}</div><div class="kpi-value" style="color:${k.color};-webkit-print-color-adjust:exact;print-color-adjust:exact">${esc(k.value)}</div><div class="kpi-note">${esc(k.note)}</div></div>`).join('');
+  // Pareto data para el PDF (tablas + barras SVG inline)
+  const rubPareto=calcParetoData(m.rubros,12);
+  const efPareto=calcParetoData(m.efectores,12);
+  const vfRub=paretoVitalFew(rubPareto);
+  const vfEf=paretoVitalFew(efPareto);
+  // Imágenes de gráficos Pareto del dashboard
+  const paretoImgs=getReportChartImages_ids(['pareto-rub','pareto-ef']);
+  // Recomendaciones
+  const recs=buildRecomendaciones(m);
+  // Gráficos generales (excluir los de Pareto ya usados)
   const chartHTML=charts.length
     ?charts.map(c=>`<div class="chart-card"><div class="chart-title">${esc(c.title)}</div><img src="${c.src}" alt="${esc(c.title)}" style="width:100%;max-height:200px;object-fit:contain;display:block;background:#fff"></div>`).join('')
     :`<div class="no-charts"><p>⚠ Sin gráficos disponibles. Asegurate de tener datos cargados y visibles antes de exportar.</p></div>`;
@@ -1675,48 +1932,70 @@ function buildPrintReportHTML(rows,m,charts){
   const rubRows=topRub.map((e,i)=>`<tr><td class="n">${i+1}</td><td>${esc(truncStr(e[0],30))}</td><td class="n">${fmt(e[1])}</td></tr>`).join('');
   const prodRows=topProd.map((e,i)=>`<tr><td class="n">${i+1}</td><td>${esc(truncStr(e[0],30))}</td><td class="n">${fmt(e[1])}</td></tr>`).join('');
   const efRows=topEf.map((e,i)=>`<tr><td class="n">${i+1}</td><td>${esc(truncStr(e[0],30))}</td><td class="n">${fmt(e[1])}</td></tr>`).join('');
+  // Helper: tabla Pareto con % acumulado
+  const paretoTable=(data,label)=>{
+    if(!data.length) return `<p style="color:#64748B;font-size:8pt">Sin datos suficientes.</p>`;
+    const rows=data.map((d,i)=>`<tr>
+      <td class="n">${i+1}</td>
+      <td>${esc(truncStr(d.label,32))}</td>
+      <td class="n">${fmt(d.val)}</td>
+      <td class="n">${d.pct}%</td>
+      <td class="n" style="font-weight:700;color:${d.acum<=80?'#057A55':'#64748B'}">${d.acum}%</td>
+    </tr>`).join('');
+    return `<table><thead><tr><th>#</th><th>${esc(label)}</th><th>Tareas</th><th>%</th><th>Acum.</th></tr></thead><tbody>${rows}</tbody></table>`;
+  };
+  // Helper: semáforo visual para PDF
+  const nivelColor={rojo:'#C81E1E',amarillo:'#B45309',verde:'#057A55'};
+  const nivelBg={rojo:'#FEE2E2',amarillo:'#FEF3C7',verde:'#D1FAE5'};
+  const nivelLabel={rojo:'🔴 Atención urgente',amarillo:'🟡 Monitorear',verde:'🟢 En buen camino'};
+  const recHTML=recs.map(r=>`
+    <div class="pdf-rec" style="border-top:3px solid ${nivelColor[r.nivel]||'#1A56DB'};-webkit-print-color-adjust:exact;print-color-adjust:exact">
+      <div class="pdf-rec-head">
+        <span class="pdf-rec-ico" style="background:${nivelBg[r.nivel]||'#EFF6FF'};-webkit-print-color-adjust:exact;print-color-adjust:exact">${r.icono}</span>
+        <div>
+          <div class="pdf-rec-title">${esc(r.titulo)}</div>
+          <span class="pdf-rec-badge" style="background:${nivelBg[r.nivel]||'#EFF6FF'};color:${nivelColor[r.nivel]||'#1A56DB'};-webkit-print-color-adjust:exact;print-color-adjust:exact">${nivelLabel[r.nivel]||''}</span>
+        </div>
+      </div>
+      <div class="pdf-rec-body">${r.cuerpo}</div>
+      <div class="pdf-rec-accion"><strong>▸ Acción:</strong> ${esc(r.accion)}</div>
+    </div>`).join('');
+  const hdr=(page,total,section)=>`
+    <div class="page-header">
+      <div class="brand"><div class="brand-mark">DG</div>
+        <div><div class="brand-name">DGIME · SIPROSA</div>
+        <div class="brand-sub">Dirección General de Infraestructura, Mantenimiento y Equipamiento</div></div>
+      </div>
+      <div class="meta-box"><strong>Informe Ejecutivo</strong><br>${esc(meta.title)}<br>Generado: ${esc(genDate)}<br>Página ${page}/${total}</div>
+    </div>
+    <div class="section-tag">${section}</div>`;
+  const ftr=(page,total)=>`<div class="page-footer"><span>Fuente: CONSOLIDADO · análisis agrupado por ID único · Dirección de Mantenimiento</span><span>Diseñado por DI Emiliano Villagra · Página ${page}/${total}</span></div>`;
+  const TOTAL=4;
 
   return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
 <title>DGIME · Informe Ejecutivo · ${esc(meta.title)}</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;font-size:11pt;color:#1E293B;background:#fff}
-/* ── ENCABEZADO FIJO EN CADA PÁGINA ── */
-.page-header{
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:3px solid #1A56DB;padding-bottom:10px;margin-bottom:14px;
-}
+.page-header{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #1A56DB;padding-bottom:10px;margin-bottom:14px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .brand{display:flex;align-items:center;gap:10px}
-.brand-mark{
-  width:44px;height:44px;border-radius:12px;
-  background:linear-gradient(135deg,#0D1B2A,#1A56DB);
-  color:#fff;font-size:16pt;font-weight:900;
-  display:flex;align-items:center;justify-content:center;
-  -webkit-print-color-adjust:exact;print-color-adjust:exact;
-}
+.brand-mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#0D1B2A,#1A56DB);color:#fff;font-size:16pt;font-weight:900;display:flex;align-items:center;justify-content:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .brand-name{font-size:18pt;font-weight:900;color:#0D1B2A;line-height:1}
 .brand-sub{font-size:8pt;color:#64748B;margin-top:3px}
 .meta-box{text-align:right;font-size:8pt;color:#475569;line-height:1.5}
 .meta-box strong{font-size:9pt;color:#1E293B}
-/* ── PIE DE PÁGINA ── */
-.page-footer{
-  border-top:1px solid #E2E8F0;padding-top:6px;margin-top:14px;
-  display:flex;justify-content:space-between;font-size:7.5pt;color:#64748B;
-}
-/* ── SECCIONES ── */
+.page-footer{border-top:1px solid #E2E8F0;padding-top:6px;margin-top:14px;display:flex;justify-content:space-between;font-size:7.5pt;color:#64748B}
 .section-tag{font-size:7.5pt;font-weight:700;color:#1A56DB;text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
 .page-title{margin:6px 0 12px}
 .page-title h1{font-size:20pt;color:#0D1B2A;letter-spacing:-.5px}
 .page-title p{font-size:9pt;color:#64748B;margin-top:4px;line-height:1.4}
 .pill{display:inline-block;padding:3px 9px;border-radius:999px;background:#EFF6FF;color:#1D4ED8;font-size:7.5pt;font-weight:700;border:1px solid #BFDBFE}
-/* ── KPI GRID ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 14px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .kpi{border:1px solid #DDE7F2;border-radius:10px;padding:10px 10px 8px;background:#F8FAFC;position:relative;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.kpi-bar{position:absolute;top:0;left:0;right:0;height:3px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.kpi-bar{position:absolute;top:0;left:0;right:0;height:3px}
 .kpi-label{font-size:7pt;text-transform:uppercase;color:#64748B;font-weight:700;letter-spacing:.4px;margin-top:4px}
-.kpi-value{font-size:18pt;font-weight:900;line-height:1.1;margin-top:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.kpi-value{font-size:18pt;font-weight:900;line-height:1.1;margin-top:4px}
 .kpi-note{font-size:7pt;color:#64748B;margin-top:4px;line-height:1.25}
-/* ── TARJETAS ── */
 .grid-2{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-top:10px}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
 .grid-2c{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
@@ -1725,154 +2004,116 @@ body{font-family:'Segoe UI',Arial,sans-serif;font-size:11pt;color:#1E293B;backgr
 .card p,.card li{font-size:8.5pt;line-height:1.55;color:#334155}
 .card ul{padding-left:16px;margin-top:5px}
 .card li{margin-bottom:4px}
-/* ── GRÁFICOS ── */
 .chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
 .chart-card{border:1px solid #DDE7F2;border-radius:10px;padding:10px;background:#fff}
 .chart-title{font-size:8pt;font-weight:700;color:#0D1B2A;margin-bottom:6px}
 .no-charts{border:1px dashed #CBD5E1;border-radius:10px;padding:20px;text-align:center;color:#64748B;font-size:9pt}
-/* ── TABLAS ── */
 table{width:100%;border-collapse:collapse;font-size:7.5pt;margin-top:6px}
 th{background:#0D1B2A;color:#fff;text-align:left;padding:5px 6px;font-size:7pt;text-transform:uppercase;letter-spacing:.2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 td{padding:4px 6px;border-bottom:1px solid #E2E8F0;color:#334155;vertical-align:top}
 tr:nth-child(even) td{background:#F8FAFC;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 td.n{text-align:right;font-variant-numeric:tabular-nums}
 td.pct{font-weight:700;color:#057A55}
-/* ── PÁGINAS ── */
-.report-page{
-  width:100%;min-height:270mm;
-  padding:16mm 16mm 18mm;
-  position:relative;background:#fff;
-}
+.report-page{width:100%;min-height:270mm;padding:16mm 16mm 18mm;position:relative;background:#fff}
 .report-page+.report-page{page-break-before:always}
-/* ── IMPRIMIR ── */
+/* ── RECOMENDACIONES PDF ── */
+.rec-grid-pdf{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.pdf-rec{border:1px solid #DDE7F2;border-radius:10px;padding:10px;background:#fff;position:relative;overflow:hidden}
+.pdf-rec-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.pdf-rec-ico{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13pt;flex-shrink:0}
+.pdf-rec-title{font-size:8pt;font-weight:700;color:#0D1B2A;line-height:1.25}
+.pdf-rec-badge{font-size:7pt;font-weight:700;border-radius:6px;padding:2px 6px;display:inline-block;margin-top:3px}
+.pdf-rec-body{font-size:8pt;line-height:1.5;color:#334155;margin-bottom:5px}
+.pdf-rec-body strong{color:#0D1B2A}
+.pdf-rec-accion{font-size:7.5pt;color:#475569;line-height:1.4;border-top:1px dashed #E2E8F0;padding-top:5px;margin-top:4px}
+.pdf-rec-accion strong{color:#1A56DB}
 @media print{
   @page{size:A4 portrait;margin:0}
   body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .report-page{padding:10mm 12mm 14mm;min-height:0;page-break-after:always}
   .report-page:last-child{page-break-after:auto}
   .no-break{page-break-inside:avoid;break-inside:avoid}
-  .kpi-grid,.grid-2,.grid-3,.grid-2c,.chart-grid{page-break-inside:avoid;break-inside:avoid}
+  .kpi-grid,.grid-2,.grid-3,.grid-2c,.chart-grid,.rec-grid-pdf{page-break-inside:avoid;break-inside:avoid}
 }
 </style></head><body>
 
-<!-- ══════════════════════════════════════════════════
-     PÁGINA 1 · SÍNTESIS EJECUTIVA
-══════════════════════════════════════════════════ -->
+<!-- ══ PÁG 1 · SÍNTESIS EJECUTIVA ══ -->
 <div class="report-page">
-  <div class="page-header">
-    <div class="brand">
-      <div class="brand-mark">DG</div>
-      <div>
-        <div class="brand-name">DGIME · SIPROSA</div>
-        <div class="brand-sub">Dirección General de Infraestructura, Mantenimiento y Equipamiento</div>
-      </div>
-    </div>
-    <div class="meta-box">
-      <strong>Informe Ejecutivo</strong><br>
-      ${esc(meta.title)}<br>
-      Generado: ${esc(genDate)}<br>
-      Página 1 / 3
-    </div>
-  </div>
-  <div class="section-tag">Síntesis ejecutiva</div>
+  ${hdr(1,TOTAL,'Síntesis ejecutiva')}
   <div class="page-title">
     <h1>${esc(meta.title)}</h1>
-    <p>${esc(meta.sub||'')}. Análisis agrupado por ID único · Filtros activos: <span class="pill">${esc(filters)}</span></p>
+    <p>${esc(meta.sub||'')}. Análisis agrupado por ID único · Filtros: <span class="pill">${esc(filters)}</span></p>
   </div>
-
-  <!-- KPIs -->
   <div class="kpi-grid">${kpiHTML}</div>
-
-  <!-- Lectura ejecutiva -->
   <div class="grid-2 no-break">
     <div class="card">
       <h2>📋 Lectura ejecutiva</h2>
-      <p>El tablero analiza <strong>${fmt(m.total)}</strong> tareas únicas agrupadas por ID, provenientes de <strong>${fmt(m.detailTotal)}</strong> filas de detalle. Esta metodología evita inflar indicadores cuando una misma tarea posee múltiples rubros, productos o subtareas.</p>
+      <p>Se analizan <strong>${fmt(m.total)}</strong> tareas únicas (${fmt(m.detailTotal)} filas). Metodología por ID agrupado.</p>
       <ul>
-        <li>Tipo dominante: <strong>${esc(m.topTipo[0]||'—')}</strong> con ${fmt(m.topTipo[1]||0)} registros.</li>
+        <li>Tipo dominante: <strong>${esc(m.topTipo[0]||'—')}</strong> (${fmt(m.topTipo[1]||0)} registros).</li>
         <li>Estado dominante: <strong>${esc(m.topEst[0]||'—')}</strong>; subestado: <strong>${esc(m.topSub[0]||'—')}</strong>.</li>
         <li>Efector con mayor volumen: <strong>${esc(m.topEf[0]||'—')}</strong> (${fmt(m.topEf[1]||0)} tareas).</li>
-        <li>Producto/ítem dominante: <strong>${esc(m.topProd[0]||m.topItem[0]||'—')}</strong>.</li>
-        <li>Tasa de resolución global: <strong>${m.compRate}%</strong> de las tareas únicas finalizadas.</li>
+        <li>Rubro principal: <strong>${esc(m.topRub[0]||'—')}</strong>. Producto: <strong>${esc(m.topProd[0]||'—')}</strong>.</li>
+        <li>Tasa de resolución global: <strong>${m.compRate}%</strong>.</li>
       </ul>
     </div>
     <div class="card">
-      <h2>🎯 Decisiones sugeridas</h2>
-      <ul>
-        <li>Priorizar urgencias pendientes segmentadas por efector y rubro para una respuesta focalizada.</li>
-        <li>Separar mantenimiento programable de pedidos de insumos para no mezclar naturaleza operativa con abastecimiento.</li>
-        <li>Revisar subrubros y productos dominantes para detectar concentración de demanda y planificar stock.</li>
-        <li>Escalar efectores con alta carga de pendientes a los equipos de supervisión de zona.</li>
-        <li>Usar el CSV exportado para auditoría granular y cruce con sistemas externos (Excel / Power BI).</li>
-      </ul>
+      <h2>🧩 Tipo de solicitud</h2>
+      <table><thead><tr><th>Tipo</th><th>Total</th><th>Final.</th><th>Pend.</th><th>% Res.</th></tr></thead>
+      <tbody>${(m.tipoStats||[]).filter(t=>t.total>0).map(t=>`<tr><td>${esc(t.tipo)}</td><td class="n">${fmt(t.total)}</td><td class="n">${fmt(t.finalizados)}</td><td class="n">${fmt(t.pendientes)}</td><td class="n pct">${t.resolucion}%</td></tr>`).join('')||'<tr><td colspan="5">Sin datos</td></tr>'}</tbody></table>
     </div>
   </div>
-
-  <div class="page-footer">
-    <span>Fuente: CONSOLIDADO · análisis agrupado por ID único · Dirección de Mantenimiento</span>
-    <span>Diseñado por DI Emiliano Villagra · Página 1/3</span>
-  </div>
+  ${ftr(1,TOTAL)}
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     PÁGINA 2 · GRÁFICOS
-══════════════════════════════════════════════════ -->
+<!-- ══ PÁG 2 · PARETO + RECOMENDACIONES ══ -->
 <div class="report-page">
-  <div class="page-header">
-    <div class="brand">
-      <div class="brand-mark">DG</div>
-      <div>
-        <div class="brand-name">DGIME · SIPROSA</div>
-        <div class="brand-sub">Dirección General de Infraestructura, Mantenimiento y Equipamiento</div>
-      </div>
-    </div>
-    <div class="meta-box">
-      <strong>Informe Ejecutivo</strong><br>
-      ${esc(meta.title)}<br>
-      Generado: ${esc(genDate)}<br>
-      Página 2 / 3
-    </div>
-  </div>
-  <div class="section-tag">Visualizaciones ejecutivas</div>
+  ${hdr(2,TOTAL,'Análisis de Pareto · Recomendaciones estratégicas')}
   <div class="page-title">
-    <h1>Gráficas y visualizaciones</h1>
-    <p>Imágenes exportadas directamente desde Chart.js · <span class="pill">${charts.length} gráficas disponibles</span></p>
+    <h1>Análisis de Pareto</h1>
+    <p>Categorías vitales que concentran el 80% de la carga operativa · Principio de Pareto (80/20)</p>
   </div>
-  <div class="chart-grid">${chartHTML}</div>
-  <div class="page-footer">
-    <span>Fuente: CONSOLIDADO · análisis agrupado por ID único · Dirección de Mantenimiento</span>
-    <span>Diseñado por DI Emiliano Villagra · Página 2/3</span>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════
-     PÁGINA 3 · TABLAS DE CONTROL
-══════════════════════════════════════════════════ -->
-<div class="report-page">
-  <div class="page-header">
-    <div class="brand">
-      <div class="brand-mark">DG</div>
-      <div>
-        <div class="brand-name">DGIME · SIPROSA</div>
-        <div class="brand-sub">Dirección General de Infraestructura, Mantenimiento y Equipamiento</div>
-      </div>
-    </div>
-    <div class="meta-box">
-      <strong>Informe Ejecutivo</strong><br>
-      ${esc(meta.title)}<br>
-      Generado: ${esc(genDate)}<br>
-      Página 3 / 3
-    </div>
-  </div>
-  <div class="section-tag">Tablas de control</div>
-  <div class="page-title">
-    <h1>Detalle analítico y ranking</h1>
-    <p>Tablas resumidas para lectura directiva y trazabilidad de los filtros aplicados.</p>
-  </div>
-
   <div class="grid-2c no-break">
     <div class="card">
-      <h2>Tipo de solicitud</h2>
+      <h2>📉 Pareto de Rubros <span style="font-weight:400;font-size:8pt;color:#64748B">— ${vfRub} rubro${vfRub>1?'s':''} = 80%</span></h2>
+      ${paretoImgs[0]?`<img src="${paretoImgs[0].src}" style="width:100%;max-height:160px;object-fit:contain;margin-bottom:8px">`:``}
+      ${paretoTable(rubPareto,'Rubro')}
+    </div>
+    <div class="card">
+      <h2>📉 Pareto de Efectores <span style="font-weight:400;font-size:8pt;color:#64748B">— ${vfEf} efector${vfEf>1?'es':''} = 80%</span></h2>
+      ${paretoImgs[1]?`<img src="${paretoImgs[1].src}" style="width:100%;max-height:160px;object-fit:contain;margin-bottom:8px">`:``}
+      ${paretoTable(efPareto,'Efector')}
+    </div>
+  </div>
+  <div class="page-title" style="margin-top:14px">
+    <h1>Recomendaciones estratégicas</h1>
+    <p>Decisiones directivas basadas en los datos reales del período filtrado · Semáforo de prioridad</p>
+  </div>
+  <div class="rec-grid-pdf no-break">${recHTML}</div>
+  ${ftr(2,TOTAL)}
+</div>
+
+<!-- ══ PÁG 3 · GRÁFICOS ══ -->
+<div class="report-page">
+  ${hdr(3,TOTAL,'Visualizaciones ejecutivas')}
+  <div class="page-title">
+    <h1>Gráficas y visualizaciones</h1>
+    <p>Imágenes exportadas desde Chart.js · <span class="pill">${charts.length} gráficas disponibles</span></p>
+  </div>
+  <div class="chart-grid">${chartHTML}</div>
+  ${ftr(3,TOTAL)}
+</div>
+
+<!-- ══ PÁG 4 · TABLAS DE CONTROL ══ -->
+<div class="report-page">
+  ${hdr(4,TOTAL,'Tablas de control')}
+  <div class="page-title">
+    <h1>Detalle analítico y ranking</h1>
+    <p>Tablas resumidas para lectura directiva y trazabilidad de filtros aplicados.</p>
+  </div>
+  <div class="grid-2c no-break">
+    <div class="card">
+      <h2>Tipo de solicitud · detalle</h2>
       <table><thead><tr><th>Tipo</th><th>Total</th><th>Final.</th><th>Pend.</th><th>% Res.</th><th>Rubro principal</th></tr></thead>
       <tbody>${tipoRows||'<tr><td colspan="6">Sin datos</td></tr>'}</tbody></table>
     </div>
@@ -1882,7 +2123,6 @@ td.pct{font-weight:700;color:#057A55}
       <tbody>${sampleRows||'<tr><td colspan="6">Sin datos</td></tr>'}</tbody></table>
     </div>
   </div>
-
   <div class="grid-3 no-break" style="margin-top:10px">
     <div class="card"><h2>Top Rubros</h2>
       <table><thead><tr><th>#</th><th>Rubro</th><th>Total</th></tr></thead>
@@ -1897,17 +2137,25 @@ td.pct{font-weight:700;color:#057A55}
       <tbody>${efRows||'<tr><td colspan="3">Sin datos</td></tr>'}</tbody></table>
     </div>
   </div>
-
-  <div class="page-footer">
-    <span>Fuente: CONSOLIDADO · análisis agrupado por ID único · Dirección de Mantenimiento</span>
-    <span>Diseñado por DI Emiliano Villagra · Página 3/3</span>
-  </div>
+  ${ftr(4,TOTAL)}
 </div>
 
 </body></html>`;
 }
+  const kpis=[
+    {label:'Tareas únicas',value:fmt(m.total),note:`${fmt(m.detailTotal)} filas · ${fmt(m.filasAgrupadas)} agrupadas`,color:'#1A56DB'},
+    {label:'Finalizadas',value:fmt(m.finalizados),note:`${m.compRate}% resolución global`,color:'#057A55'},
+    {label:'Pendientes activos',value:fmt(m.pendientes),note:`${m.pendRate}% del total filtrado`,color:'#B45309'},
+    {label:'Señales críticas',value:fmt(m.criticos),note:`${m.critRate}% con prioridad/demora`,color:'#C81E1E'},
+    {label:'Urgencias finalizadas',value:fmt(urg.finalizados),note:`${urg.resolucion||0}% de ${fmt(urg.total||0)} urgencias`,color:'#6C2BD9'},
+    {label:'Mantenimiento finaliz.',value:fmt(man.finalizados),note:`${man.resolucion||0}% de ${fmt(man.total||0)}`,color:'#0694A2'},
+    {label:'Insumos finalizados',value:fmt(ins.finalizados),note:`${ins.resolucion||0}% de ${fmt(ins.total||0)}`,color:'#1A56DB'},
+    {label:'Rubro dominante',value:truncStr(m.topRub[0]||'—',18),note:`${fmt(m.topRub[1]||0)} tareas únicas`,color:'#057A55'}
+  ];
+}
 function getReportChartImages(limit=6){
-  return Object.entries(S.charts||{}).slice(0,limit).map(([id,c])=>{
+  // Excluye los de Pareto para no duplicar en los gráficos generales
+  return Object.entries(S.charts||{}).filter(([id])=>!id.startsWith('pareto-')).slice(0,limit).map(([id,c])=>{
     let title='Gráfico ejecutivo';
     try{title=c?.config?.data?.datasets?.[0]?.label||document.getElementById(id)?.closest('.chart-card')?.querySelector('.chart-title')?.textContent||title;}catch(e){}
     let src='';
@@ -1915,17 +2163,15 @@ function getReportChartImages(limit=6){
     return src?{title,src}:null;
   }).filter(Boolean);
 }
-function tipoStatsTable(stats){
-  const rows=(stats||[]).filter(t=>t.total>0).map(t=>`<tr><td>${esc(t.tipo)}</td><td>${fmt(t.total)}</td><td>${fmt(t.finalizados)}</td><td>${fmt(t.pendientes)}</td><td>${t.resolucion}%</td><td>${esc(truncStr(t.topRubro?.[0]||'Sin dato',24))}</td></tr>`).join('');
-  return `<table class="pdf-table"><thead><tr><th>Tipo</th><th>Total</th><th>Final.</th><th>Pend.</th><th>% Res.</th><th>Rubro principal</th></tr></thead><tbody>${rows||'<tr><td colspan="6">Sin datos</td></tr>'}</tbody></table>`;
-}
-function taskSampleTable(tasks){
-  const rows=(tasks||[]).map(r=>`<tr><td>${esc(truncStr(r.__id,16))}</td><td>${r.__fecha?esc(r.__fecha.toLocaleDateString('es-AR')):'—'}</td><td>${esc(truncStr(r.__tipo,18))}</td><td>${esc(truncStr(r.__estado,18))}</td><td>${esc(truncStr(r.__rubro,20))}</td><td>${esc(truncStr(r.__efector,26))}</td></tr>`).join('');
-  return `<table class="pdf-table"><thead><tr><th>ID</th><th>Fecha</th><th>Tipo</th><th>Estado</th><th>Rubro</th><th>Efector</th></tr></thead><tbody>${rows||'<tr><td colspan="6">Sin datos</td></tr>'}</tbody></table>`;
-}
-function simpleRankTable(entries){
-  const rows=(entries||[]).map((e,i)=>`<tr><td>${i+1}</td><td>${esc(truncStr(e[0],32))}</td><td>${fmt(e[1])}</td></tr>`).join('');
-  return `<table class="pdf-table"><thead><tr><th>#</th><th>Dimensión</th><th>Total</th></tr></thead><tbody>${rows||'<tr><td colspan="3">Sin datos</td></tr>'}</tbody></table>`;
+function getReportChartImages_ids(ids){
+  return ids.map(id=>{
+    const c=S.charts[id];if(!c)return null;
+    let title=id;
+    try{title=document.getElementById(id)?.closest('.chart-card')?.querySelector('.chart-title')?.textContent||id;}catch(e){}
+    let src='';
+    try{src=c.toBase64Image('image/png',1);}catch(e){src='';}
+    return src?{title,src}:null;
+  }).filter(Boolean);
 }
 function getFilterSummary(){
   const pairs=[['Desde',document.getElementById('g-from')?.value],['Hasta',document.getElementById('g-to')?.value],['Tipo',document.getElementById('g-tipo')?.value],['Estado',document.getElementById('g-estado')?.value],['Subestado',document.getElementById('g-subestado')?.value],['Rubro',document.getElementById('g-rubro')?.value],['Efector',document.getElementById('g-efector')?.value],['Búsqueda',document.getElementById('g-search')?.value]];

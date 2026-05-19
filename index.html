@@ -1634,84 +1634,277 @@ function exportCSV(){
 function exportPDF(){
   const rows=getFilteredRows();
   if(!rows.length){toast('⚠ No hay datos para armar el informe',3200);return;}
-  toast('⏳ Armando informe ejecutivo profesional...');
+  toast('⏳ Abriendo informe ejecutivo para imprimir/guardar como PDF...',4000);
   const m=calcMetrics(rows,S.activeTab);
-  const report=document.createElement('div');
-  report.className='pdf-report-shell';
-  report.innerHTML=buildExecutiveReportHTML(rows,m);
-  document.body.appendChild(report);
-  const tab=TAB_META[S.activeTab]?.title||S.activeTab;
-  const opt={
-    margin:0,
-    filename:`DGIME_Informe_Ejecutivo_${slug(tab)}_${dateStamp()}.pdf`,
-    image:{type:'jpeg',quality:.98},
-    html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:'#ffffff',windowWidth:1122,windowHeight:794},
-    jsPDF:{unit:'px',format:[1122,794],orientation:'landscape',compress:true},
-    pagebreak:{mode:['css','legacy'],before:'.pdf-page-break'}
-  };
-  html2pdf().set(opt).from(report).save().then(()=>{
-    report.remove();
-    toast('✓ Informe ejecutivo PDF exportado');
-  }).catch(err=>{
-    console.error(err);
-    report.remove();
-    toast('⚠ No se pudo exportar el PDF. Revisá la consola.',5000);
-  });
+  const charts=getReportChartImages(6);
+  const html=buildPrintReportHTML(rows,m,charts);
+  const win=window.open('','_blank','width=1200,height=900,menubar=yes,toolbar=yes,scrollbars=yes');
+  if(!win){toast('⚠ El navegador bloqueó la ventana emergente. Permitila y reintentá.',5000);return;}
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  // Disparar print automáticamente después de que carguen las imágenes
+  win.onload=()=>{setTimeout(()=>{win.print();},400);};
 }
-function buildExecutiveReportHTML(rows,m){
+function buildPrintReportHTML(rows,m,charts){
   const meta=TAB_META[m.tab]||TAB_META.general;
   const filters=getFilterSummary();
-  const charts=getReportChartImages(6);
   const genDate=new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
   const topRub=topEntries(m.rubros,6),topProd=topEntries(m.productos,6),topEf=topEntries(m.efectores,6);
-  const sample=m.tasks.slice(0,14);
+  const sample=m.tasks.slice(0,16);
   const urg=m.tipoStats.find(x=>x.tipo==='Urgencia')||{total:0,finalizados:0,resolucion:0};
   const man=m.tipoStats.find(x=>x.tipo==='Mantenimiento')||{total:0,finalizados:0,resolucion:0};
   const ins=m.tipoStats.find(x=>x.tipo==='Pedidos de insumos')||{total:0,finalizados:0,resolucion:0};
-  const pageHeader=(page,total,section)=>`<div class="pdf-header"><div class="pdf-brand"><div class="pdf-mark">DG</div><div><div class="pdf-title-main">DGIME · SIPROSA</div><div class="pdf-title-sub">Dirección General de Infraestructura, Mantenimiento y Equipamiento</div></div></div><div class="pdf-meta-box"><strong>Informe Ejecutivo</strong><br>${esc(meta.title)}<br>Generado: ${esc(genDate)}<br>Página ${page}/${total}</div></div><div class="pdf-section-tag">${section}</div>`;
-  const pageFooter=(page,total)=>`<div class="pdf-footer"><span>Fuente: pestaña CONSOLIDADO · análisis agrupado por ID único</span><span>Diseñado por DI Emiliano Villagra · Página ${page}/${total}</span></div>`;
   const kpis=[
-    ['Tareas únicas',fmt(m.total),`${fmt(m.detailTotal)} filas de detalle · ${fmt(m.filasAgrupadas)} filas agrupadas`],
-    ['Finalizadas',fmt(m.finalizados),`${m.compRate}% de resolución global`],
-    ['Pendientes activos',fmt(m.pendientes),`${m.pendRate}% del total filtrado`],
-    ['Señales críticas',fmt(m.criticos),`${m.critRate}% con prioridad/demora/urgencia`],
-    ['Urgencias finalizadas',fmt(urg.finalizados),`${urg.resolucion||0}% de ${fmt(urg.total||0)} urgencias`],
-    ['Mantenimiento finalizado',fmt(man.finalizados),`${man.resolucion||0}% de ${fmt(man.total||0)} mantenimientos`],
-    ['Insumos finalizados',fmt(ins.finalizados),`${ins.resolucion||0}% de ${fmt(ins.total||0)} pedidos`],
-    ['Rubro dominante',truncStr(m.topRub[0],24),`${fmt(m.topRub[1])} tareas únicas asociadas`]
+    {label:'Tareas únicas',value:fmt(m.total),note:`${fmt(m.detailTotal)} filas · ${fmt(m.filasAgrupadas)} agrupadas`,color:'#1A56DB'},
+    {label:'Finalizadas',value:fmt(m.finalizados),note:`${m.compRate}% resolución global`,color:'#057A55'},
+    {label:'Pendientes activos',value:fmt(m.pendientes),note:`${m.pendRate}% del total filtrado`,color:'#B45309'},
+    {label:'Señales críticas',value:fmt(m.criticos),note:`${m.critRate}% con prioridad/demora`,color:'#C81E1E'},
+    {label:'Urgencias finalizadas',value:fmt(urg.finalizados),note:`${urg.resolucion||0}% de ${fmt(urg.total||0)} urgencias`,color:'#6C2BD9'},
+    {label:'Mantenimiento finaliz.',value:fmt(man.finalizados),note:`${man.resolucion||0}% de ${fmt(man.total||0)}`,color:'#0694A2'},
+    {label:'Insumos finalizados',value:fmt(ins.finalizados),note:`${ins.resolucion||0}% de ${fmt(ins.total||0)}`,color:'#1A56DB'},
+    {label:'Rubro dominante',value:truncStr(m.topRub[0]||'—',18),note:`${fmt(m.topRub[1]||0)} tareas únicas`,color:'#057A55'}
   ];
-  const chartHTML=charts.length?charts.map(c=>`<div class="pdf-chart-card"><div class="pdf-chart-title">${esc(c.title)}</div><img src="${c.src}" alt="${esc(c.title)}"></div>`).join(''):`<div class="pdf-card"><h2>Sin gráficos disponibles</h2><p>Aplicá filtros o refrescá el consolidado antes de exportar.</p></div>`;
-  return `
-  <div class="pdf-report-page">
-    ${pageHeader(1,3,'Síntesis ejecutiva')}
-    <div class="pdf-page-title"><div><h1>${esc(meta.title)}</h1><p>${esc(meta.sub)}. El informe resume el universo filtrado como gestión por ID único y conserva el detalle técnico por rubro, subrubro, producto e ítem.</p></div><span class="pdf-pill">${esc(filters)}</span></div>
-    <div class="pdf-kpi-grid">${kpis.map(k=>`<div class="pdf-kpi"><div class="pdf-kpi-label">${esc(k[0])}</div><div class="pdf-kpi-value">${esc(k[1])}</div><div class="pdf-kpi-note">${esc(k[2])}</div></div>`).join('')}</div>
-    <div class="pdf-grid-2">
-      <div class="pdf-card"><h2>Lectura ejecutiva</h2><p>El tablero analiza <strong>${fmt(m.total)}</strong> tareas únicas agrupadas por ID, provenientes de <strong>${fmt(m.detailTotal)}</strong> filas de detalle. Esta diferencia evita inflar indicadores cuando una misma tarea posee múltiples rubros, productos o subtareas.</p><ul><li>Tipo dominante: <strong>${esc(m.topTipo[0])}</strong> (${fmt(m.topTipo[1])}).</li><li>Estado dominante: <strong>${esc(m.topEst[0])}</strong>; subestado dominante: <strong>${esc(m.topSub[0])}</strong>.</li><li>Efector con mayor volumen: <strong>${esc(m.topEf[0])}</strong> (${fmt(m.topEf[1])}).</li><li>Producto / ítem dominante: <strong>${esc(m.topProd[0]||m.topItem[0])}</strong>.</li></ul></div>
-      <div class="pdf-card"><h2>Decisiones sugeridas</h2><ul><li>Priorizar primero urgencias pendientes por efector y rubro.</li><li>Separar mantenimiento programable de pedidos de insumos para no mezclar naturaleza operativa con abastecimiento.</li><li>Revisar subrubros y productos dominantes en Producción para detectar concentración de demanda.</li><li>Usar el CSV exportado para auditoría granular, conciliación y cruce en Excel / Power BI.</li></ul></div>
+  const kpiHTML=kpis.map(k=>`<div class="kpi"><div class="kpi-bar" style="background:${k.color}"></div><div class="kpi-label">${esc(k.label)}</div><div class="kpi-value" style="color:${k.color}">${esc(k.value)}</div><div class="kpi-note">${esc(k.note)}</div></div>`).join('');
+  const chartHTML=charts.length
+    ?charts.map(c=>`<div class="chart-card"><div class="chart-title">${esc(c.title)}</div><img src="${c.src}" alt="${esc(c.title)}" style="width:100%;max-height:200px;object-fit:contain;display:block;background:#fff"></div>`).join('')
+    :`<div class="no-charts"><p>⚠ Sin gráficos disponibles. Asegurate de tener datos cargados y visibles antes de exportar.</p></div>`;
+  // Tablas
+  const tipoRows=(m.tipoStats||[]).filter(t=>t.total>0).map(t=>`<tr><td>${esc(t.tipo)}</td><td class="n">${fmt(t.total)}</td><td class="n">${fmt(t.finalizados)}</td><td class="n">${fmt(t.pendientes)}</td><td class="n pct">${t.resolucion}%</td><td>${esc(truncStr(t.topRubro?.[0]||'—',22))}</td></tr>`).join('');
+  const sampleRows=(sample||[]).map(r=>`<tr><td>${esc(truncStr(r.__id,14))}</td><td>${r.__fecha?esc(r.__fecha.toLocaleDateString('es-AR')):'—'}</td><td>${esc(truncStr(r.__tipo,16))}</td><td>${esc(truncStr(r.__estado,16))}</td><td>${esc(truncStr(r.__rubro,18))}</td><td>${esc(truncStr(r.__efector,22))}</td></tr>`).join('');
+  const rubRows=topRub.map((e,i)=>`<tr><td class="n">${i+1}</td><td>${esc(truncStr(e[0],30))}</td><td class="n">${fmt(e[1])}</td></tr>`).join('');
+  const prodRows=topProd.map((e,i)=>`<tr><td class="n">${i+1}</td><td>${esc(truncStr(e[0],30))}</td><td class="n">${fmt(e[1])}</td></tr>`).join('');
+  const efRows=topEf.map((e,i)=>`<tr><td class="n">${i+1}</td><td>${esc(truncStr(e[0],30))}</td><td class="n">${fmt(e[1])}</td></tr>`).join('');
+
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<title>DGIME · Informe Ejecutivo · ${esc(meta.title)}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:11pt;color:#1E293B;background:#fff}
+/* ── ENCABEZADO FIJO EN CADA PÁGINA ── */
+.page-header{
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:3px solid #1A56DB;padding-bottom:10px;margin-bottom:14px;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,#0D1B2A,#1A56DB);
+  color:#fff;font-size:16pt;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+}
+.brand-name{font-size:18pt;font-weight:900;color:#0D1B2A;line-height:1}
+.brand-sub{font-size:8pt;color:#64748B;margin-top:3px}
+.meta-box{text-align:right;font-size:8pt;color:#475569;line-height:1.5}
+.meta-box strong{font-size:9pt;color:#1E293B}
+/* ── PIE DE PÁGINA ── */
+.page-footer{
+  border-top:1px solid #E2E8F0;padding-top:6px;margin-top:14px;
+  display:flex;justify-content:space-between;font-size:7.5pt;color:#64748B;
+}
+/* ── SECCIONES ── */
+.section-tag{font-size:7.5pt;font-weight:700;color:#1A56DB;text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px}
+.page-title{margin:6px 0 12px}
+.page-title h1{font-size:20pt;color:#0D1B2A;letter-spacing:-.5px}
+.page-title p{font-size:9pt;color:#64748B;margin-top:4px;line-height:1.4}
+.pill{display:inline-block;padding:3px 9px;border-radius:999px;background:#EFF6FF;color:#1D4ED8;font-size:7.5pt;font-weight:700;border:1px solid #BFDBFE}
+/* ── KPI GRID ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 14px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.kpi{border:1px solid #DDE7F2;border-radius:10px;padding:10px 10px 8px;background:#F8FAFC;position:relative;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.kpi-bar{position:absolute;top:0;left:0;right:0;height:3px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.kpi-label{font-size:7pt;text-transform:uppercase;color:#64748B;font-weight:700;letter-spacing:.4px;margin-top:4px}
+.kpi-value{font-size:18pt;font-weight:900;line-height:1.1;margin-top:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.kpi-note{font-size:7pt;color:#64748B;margin-top:4px;line-height:1.25}
+/* ── TARJETAS ── */
+.grid-2{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-top:10px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.grid-2c{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.card{border:1px solid #DDE7F2;border-radius:10px;padding:12px;background:#fff}
+.card h2{font-size:10pt;color:#0D1B2A;font-weight:700;margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid #EEF2F7}
+.card p,.card li{font-size:8.5pt;line-height:1.55;color:#334155}
+.card ul{padding-left:16px;margin-top:5px}
+.card li{margin-bottom:4px}
+/* ── GRÁFICOS ── */
+.chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.chart-card{border:1px solid #DDE7F2;border-radius:10px;padding:10px;background:#fff}
+.chart-title{font-size:8pt;font-weight:700;color:#0D1B2A;margin-bottom:6px}
+.no-charts{border:1px dashed #CBD5E1;border-radius:10px;padding:20px;text-align:center;color:#64748B;font-size:9pt}
+/* ── TABLAS ── */
+table{width:100%;border-collapse:collapse;font-size:7.5pt;margin-top:6px}
+th{background:#0D1B2A;color:#fff;text-align:left;padding:5px 6px;font-size:7pt;text-transform:uppercase;letter-spacing:.2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+td{padding:4px 6px;border-bottom:1px solid #E2E8F0;color:#334155;vertical-align:top}
+tr:nth-child(even) td{background:#F8FAFC;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+td.pct{font-weight:700;color:#057A55}
+/* ── PÁGINAS ── */
+.report-page{
+  width:100%;min-height:270mm;
+  padding:16mm 16mm 18mm;
+  position:relative;background:#fff;
+}
+.report-page+.report-page{page-break-before:always}
+/* ── IMPRIMIR ── */
+@media print{
+  @page{size:A4 portrait;margin:0}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .report-page{padding:10mm 12mm 14mm;min-height:0;page-break-after:always}
+  .report-page:last-child{page-break-after:auto}
+  .no-break{page-break-inside:avoid;break-inside:avoid}
+  .kpi-grid,.grid-2,.grid-3,.grid-2c,.chart-grid{page-break-inside:avoid;break-inside:avoid}
+}
+</style></head><body>
+
+<!-- ══════════════════════════════════════════════════
+     PÁGINA 1 · SÍNTESIS EJECUTIVA
+══════════════════════════════════════════════════ -->
+<div class="report-page">
+  <div class="page-header">
+    <div class="brand">
+      <div class="brand-mark">DG</div>
+      <div>
+        <div class="brand-name">DGIME · SIPROSA</div>
+        <div class="brand-sub">Dirección General de Infraestructura, Mantenimiento y Equipamiento</div>
+      </div>
     </div>
-    ${pageFooter(1,3)}
+    <div class="meta-box">
+      <strong>Informe Ejecutivo</strong><br>
+      ${esc(meta.title)}<br>
+      Generado: ${esc(genDate)}<br>
+      Página 1 / 3
+    </div>
   </div>
-  <div class="pdf-report-page pdf-page-break">
-    ${pageHeader(2,3,'Visualizaciones ejecutivas')}
-    <div class="pdf-page-title"><div><h1>Gráficas tipo Excel / Power BI</h1><p>Las gráficas se exportan como imágenes limpias desde Chart.js para evitar capturas deformadas del dashboard.</p></div><span class="pdf-pill">${fmt(charts.length)} gráficas principales</span></div>
-    <div class="pdf-chart-grid">${chartHTML}</div>
-    ${pageFooter(2,3)}
+  <div class="section-tag">Síntesis ejecutiva</div>
+  <div class="page-title">
+    <h1>${esc(meta.title)}</h1>
+    <p>${esc(meta.sub||'')}. Análisis agrupado por ID único · Filtros activos: <span class="pill">${esc(filters)}</span></p>
   </div>
-  <div class="pdf-report-page pdf-page-break">
-    ${pageHeader(3,3,'Tablas de control')}
-    <div class="pdf-page-title"><div><h1>Detalle analítico y ranking</h1><p>Tablas resumidas para lectura directiva y trazabilidad de los filtros aplicados.</p></div><span class="pdf-pill">Base filtrada</span></div>
-    <div class="pdf-grid-2">
-      <div class="pdf-card"><h2>Tipo de solicitud · AK</h2>${tipoStatsTable(m.tipoStats)}</div>
-      <div class="pdf-card"><h2>Muestra de tareas agrupadas por ID</h2>${taskSampleTable(sample)}</div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">${kpiHTML}</div>
+
+  <!-- Lectura ejecutiva -->
+  <div class="grid-2 no-break">
+    <div class="card">
+      <h2>📋 Lectura ejecutiva</h2>
+      <p>El tablero analiza <strong>${fmt(m.total)}</strong> tareas únicas agrupadas por ID, provenientes de <strong>${fmt(m.detailTotal)}</strong> filas de detalle. Esta metodología evita inflar indicadores cuando una misma tarea posee múltiples rubros, productos o subtareas.</p>
+      <ul>
+        <li>Tipo dominante: <strong>${esc(m.topTipo[0]||'—')}</strong> con ${fmt(m.topTipo[1]||0)} registros.</li>
+        <li>Estado dominante: <strong>${esc(m.topEst[0]||'—')}</strong>; subestado: <strong>${esc(m.topSub[0]||'—')}</strong>.</li>
+        <li>Efector con mayor volumen: <strong>${esc(m.topEf[0]||'—')}</strong> (${fmt(m.topEf[1]||0)} tareas).</li>
+        <li>Producto/ítem dominante: <strong>${esc(m.topProd[0]||m.topItem[0]||'—')}</strong>.</li>
+        <li>Tasa de resolución global: <strong>${m.compRate}%</strong> de las tareas únicas finalizadas.</li>
+      </ul>
     </div>
-    <div class="pdf-top-list">
-      <div class="pdf-card"><h2>Top rubros</h2>${simpleRankTable(topRub)}</div>
-      <div class="pdf-card"><h2>Top productos</h2>${simpleRankTable(topProd)}</div>
-      <div class="pdf-card"><h2>Top efectores</h2>${simpleRankTable(topEf)}</div>
+    <div class="card">
+      <h2>🎯 Decisiones sugeridas</h2>
+      <ul>
+        <li>Priorizar urgencias pendientes segmentadas por efector y rubro para una respuesta focalizada.</li>
+        <li>Separar mantenimiento programable de pedidos de insumos para no mezclar naturaleza operativa con abastecimiento.</li>
+        <li>Revisar subrubros y productos dominantes para detectar concentración de demanda y planificar stock.</li>
+        <li>Escalar efectores con alta carga de pendientes a los equipos de supervisión de zona.</li>
+        <li>Usar el CSV exportado para auditoría granular y cruce con sistemas externos (Excel / Power BI).</li>
+      </ul>
     </div>
-    ${pageFooter(3,3)}
-  </div>`;
+  </div>
+
+  <div class="page-footer">
+    <span>Fuente: CONSOLIDADO · análisis agrupado por ID único · Dirección de Mantenimiento</span>
+    <span>Diseñado por DI Emiliano Villagra · Página 1/3</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PÁGINA 2 · GRÁFICOS
+══════════════════════════════════════════════════ -->
+<div class="report-page">
+  <div class="page-header">
+    <div class="brand">
+      <div class="brand-mark">DG</div>
+      <div>
+        <div class="brand-name">DGIME · SIPROSA</div>
+        <div class="brand-sub">Dirección General de Infraestructura, Mantenimiento y Equipamiento</div>
+      </div>
+    </div>
+    <div class="meta-box">
+      <strong>Informe Ejecutivo</strong><br>
+      ${esc(meta.title)}<br>
+      Generado: ${esc(genDate)}<br>
+      Página 2 / 3
+    </div>
+  </div>
+  <div class="section-tag">Visualizaciones ejecutivas</div>
+  <div class="page-title">
+    <h1>Gráficas y visualizaciones</h1>
+    <p>Imágenes exportadas directamente desde Chart.js · <span class="pill">${charts.length} gráficas disponibles</span></p>
+  </div>
+  <div class="chart-grid">${chartHTML}</div>
+  <div class="page-footer">
+    <span>Fuente: CONSOLIDADO · análisis agrupado por ID único · Dirección de Mantenimiento</span>
+    <span>Diseñado por DI Emiliano Villagra · Página 2/3</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PÁGINA 3 · TABLAS DE CONTROL
+══════════════════════════════════════════════════ -->
+<div class="report-page">
+  <div class="page-header">
+    <div class="brand">
+      <div class="brand-mark">DG</div>
+      <div>
+        <div class="brand-name">DGIME · SIPROSA</div>
+        <div class="brand-sub">Dirección General de Infraestructura, Mantenimiento y Equipamiento</div>
+      </div>
+    </div>
+    <div class="meta-box">
+      <strong>Informe Ejecutivo</strong><br>
+      ${esc(meta.title)}<br>
+      Generado: ${esc(genDate)}<br>
+      Página 3 / 3
+    </div>
+  </div>
+  <div class="section-tag">Tablas de control</div>
+  <div class="page-title">
+    <h1>Detalle analítico y ranking</h1>
+    <p>Tablas resumidas para lectura directiva y trazabilidad de los filtros aplicados.</p>
+  </div>
+
+  <div class="grid-2c no-break">
+    <div class="card">
+      <h2>Tipo de solicitud</h2>
+      <table><thead><tr><th>Tipo</th><th>Total</th><th>Final.</th><th>Pend.</th><th>% Res.</th><th>Rubro principal</th></tr></thead>
+      <tbody>${tipoRows||'<tr><td colspan="6">Sin datos</td></tr>'}</tbody></table>
+    </div>
+    <div class="card">
+      <h2>Muestra de tareas (${sample.length} registros)</h2>
+      <table><thead><tr><th>ID</th><th>Fecha</th><th>Tipo</th><th>Estado</th><th>Rubro</th><th>Efector</th></tr></thead>
+      <tbody>${sampleRows||'<tr><td colspan="6">Sin datos</td></tr>'}</tbody></table>
+    </div>
+  </div>
+
+  <div class="grid-3 no-break" style="margin-top:10px">
+    <div class="card"><h2>Top Rubros</h2>
+      <table><thead><tr><th>#</th><th>Rubro</th><th>Total</th></tr></thead>
+      <tbody>${rubRows||'<tr><td colspan="3">Sin datos</td></tr>'}</tbody></table>
+    </div>
+    <div class="card"><h2>Top Productos</h2>
+      <table><thead><tr><th>#</th><th>Producto</th><th>Total</th></tr></thead>
+      <tbody>${prodRows||'<tr><td colspan="3">Sin datos</td></tr>'}</tbody></table>
+    </div>
+    <div class="card"><h2>Top Efectores</h2>
+      <table><thead><tr><th>#</th><th>Efector</th><th>Total</th></tr></thead>
+      <tbody>${efRows||'<tr><td colspan="3">Sin datos</td></tr>'}</tbody></table>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>Fuente: CONSOLIDADO · análisis agrupado por ID único · Dirección de Mantenimiento</span>
+    <span>Diseñado por DI Emiliano Villagra · Página 3/3</span>
+  </div>
+</div>
+
+</body></html>`;
 }
 function getReportChartImages(limit=6){
   return Object.entries(S.charts||{}).slice(0,limit).map(([id,c])=>{

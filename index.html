@@ -1576,7 +1576,7 @@ function uniqueVals(rows,key){return [...new Set(rows.map(r=>String(r[key]||'').
 function groupTipoStats(rows){const tasks=buildTasks(rows);return sortTipo([...new Set(tasks.map(r=>r.__tipo||'Sin tipo'))]).map(tipo=>{const ts=tasks.filter(r=>r.__tipo===tipo);const detail=rows.filter(r=>r.__tipo===tipo);const fin=ts.filter(r=>isFin(r.__estado)).length;const pen=ts.filter(r=>isPend(r.__estado)).length;const crit=ts.filter(r=>r.__critico||isCrit(r)).length;return{tipo,total:ts.length,filas:detail.length,finalizados:fin,pendientes:pen,criticos:crit,resolucion:pct(fin,ts.length),topRubro:topEntry(countUniqueBy(detail,'__rubro')),topEstado:topEntry(countBy(ts,'__estado'))};});}
 function calcMetrics(rows,tab){const tasks=buildTasks(rows);const total=tasks.length;const detailTotal=rows.length;const estados=countBy(tasks,'__estado'),subestados=countBy(tasks,'__subestado'),tipos=countBy(tasks,'__tipo'),sectores=countBy(tasks,'__sector'),efectores=countBy(tasks,'__efector'),derivs=countBy(tasks,'__derivar');const rubros=countUniqueBy(rows,'__rubro'),subrubros=countUniqueBy(rows,'__subrubro'),productos=countUniqueBy(rows,'__producto'),items=countUniqueBy(rows,'__item');const finalizados=tasks.filter(r=>isFin(r.__estado)).length;const pendientes=tasks.filter(r=>isPend(r.__estado)).length;const criticos=tasks.filter(r=>r.__critico||isCrit(r)).length;const conFecha=tasks.filter(r=>r.__fecha).length;const conExp=tasks.filter(r=>String(r.__expediente||'').trim()).length;const conSub=rows.filter(r=>r.__subestado&&r.__subestado!=='Sin subestado').length;const conItem=rows.filter(r=>r.__item&&r.__item!=='Sin descripción').length;const tipoStats=groupTipoStats(rows);return{tab,rows,tasks,total,detailTotal,filasAgrupadas:Math.max(0,detailTotal-total),estados,subestados,tipos,rubros,subrubros,productos,items,sectores,efectores,derivs,tipoStats,finalizados,pendientes,criticos,conFecha,sinFecha:total-conFecha,conExp,conSub,conItem,topTipo:topEntry(tipos),topEst:topEntry(estados),topSub:topEntry(subestados),topRub:topEntry(rubros),topSubrub:topEntry(subrubros),topProd:topEntry(productos),topItem:topEntry(items),topSec:topEntry(sectores),topEf:topEntry(efectores),compRate:pct(finalizados,total),pendRate:pct(pendientes,total),critRate:pct(criticos,total),dateRate:pct(conFecha,total),expRate:pct(conExp,total),subRate:pct(conSub,detailTotal),itemRate:pct(conItem,detailTotal)};}
 
-function renderModule(){showLoading(true);const rows=getFilteredRows();const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderTipoCards(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderPareto(rows,m);renderRecomendaciones(m);renderCharts(rows,m);renderTable(rows,m);showLoading(false);setStatus(`${fmt(m.total)} tareas únicas · ${fmt(m.detailTotal)} filas detalle · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
+function renderModule(){showLoading(true);const rows=getFilteredRows();const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderTipoCards(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderRecomendaciones(m);renderCharts(rows,m);renderPareto(rows,m);renderTable(rows,m);showLoading(false);setStatus(`${fmt(m.total)} tareas únicas · ${fmt(m.detailTotal)} filas detalle · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
 
 /* ─── ANÁLISIS DE PARETO ─────────────────────────────── */
 function calcParetoData(obj, limit=15){
@@ -1591,24 +1591,34 @@ function paretoVitalFew(data){
   return count;
 }
 function renderPareto(rows,m){
-  // Destruir charts de Pareto anteriores
-  ['pareto-rub','pareto-ef'].forEach(id=>{if(S.charts[id]){try{S.charts[id].destroy();}catch(e){}delete S.charts[id];}});
+  // Destruir SOLO los charts de Pareto anteriores
+  ['pareto-rub','pareto-ef'].forEach(id=>{
+    if(S.charts[id]){try{S.charts[id].destroy();}catch(e){}delete S.charts[id];}
+  });
   const cont=document.getElementById('pareto-container');
-  cont.innerHTML=`
-    <div class="chart-card">
-      <div class="chart-title">Pareto de Rubros · concentración de carga</div>
-      <div class="chart-subtitle">Rubros que acumulan el 80% de las tareas únicas · línea = % acumulado</div>
-      <div class="chart-box chart-box-lg"><canvas id="pareto-rub"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Pareto de Efectores · concentración por establecimiento</div>
-      <div class="chart-subtitle">Efectores que acumulan el 80% de las tareas · línea = % acumulado</div>
-      <div class="chart-box chart-box-lg"><canvas id="pareto-ef"></canvas></div>
-    </div>`;
   const rubData=calcParetoData(m.rubros,14);
   const efData=calcParetoData(m.efectores,14);
-  if(rubData.length) S.charts['pareto-rub']=mkParetoChart('pareto-rub',rubData,'Rubros');
-  if(efData.length)  S.charts['pareto-ef']=mkParetoChart('pareto-ef',efData,'Efectores');
+  // Si no hay datos suficientes, mostrar aviso
+  if(!rubData.length&&!efData.length){
+    cont.innerHTML=`<div class="chart-card" style="grid-column:1/-1"><div class="empty-state"><div class="es-icon">📉</div><h3>Sin datos para Pareto</h3><p>Cargá el consolidado y aplicá filtros para ver el análisis.</p></div></div>`;
+    return;
+  }
+  cont.innerHTML=`
+    ${rubData.length?`<div class="chart-card">
+      <div class="chart-title">Pareto de Rubros · concentración de carga</div>
+      <div class="chart-subtitle">Rubros que acumulan el 80% de las tareas únicas · barras azul = dentro del 80% · línea = % acumulado</div>
+      <div class="chart-box chart-box-lg"><canvas id="pareto-rub"></canvas></div>
+    </div>`:''}
+    ${efData.length?`<div class="chart-card">
+      <div class="chart-title">Pareto de Efectores · concentración por establecimiento</div>
+      <div class="chart-subtitle">Efectores que acumulan el 80% de las tareas · barras azul = dentro del 80% · línea = % acumulado</div>
+      <div class="chart-box chart-box-lg"><canvas id="pareto-ef"></canvas></div>
+    </div>`:''}`;
+  // Usar requestAnimationFrame para asegurar que el DOM renderizó los canvas
+  requestAnimationFrame(()=>{
+    if(rubData.length){const ctx=document.getElementById('pareto-rub');if(ctx)S.charts['pareto-rub']=mkParetoChart('pareto-rub',rubData,'Rubros');}
+    if(efData.length){const ctx=document.getElementById('pareto-ef');if(ctx)S.charts['pareto-ef']=mkParetoChart('pareto-ef',efData,'Efectores');}
+  });
 }
 function mkParetoChart(canvasId, data, dimensionLabel){
   const ctx=document.getElementById(canvasId);if(!ctx)return null;
@@ -1819,7 +1829,7 @@ function renderVJA(m){const focoTipo=esc(m.topTipo[0]),focoRubro=esc(m.topRub[0]
 function renderFODA(m){const items={F:[`Base consolidada única con ${fmt(m.total)} tareas agrupadas por ID.`,`Separación de lectura general por ID y lectura técnica por Rubro/Subrubro/Producto.`,`Filtro por Efector incorporado para ver realidades particulares.`],O:[`Usar los cruces Tipo + Efector + Rubro para planificar prioridades.`,`En Producción, detectar productos y subrubros repetidos para ordenar compras, stock o fabricación.`,`Evitar el sobredimensionamiento de barras que antes contaban filas repetidas.`],D:[`Hay ${fmt(m.sinFecha)} tareas sin fecha válida para análisis temporal.`,`Si el ID no está normalizado en la planilla, algunas tareas podrían quedar separadas.`,`Producto y subrubro dependen de que las columnas estén cargadas de forma consistente.`],A:[`${fmt(m.pendientes)} tareas pendientes pueden ocultar varias filas internas de trabajo.`,`Si se vuelve a contar por filas, los gráficos de barras pueden inflarse.`,`Urgencias con ID repetido deben consolidarse para no simular más casos de los reales.`]};const icons={F:'💪',O:'🌟',D:'⚠️',A:'🔴'},labels={F:'Fortalezas',O:'Oportunidades',D:'Debilidades',A:'Amenazas'};document.getElementById('foda-container').innerHTML=Object.entries(items).map(([k,list])=>`<div class="foda-box"><div class="foda-lbl foda-${k}">${icons[k]} ${labels[k]}</div><ul>${list.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('');}
 function renderInsights(m){const stats=m.tipoStats.filter(t=>t.total>0);const topPendingTipo=[...stats].sort((a,b)=>b.pendientes-a.pendientes)[0]||{tipo:'Sin dato',pendientes:0};const topResTipo=[...stats].sort((a,b)=>b.resolucion-a.resolucion)[0]||{tipo:'Sin dato',resolucion:0};document.getElementById('insights-container').innerHTML=`<div class="insight"><strong>Lectura corregida:</strong> los KPIs principales cuentan IDs únicos, no filas repetidas.</div><div class="insight"><strong>Tipo con más pendientes:</strong> ${esc(topPendingTipo.tipo)} concentra ${fmt(topPendingTipo.pendientes)} tareas pendientes.</div><div class="insight"><strong>Mejor resolución por tipo:</strong> ${esc(topResTipo.tipo)} alcanza ${topResTipo.resolucion}% de finalización.</div><div class="insight"><strong>Rubro principal:</strong> ${esc(m.topRub[0])} aparece en ${fmt(m.topRub[1])} tareas únicas.</div><div class="insight"><strong>Producto principal:</strong> ${esc(m.topProd[0])} aparece en ${fmt(m.topProd[1])} tareas únicas vinculadas.</div><div class="insight"><strong>Efector:</strong> ahora se puede filtrar directamente desde la barra superior.</div>`;}
 
-function destroyCharts(){Object.values(S.charts).forEach(c=>{try{c.destroy();}catch(e){}});S.charts={};}
+function destroyCharts(){Object.entries(S.charts).forEach(([id,c])=>{if(id.startsWith('pareto-'))return;try{c.destroy();}catch(e){}delete S.charts[id];});}
 function renderCharts(rows,m){destroyCharts();const specs=buildChartSpecs(rows,m).filter(Boolean);document.getElementById('chart-count').textContent=`${specs.length} gráficos`;const container=document.getElementById('charts-container');container.innerHTML=specs.map((sp,i)=>`<div class="chart-card${sp.wide?' wide':''}"><div class="chart-title">${sp.title}</div><div class="chart-subtitle">${sp.subtitle}</div><div class="chart-box${sp.large?' chart-box-lg':sp.small?' chart-box-sm':''}"><canvas id="chart-${i}"></canvas></div></div>`).join('');specs.forEach((sp,i)=>{const ctx=document.getElementById(`chart-${i}`);if(ctx)S.charts[`chart-${i}`]=new Chart(ctx,makeChartConfig(sp));});}
 function makeChartConfig(sp){const isPie=sp.type==='pie'||sp.type==='doughnut';const colors=(sp.labels||[]).map((_,j)=>PALETTE[j%PALETTE.length]);const common={responsive:true,maintainAspectRatio:false,animation:{duration:900,easing:'easeOutQuart'},plugins:{legend:{display:isPie||sp.showLegend,position:'bottom',labels:{font:{size:10},boxWidth:10,padding:9}},tooltip:{callbacks:{label:ctx=>{const v=Number(ctx.raw||0);const values=ctx.dataset?.data||sp.values||[];const tot=values.reduce((a,b)=>a+Number(b||0),0);return` ${fmt(v)} (${tot?(v/tot*100).toFixed(1):0}%)`;}}}}};if(sp.customData)return{type:sp.type,data:sp.customData,options:{...common,indexAxis:sp.horizontal?'y':'x',scales:sp.scales||defaultScales(sp.horizontal,sp.stacked)}};return{type:sp.type,data:{labels:sp.labels,datasets:[{label:sp.title,data:sp.values,backgroundColor:isPie?colors:colors.map(c=>c+'CC'),borderColor:isPie?colors:colors,borderWidth:isPie?1:0,borderRadius:isPie?0:7,tension:.35,fill:sp.type==='line',pointRadius:sp.type==='line'?3:undefined}]},options:{...common,indexAxis:sp.horizontal?'y':'x',scales:isPie?{}:defaultScales(sp.horizontal,false)}};}
 function defaultScales(horizontal=false,stacked=false){return{x:{stacked,grid:{color:'#EEF2F7'},ticks:{color:'#64748B',font:{size:10},maxRotation:horizontal?0:35}},y:{stacked,beginAtZero:true,grid:{color:'#EEF2F7'},ticks:{color:'#64748B',font:{size:10}}}};}

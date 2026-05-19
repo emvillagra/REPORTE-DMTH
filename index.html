@@ -2142,17 +2142,6 @@ td.pct{font-weight:700;color:#057A55}
 
 </body></html>`;
 }
-  const kpis=[
-    {label:'Tareas únicas',value:fmt(m.total),note:`${fmt(m.detailTotal)} filas · ${fmt(m.filasAgrupadas)} agrupadas`,color:'#1A56DB'},
-    {label:'Finalizadas',value:fmt(m.finalizados),note:`${m.compRate}% resolución global`,color:'#057A55'},
-    {label:'Pendientes activos',value:fmt(m.pendientes),note:`${m.pendRate}% del total filtrado`,color:'#B45309'},
-    {label:'Señales críticas',value:fmt(m.criticos),note:`${m.critRate}% con prioridad/demora`,color:'#C81E1E'},
-    {label:'Urgencias finalizadas',value:fmt(urg.finalizados),note:`${urg.resolucion||0}% de ${fmt(urg.total||0)} urgencias`,color:'#6C2BD9'},
-    {label:'Mantenimiento finaliz.',value:fmt(man.finalizados),note:`${man.resolucion||0}% de ${fmt(man.total||0)}`,color:'#0694A2'},
-    {label:'Insumos finalizados',value:fmt(ins.finalizados),note:`${ins.resolucion||0}% de ${fmt(ins.total||0)}`,color:'#1A56DB'},
-    {label:'Rubro dominante',value:truncStr(m.topRub[0]||'—',18),note:`${fmt(m.topRub[1]||0)} tareas únicas`,color:'#057A55'}
-  ];
-}
 function getReportChartImages(limit=6){
   // Excluye los de Pareto para no duplicar en los gráficos generales
   return Object.entries(S.charts||{}).filter(([id])=>!id.startsWith('pareto-')).slice(0,limit).map(([id,c])=>{

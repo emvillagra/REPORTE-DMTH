@@ -341,6 +341,10 @@
       background:var(--teal);
       color:white
     }
+    .btn-green{
+      background:var(--green);
+      color:white
+    }
     .status-pill{
       display:flex;
       align-items:center;
@@ -913,6 +917,88 @@
     
     }
     
+
+    .pdf-report-shell{
+      position:fixed;
+      left:-12000px;
+      top:0;
+      width:1122px;
+      background:#fff;
+      color:#1E293B;
+      font-family:'Segoe UI',Arial,sans-serif;
+      z-index:-1
+    }
+    .pdf-report-page{
+      width:1122px;
+      min-height:794px;
+      padding:30px 34px 26px;
+      background:#ffffff;
+      page-break-after:always;
+      position:relative;
+      overflow:hidden
+    }
+    .pdf-report-page:last-child{page-break-after:auto}
+    .pdf-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:3px solid #1A56DB;
+      padding-bottom:14px;
+      margin-bottom:16px
+    }
+    .pdf-brand{
+      display:flex;
+      align-items:center;
+      gap:12px
+    }
+    .pdf-mark{
+      width:48px;
+      height:48px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#0D1B2A,#1A56DB);
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      font-weight:950;
+      letter-spacing:.4px
+    }
+    .pdf-title-main{font-size:23px;font-weight:950;color:#0D1B2A;line-height:1.05}
+    .pdf-title-sub{font-size:11px;color:#64748B;margin-top:4px;font-weight:700}
+    .pdf-meta-box{text-align:right;font-size:10.5px;color:#475569;line-height:1.45}
+    .pdf-page-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:16px;
+      margin:6px 0 14px
+    }
+    .pdf-page-title h1{font-size:26px;color:#0D1B2A;letter-spacing:-.6px;margin:0}
+    .pdf-page-title p{font-size:12px;color:#64748B;margin-top:4px;max-width:620px;line-height:1.35}
+    .pdf-pill{display:inline-flex;padding:5px 10px;border-radius:999px;background:#EFF6FF;color:#1D4ED8;font-weight:900;font-size:10px;border:1px solid #BFDBFE}
+    .pdf-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0 14px}
+    .pdf-kpi{border:1px solid #DDE7F2;border-radius:14px;padding:12px;background:linear-gradient(180deg,#FFFFFF,#F8FAFC);box-shadow:0 4px 12px rgba(15,23,42,.06)}
+    .pdf-kpi-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:#64748B;font-weight:950}
+    .pdf-kpi-value{font-size:24px;line-height:1;font-weight:950;color:#0D1B2A;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pdf-kpi-note{font-size:10px;color:#64748B;margin-top:6px;line-height:1.25}
+    .pdf-grid-2{display:grid;grid-template-columns:1.05fr .95fr;gap:14px;margin-top:10px}
+    .pdf-card{border:1px solid #DDE7F2;border-radius:14px;background:#fff;padding:14px;box-shadow:0 4px 12px rgba(15,23,42,.05)}
+    .pdf-card h2{font-size:14px;color:#0D1B2A;margin:0 0 8px;font-weight:950}
+    .pdf-card p,.pdf-card li{font-size:11.5px;line-height:1.5;color:#334155}
+    .pdf-card ul{padding-left:18px;margin:6px 0 0}
+    .pdf-chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-top:8px}
+    .pdf-chart-card{border:1px solid #DDE7F2;border-radius:14px;background:#FFFFFF;padding:10px 12px;min-height:220px;box-shadow:0 4px 12px rgba(15,23,42,.05)}
+    .pdf-chart-title{font-size:11px;font-weight:950;color:#0D1B2A;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pdf-chart-card img{display:block;width:100%;height:178px;object-fit:contain;background:#fff}
+    .pdf-table{width:100%;border-collapse:collapse;font-size:9.7px;margin-top:6px}
+    .pdf-table th{background:#0D1B2A;color:white;text-align:left;padding:6px;border:1px solid #0D1B2A;font-size:8.8px;text-transform:uppercase;letter-spacing:.25px}
+    .pdf-table td{padding:5px 6px;border:1px solid #E2E8F0;color:#334155;vertical-align:top}
+    .pdf-table tr:nth-child(even) td{background:#F8FAFC}
+    .pdf-top-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    .pdf-footer{position:absolute;left:34px;right:34px;bottom:14px;border-top:1px solid #E2E8F0;padding-top:7px;display:flex;justify-content:space-between;color:#64748B;font-size:9.5px}
+    .pdf-section-tag{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:#1D4ED8;font-weight:950;margin-bottom:4px}
+
     @media print{
       .sidebar,.topbar,.toolbar-card,.toast{
       display:none!important
@@ -1334,6 +1420,7 @@
       <button class="btn btn-primary" onclick="applyFilters()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>Aplicar</button>
       <button class="btn btn-ghost" onclick="clearFilters()">Limpiar</button>
       <button class="btn btn-teal" onclick="exportPDF()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Exportar PDF</button>
+      <button class="btn btn-green" onclick="exportCSV()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Exportar CSV</button>
       <div class="status-pill" id="status-pill"><div class="status-dot" style="background:var(--amber2)"></div><span id="status-text">Cargando CONSOLIDADO...</span></div>
     </div>
     <div class="loading-bar" id="loading-bar" style="display:none"></div>
@@ -1528,7 +1615,139 @@ function extractKeywords(rows){const o={};rows.forEach(r=>{const text=normText(r
 function renderTable(rows){const sample=rows.slice(0,40);const cont=document.getElementById('table-container');if(!sample.length){cont.innerHTML=`<div class="empty-state"><div class="es-icon">🔍</div><h3>Sin resultados</h3><p>No hay registros con los filtros actuales. Ajustá el período o eliminá filtros.</p></div>`;return;}const BADGE={'FINALIZADO':'badge-green','FINALIZADA':'badge-green','EN PROCESO':'badge-blue','RECIBIDO':'badge-amber','NO CALIFICA':'badge-gray','MAL CARGADO':'badge-gray','ANULADO':'badge-gray','CANCELADO':'badge-gray'};cont.innerHTML=`<div class="table-header"><h3>Muestra de registros (${sample.length} de ${fmt(rows.length)})</h3><span style="font-size:11px;color:var(--muted)">Tipo, Estado y Subestado se muestran separados</span></div><div class="table-wrap"><table class="dt"><thead><tr><th>Fecha</th><th>Derivar</th><th>Tipo solicitud</th><th>Estado</th><th>Subestado</th><th>Rubro</th><th>Descripción del ítem</th><th>Sector / Área</th><th>Efector</th><th>Expediente</th></tr></thead><tbody>${sample.map(r=>{const badgeCls=BADGE[normText(r.__estado)]||'badge-gray';const tipoCls=r.__tipo==='Urgencia'?'badge-red':r.__tipo==='Mantenimiento'?'badge-teal':r.__tipo==='Pedidos de insumos'?'badge-orange':'badge-gray';return`<tr><td style="white-space:nowrap">${r.__fecha?r.__fecha.toLocaleDateString('es-AR'):'—'}</td><td><span class="badge badge-blue">${esc(r.__derivar)}</span></td><td><span class="badge ${tipoCls}">${esc(r.__tipo)}</span></td><td><span class="badge ${badgeCls}">${esc(r.__estado)}</span></td><td><span class="badge badge-purple">${esc(r.__subestado)}</span></td><td>${esc(truncStr(r.__rubro,32))}</td><td>${esc(truncStr(r.__item,52))}</td><td>${esc(truncStr(r.__sector,25))}</td><td>${esc(truncStr(r.__efector,28))}</td><td>${r.__expediente?`<span class="badge badge-teal">${esc(r.__expediente)}</span>`:'—'}</td></tr>`;}).join('')}</tbody></table></div>`;}
 function updateBadges(){['general','obras','produccion','rf'].forEach(t=>{const el=document.getElementById(`badge-${t}`);if(el)el.textContent=fmt(buildTasks(getBaseRows(t)).length);});}
 function showSourceStatus(){const ts=S.lastRefresh?S.lastRefresh.toLocaleTimeString('es-AR'):'no cargado';toast(`📊 CONSOLIDADO: ${fmt(S.raw.consolidado.length)} registros · ${ts}`,4000);}
-function exportPDF(){toast('⏳ Generando PDF...');const el=document.getElementById('export-area');const tab=TAB_META[S.activeTab]?.title||S.activeTab;html2pdf().set({margin:[8,8,8,8],filename:`DGIME_${tab.replace(/\s+/g,'_')}.pdf`,image:{type:'jpeg',quality:.97},html2canvas:{scale:2,useCORS:true,logging:false},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['avoid-all','css','legacy']}}).from(el).save().then(()=>toast('✓ PDF exportado correctamente'));}
+function exportCSV(){
+  const rows=getFilteredRows();
+  if(!rows.length){toast('⚠ No hay registros para exportar',3200);return;}
+  const normalizedHeaders=['ID_AGRUPADO','FECHA_NORMALIZADA','DERIVAR_NORMALIZADO','TIPO_SOLICITUD_NORMALIZADO','ESTADO_NORMALIZADO','SUBESTADO_NORMALIZADO','RUBRO_NORMALIZADO','SUBRUBRO_NORMALIZADO','PRODUCTO_NORMALIZADO','ITEM_NORMALIZADO','SECTOR_NORMALIZADO','EFECTOR_NORMALIZADO','EXPEDIENTE_NORMALIZADO'];
+  const originalHeaders=(S.headers||[]).filter(Boolean);
+  const headers=[...normalizedHeaders,...originalHeaders];
+  const data=rows.map(r=>{
+    const normalized=[r.__id||'',r.__fecha?isoDate(r.__fecha):'',r.__derivar||'',r.__tipo||'',r.__estado||'',r.__subestado||'',r.__rubro||'',r.__subrubro||'',r.__producto||'',r.__item||'',r.__sector||'',r.__efector||'',r.__expediente||''];
+    const original=originalHeaders.map(h=>r[h]??'');
+    return [...normalized,...original];
+  });
+  const csv='sep=;\r\n'+toCSV([headers,...data],';');
+  const tab=TAB_META[S.activeTab]?.title||S.activeTab;
+  downloadText(`DGIME_${slug(tab)}_${dateStamp()}_filtrado.csv`,csv,'text/csv;charset=utf-8;');
+  toast(`✓ CSV exportado · ${fmt(rows.length)} filas`,3200);
+}
+function exportPDF(){
+  const rows=getFilteredRows();
+  if(!rows.length){toast('⚠ No hay datos para armar el informe',3200);return;}
+  toast('⏳ Armando informe ejecutivo profesional...');
+  const m=calcMetrics(rows,S.activeTab);
+  const report=document.createElement('div');
+  report.className='pdf-report-shell';
+  report.innerHTML=buildExecutiveReportHTML(rows,m);
+  document.body.appendChild(report);
+  const tab=TAB_META[S.activeTab]?.title||S.activeTab;
+  const opt={
+    margin:0,
+    filename:`DGIME_Informe_Ejecutivo_${slug(tab)}_${dateStamp()}.pdf`,
+    image:{type:'jpeg',quality:.98},
+    html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:'#ffffff',windowWidth:1122,windowHeight:794},
+    jsPDF:{unit:'px',format:[1122,794],orientation:'landscape',compress:true},
+    pagebreak:{mode:['css','legacy'],before:'.pdf-page-break'}
+  };
+  html2pdf().set(opt).from(report).save().then(()=>{
+    report.remove();
+    toast('✓ Informe ejecutivo PDF exportado');
+  }).catch(err=>{
+    console.error(err);
+    report.remove();
+    toast('⚠ No se pudo exportar el PDF. Revisá la consola.',5000);
+  });
+}
+function buildExecutiveReportHTML(rows,m){
+  const meta=TAB_META[m.tab]||TAB_META.general;
+  const filters=getFilterSummary();
+  const charts=getReportChartImages(6);
+  const genDate=new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const topRub=topEntries(m.rubros,6),topProd=topEntries(m.productos,6),topEf=topEntries(m.efectores,6);
+  const sample=m.tasks.slice(0,14);
+  const urg=m.tipoStats.find(x=>x.tipo==='Urgencia')||{total:0,finalizados:0,resolucion:0};
+  const man=m.tipoStats.find(x=>x.tipo==='Mantenimiento')||{total:0,finalizados:0,resolucion:0};
+  const ins=m.tipoStats.find(x=>x.tipo==='Pedidos de insumos')||{total:0,finalizados:0,resolucion:0};
+  const pageHeader=(page,total,section)=>`<div class="pdf-header"><div class="pdf-brand"><div class="pdf-mark">DG</div><div><div class="pdf-title-main">DGIME · SIPROSA</div><div class="pdf-title-sub">Dirección General de Infraestructura, Mantenimiento y Equipamiento</div></div></div><div class="pdf-meta-box"><strong>Informe Ejecutivo</strong><br>${esc(meta.title)}<br>Generado: ${esc(genDate)}<br>Página ${page}/${total}</div></div><div class="pdf-section-tag">${section}</div>`;
+  const pageFooter=(page,total)=>`<div class="pdf-footer"><span>Fuente: pestaña CONSOLIDADO · análisis agrupado por ID único</span><span>Diseñado por DI Emiliano Villagra · Página ${page}/${total}</span></div>`;
+  const kpis=[
+    ['Tareas únicas',fmt(m.total),`${fmt(m.detailTotal)} filas de detalle · ${fmt(m.filasAgrupadas)} filas agrupadas`],
+    ['Finalizadas',fmt(m.finalizados),`${m.compRate}% de resolución global`],
+    ['Pendientes activos',fmt(m.pendientes),`${m.pendRate}% del total filtrado`],
+    ['Señales críticas',fmt(m.criticos),`${m.critRate}% con prioridad/demora/urgencia`],
+    ['Urgencias finalizadas',fmt(urg.finalizados),`${urg.resolucion||0}% de ${fmt(urg.total||0)} urgencias`],
+    ['Mantenimiento finalizado',fmt(man.finalizados),`${man.resolucion||0}% de ${fmt(man.total||0)} mantenimientos`],
+    ['Insumos finalizados',fmt(ins.finalizados),`${ins.resolucion||0}% de ${fmt(ins.total||0)} pedidos`],
+    ['Rubro dominante',truncStr(m.topRub[0],24),`${fmt(m.topRub[1])} tareas únicas asociadas`]
+  ];
+  const chartHTML=charts.length?charts.map(c=>`<div class="pdf-chart-card"><div class="pdf-chart-title">${esc(c.title)}</div><img src="${c.src}" alt="${esc(c.title)}"></div>`).join(''):`<div class="pdf-card"><h2>Sin gráficos disponibles</h2><p>Aplicá filtros o refrescá el consolidado antes de exportar.</p></div>`;
+  return `
+  <div class="pdf-report-page">
+    ${pageHeader(1,3,'Síntesis ejecutiva')}
+    <div class="pdf-page-title"><div><h1>${esc(meta.title)}</h1><p>${esc(meta.sub)}. El informe resume el universo filtrado como gestión por ID único y conserva el detalle técnico por rubro, subrubro, producto e ítem.</p></div><span class="pdf-pill">${esc(filters)}</span></div>
+    <div class="pdf-kpi-grid">${kpis.map(k=>`<div class="pdf-kpi"><div class="pdf-kpi-label">${esc(k[0])}</div><div class="pdf-kpi-value">${esc(k[1])}</div><div class="pdf-kpi-note">${esc(k[2])}</div></div>`).join('')}</div>
+    <div class="pdf-grid-2">
+      <div class="pdf-card"><h2>Lectura ejecutiva</h2><p>El tablero analiza <strong>${fmt(m.total)}</strong> tareas únicas agrupadas por ID, provenientes de <strong>${fmt(m.detailTotal)}</strong> filas de detalle. Esta diferencia evita inflar indicadores cuando una misma tarea posee múltiples rubros, productos o subtareas.</p><ul><li>Tipo dominante: <strong>${esc(m.topTipo[0])}</strong> (${fmt(m.topTipo[1])}).</li><li>Estado dominante: <strong>${esc(m.topEst[0])}</strong>; subestado dominante: <strong>${esc(m.topSub[0])}</strong>.</li><li>Efector con mayor volumen: <strong>${esc(m.topEf[0])}</strong> (${fmt(m.topEf[1])}).</li><li>Producto / ítem dominante: <strong>${esc(m.topProd[0]||m.topItem[0])}</strong>.</li></ul></div>
+      <div class="pdf-card"><h2>Decisiones sugeridas</h2><ul><li>Priorizar primero urgencias pendientes por efector y rubro.</li><li>Separar mantenimiento programable de pedidos de insumos para no mezclar naturaleza operativa con abastecimiento.</li><li>Revisar subrubros y productos dominantes en Producción para detectar concentración de demanda.</li><li>Usar el CSV exportado para auditoría granular, conciliación y cruce en Excel / Power BI.</li></ul></div>
+    </div>
+    ${pageFooter(1,3)}
+  </div>
+  <div class="pdf-report-page pdf-page-break">
+    ${pageHeader(2,3,'Visualizaciones ejecutivas')}
+    <div class="pdf-page-title"><div><h1>Gráficas tipo Excel / Power BI</h1><p>Las gráficas se exportan como imágenes limpias desde Chart.js para evitar capturas deformadas del dashboard.</p></div><span class="pdf-pill">${fmt(charts.length)} gráficas principales</span></div>
+    <div class="pdf-chart-grid">${chartHTML}</div>
+    ${pageFooter(2,3)}
+  </div>
+  <div class="pdf-report-page pdf-page-break">
+    ${pageHeader(3,3,'Tablas de control')}
+    <div class="pdf-page-title"><div><h1>Detalle analítico y ranking</h1><p>Tablas resumidas para lectura directiva y trazabilidad de los filtros aplicados.</p></div><span class="pdf-pill">Base filtrada</span></div>
+    <div class="pdf-grid-2">
+      <div class="pdf-card"><h2>Tipo de solicitud · AK</h2>${tipoStatsTable(m.tipoStats)}</div>
+      <div class="pdf-card"><h2>Muestra de tareas agrupadas por ID</h2>${taskSampleTable(sample)}</div>
+    </div>
+    <div class="pdf-top-list">
+      <div class="pdf-card"><h2>Top rubros</h2>${simpleRankTable(topRub)}</div>
+      <div class="pdf-card"><h2>Top productos</h2>${simpleRankTable(topProd)}</div>
+      <div class="pdf-card"><h2>Top efectores</h2>${simpleRankTable(topEf)}</div>
+    </div>
+    ${pageFooter(3,3)}
+  </div>`;
+}
+function getReportChartImages(limit=6){
+  return Object.entries(S.charts||{}).slice(0,limit).map(([id,c])=>{
+    let title='Gráfico ejecutivo';
+    try{title=c?.config?.data?.datasets?.[0]?.label||document.getElementById(id)?.closest('.chart-card')?.querySelector('.chart-title')?.textContent||title;}catch(e){}
+    let src='';
+    try{src=c.toBase64Image('image/png',1);}catch(e){src='';}
+    return src?{title,src}:null;
+  }).filter(Boolean);
+}
+function tipoStatsTable(stats){
+  const rows=(stats||[]).filter(t=>t.total>0).map(t=>`<tr><td>${esc(t.tipo)}</td><td>${fmt(t.total)}</td><td>${fmt(t.finalizados)}</td><td>${fmt(t.pendientes)}</td><td>${t.resolucion}%</td><td>${esc(truncStr(t.topRubro?.[0]||'Sin dato',24))}</td></tr>`).join('');
+  return `<table class="pdf-table"><thead><tr><th>Tipo</th><th>Total</th><th>Final.</th><th>Pend.</th><th>% Res.</th><th>Rubro principal</th></tr></thead><tbody>${rows||'<tr><td colspan="6">Sin datos</td></tr>'}</tbody></table>`;
+}
+function taskSampleTable(tasks){
+  const rows=(tasks||[]).map(r=>`<tr><td>${esc(truncStr(r.__id,16))}</td><td>${r.__fecha?esc(r.__fecha.toLocaleDateString('es-AR')):'—'}</td><td>${esc(truncStr(r.__tipo,18))}</td><td>${esc(truncStr(r.__estado,18))}</td><td>${esc(truncStr(r.__rubro,20))}</td><td>${esc(truncStr(r.__efector,26))}</td></tr>`).join('');
+  return `<table class="pdf-table"><thead><tr><th>ID</th><th>Fecha</th><th>Tipo</th><th>Estado</th><th>Rubro</th><th>Efector</th></tr></thead><tbody>${rows||'<tr><td colspan="6">Sin datos</td></tr>'}</tbody></table>`;
+}
+function simpleRankTable(entries){
+  const rows=(entries||[]).map((e,i)=>`<tr><td>${i+1}</td><td>${esc(truncStr(e[0],32))}</td><td>${fmt(e[1])}</td></tr>`).join('');
+  return `<table class="pdf-table"><thead><tr><th>#</th><th>Dimensión</th><th>Total</th></tr></thead><tbody>${rows||'<tr><td colspan="3">Sin datos</td></tr>'}</tbody></table>`;
+}
+function getFilterSummary(){
+  const pairs=[['Desde',document.getElementById('g-from')?.value],['Hasta',document.getElementById('g-to')?.value],['Tipo',document.getElementById('g-tipo')?.value],['Estado',document.getElementById('g-estado')?.value],['Subestado',document.getElementById('g-subestado')?.value],['Rubro',document.getElementById('g-rubro')?.value],['Efector',document.getElementById('g-efector')?.value],['Búsqueda',document.getElementById('g-search')?.value]];
+  const active=pairs.filter(([,v])=>String(v||'').trim()).map(([k,v])=>`${k}: ${v}`);
+  return active.length?active.join(' · '):'Sin filtros aplicados';
+}
+function topEntries(obj,n=6){return Object.entries(obj||{}).filter(([,v])=>Number(v)>0).sort((a,b)=>Number(b[1])-Number(a[1])).slice(0,n);}
+function isoDate(d){return d instanceof Date&&!isNaN(d)?d.toISOString().slice(0,10):'';}
+function toCSV(matrix,sep=';'){return matrix.map(row=>row.map(v=>csvCell(v,sep)).join(sep)).join('\r\n');}
+function csvCell(v,sep=';'){const s=String(v??'').replace(/\r?\n/g,' ').trim();return /[";,
+]/.test(s)||s.includes(sep)?`"${s.replaceAll('"','""')}"`:s;}
+function downloadText(filename,text,mime='text/plain;charset=utf-8;'){const blob=new Blob(['\ufeff',text],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},0);}
+function slug(s){return String(s||'reporte').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,55)||'reporte';}
+function dateStamp(){const d=new Date();return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;}
+
 function showLoading(show){document.getElementById('loading-bar').style.display=show?'block':'none';}
 function setStatus(msg,type='green'){const dot=document.querySelector('#status-pill .status-dot');const txt=document.getElementById('status-text');if(dot)dot.style.background=type==='green'?'var(--green2)':type==='amber'?'var(--amber2)':'var(--red2)';if(txt)txt.textContent=msg;}
 let toastTimer;function toast(msg,duration=2600){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),duration);}

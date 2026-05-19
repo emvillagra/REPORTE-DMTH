@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DGIME · Dashboard Consolidado</title>
+  <title>DGIME · Dashboard Integral</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230D1B2A%27/%3E%3Ctext x=%2732%27 y=%2739%27 text-anchor=%27middle%27 font-size=%2722%27 fill=%27white%27 font-family=%27Arial%27 font-weight=%27bold%27%3EDG%3C/text%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
@@ -1413,16 +1413,20 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="sidebar-brand"><img class="brand-logo-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmEBSeIwQxdoOTkf2UCsKxoA0eVd5dR_1qSA&s" alt="Logo institucional"><div><div class="brand-text">DGIME</div><div class="brand-sub">SIPROSA · Consolidado</div></div></div>
+    <div class="sidebar-brand"><img class="brand-logo-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmEBSeIwQxdoOTkf2UCsKxoA0eVd5dR_1qSA&s" alt="Logo institucional"><div><div class="brand-text">DGIME</div><div class="brand-sub">SIPROSA · Gestión integral</div></div></div>
     <nav class="nav">
       <div class="nav-label">Módulos</div>
       <button class="nav-item active" data-tab="general" onclick="switchTab('general',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>General <span class="nav-badge" id="badge-general">—</span></button>
       <button class="nav-item" data-tab="obras" onclick="switchTab('obras',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V5a2 2 0 012-2h9a2 2 0 012 2v16"/><path d="M9 21v-5h3v5"/><path d="M8 7h1M12 7h1M8 11h1M12 11h1"/><path d="M17 9h1a2 2 0 012 2v10"/></svg>Dpto. Obras <span class="nav-badge" id="badge-obras">—</span></button>
       <button class="nav-item" data-tab="produccion" onclick="switchTab('produccion',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l6 4V9l6 4V7l6 4v10H3z"/><path d="M7 17h2M12 17h2M17 17h2"/></svg>Dpto. Producción <span class="nav-badge" id="badge-produccion">—</span></button>
       <button class="nav-item" data-tab="rf" onclick="switchTab('rf',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6V5a2 2 0 012-2h0a2 2 0 012 2v1"/><path d="M3 7h18v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 12h18M10 12v2h4v-2"/></svg>Recursos Físicos <span class="nav-badge" id="badge-rf">—</span></button>
+      <div class="nav-label" style="margin-top:14px">Órdenes y móviles</div>
+      <button class="nav-item" data-tab="odt-obras" onclick="switchTab('odt-obras',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-7h6v7"/><path d="M7 10h2M15 10h2"/></svg>ODT Obras <span class="nav-badge" id="badge-odt-obras">—</span></button>
+      <button class="nav-item" data-tab="odt-produccion" onclick="switchTab('odt-produccion',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V10l5 3V9l5 4V8l8 5v8H3z"/><path d="M7 17h2M12 17h2M17 17h2"/></svg>ODT Producción <span class="nav-badge" id="badge-odt-produccion">—</span></button>
+      <button class="nav-item" data-tab="pedido-moviles" onclick="switchTab('pedido-moviles',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14l-1.5-6.5A2 2 0 0015.6 9H8.4a2 2 0 00-1.9 1.5L5 17z"/><path d="M7 17v2M17 17v2"/><circle cx="8" cy="17" r="1"/><circle cx="16" cy="17" r="1"/><path d="M8 9V6h8v3"/></svg>Pedidos de móviles <span class="nav-badge" id="badge-pedido-moviles">—</span></button>
       <div class="nav-label" style="margin-top:14px">Acciones</div>
       <button class="nav-item" onclick="showSourceStatus()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h10M4 18h6"/></svg>Estado de datos</button>
-      <button class="nav-item" onclick="refreshAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-15.5 6.2"/><path d="M3 12A9 9 0 0118.5 5.8"/><path d="M18 3v4h4M6 21v-4H2"/></svg>Refrescar consolidado</button>
+      <button class="nav-item" onclick="refreshAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-15.5 6.2"/><path d="M3 12A9 9 0 0118.5 5.8"/><path d="M18 3v4h4M6 21v-4H2"/></svg>Refrescar datos</button>
     </nav>
     <div class="sidebar-bottom"><div class="sidebar-user"><div class="user-avatar">DG</div><div><div class="user-name">Dirección</div><div class="user-role">Gestión consolidada</div></div></div></div>
   </aside>
@@ -1432,8 +1436,8 @@
   </header>
   <main class="main">
     <div class="toolbar-card">
-      <div class="field"><label>Fecha desde</label><input type="date" id="g-from" value="2026-01-01"></div>
-      <div class="field"><label>Fecha hasta</label><input type="date" id="g-to" value="2026-04-30"></div>
+      <div class="field"><label>Fecha desde</label><input type="date" id="g-from" value=""></div>
+      <div class="field"><label>Fecha hasta</label><input type="date" id="g-to" value=""></div>
       <div class="field"><label>Tipo de solicitud</label><select id="g-tipo"><option value="">Todos</option></select></div>
       <div class="field"><label>Estado</label><select id="g-estado"><option value="">Todos</option></select></div>
       <div class="field"><label>Subestado</label><select id="g-subestado"><option value="">Todos</option></select></div>
@@ -1445,20 +1449,20 @@
       <button class="btn btn-ghost" onclick="clearFilters()">Limpiar</button>
       <button class="btn btn-teal" onclick="exportPDF()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Exportar PDF</button>
       <button class="btn btn-green" onclick="exportCSV()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Exportar CSV</button>
-      <div class="status-pill" id="status-pill"><div class="status-dot" style="background:var(--amber2)"></div><span id="status-text">Cargando CONSOLIDADO...</span></div>
+      <div class="status-pill" id="status-pill"><div class="status-dot" style="background:var(--amber2)"></div><span id="status-text">Cargando datos...</span></div>
     </div>
     <div class="loading-bar" id="loading-bar" style="display:none"></div>
     <div id="export-area">
       <div class="export-brand">
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmEBSeIwQxdoOTkf2UCsKxoA0eVd5dR_1qSA&s" alt="Logo institucional">
         <div>
-          <div class="export-brand-title">DGIME · Dashboard Consolidado</div>
+          <div class="export-brand-title">DGIME · Dashboard Integral</div>
           <div class="export-brand-sub">Dirección General · SIPROSA</div>
         </div>
       </div>
       <div class="section-hdr"><h2><span>📌</span> Resumen ejecutivo</h2></div>
       <div class="summary-card" id="summary-container"></div>
-      <div class="section-hdr"><h2><span>🧩</span> Tipo de solicitud · AK</h2><span class="section-note">Urgencia, Mantenimiento y Pedido de Insumos se cruzan con todos los análisis.</span></div>
+      <div class="section-hdr"><h2><span>🧩</span> Tipo / categoría de solicitud</h2><span class="section-note">El análisis se adapta a Consolidado, órdenes de trabajo y pedidos de móviles.</span></div>
       <div class="tipo-grid" id="tipo-container"></div>
       <div class="section-hdr"><h2><span>📊</span> Indicadores principales</h2><span class="section-note">Cada tarjeta explica qué mide y cómo leerla.</span></div>
       <div class="kpi-grid" id="kpi-container"></div>
@@ -1472,7 +1476,7 @@
       <div class="charts-grid" id="pareto-container"></div>
       <div class="section-hdr"><h2><span>🎯</span> Recomendaciones estratégicas</h2><span class="section-note">Decisiones directivas basadas en los datos del período filtrado.</span></div>
       <div id="recomendaciones-container"></div>
-      <div class="section-hdr"><h2><span>📈</span> Visualizaciones del consolidado</h2><div class="section-hdr-right"><span id="chart-count" style="font-size:11px;color:var(--muted)"></span></div></div>
+      <div class="section-hdr"><h2><span>📈</span> Visualizaciones del módulo</h2><div class="section-hdr-right"><span id="chart-count" style="font-size:11px;color:var(--muted)"></span></div></div>
       <div class="charts-grid" id="charts-container"></div>
       <div class="section-hdr"><h2><span>📋</span> Muestra de registros</h2></div>
       <div class="table-card" id="table-container"></div>
@@ -1490,25 +1494,36 @@
    Columnas clave: N Rubro, O Descripción del ítem, AE Derivar, AK Tipo de solicitud.
 ============================================================ */
 
-const CONFIG={consolidado:{label:'CONSOLIDADO',CSV_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjKIJnzV8oxK7uDAxU9Jx4WJj8V6yLZhhJd6hiu7XHzhZoHInkgpJKpwknj5IXxNXH17is_mt0hpHj/pub?gid=2122917362&single=true&output=csv'}};
+const CONFIG={
+  consolidado:{label:'CONSOLIDADO',CSV_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjKIJnzV8oxK7uDAxU9Jx4WJj8V6yLZhhJd6hiu7XHzhZoHInkgpJKpwknj5IXxNXH17is_mt0hpHj/pub?gid=2122917362&single=true&output=csv'},
+  odtObras:{label:'ODT OBRAS · SOPORTE',CSV_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQUqoSjcVbfuIMs0sDlbFe8FmNNMBtKjM67T4FQIu_8wvIuRl4QqVcpEgvZ2Lrhk3lrHcOc_HlMA8vO/pub?gid=646917453&single=true&output=csv'},
+  odtProduccion:{label:'ODT PRODUCCIÓN · ORDENES',CSV_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTDXSk7VpcFqTKJ9njjjSaxXwOhIV3_osFEr6cEU2qq6YVMpkZi3XidtubsWNx1Y7zDl_a9rOMOG2_V/pub?gid=805220081&single=true&output=csv'},
+  pedidoMoviles:{label:'PEDIDOS DE MÓVILES',CSV_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vR57w_yP1_FfAzWryu64yqD0w61PFLsnxY-25QdMqFb69bWWyOWu6zfLYgHwQZzKWVpl5D3HT0EC7N5/pub?gid=1174281307&single=true&output=csv'}
+};
 const DERIVAR_MAP={'DO':'Dpto. Obras','D.O.':'Dpto. Obras','OBRAS':'Dpto. Obras','DP':'Dpto. Producción','D.P.':'Dpto. Producción','PRODUCCION':'Dpto. Producción','PRODUCCIÓN':'Dpto. Producción','RF':'Recursos Físicos','R.F.':'Recursos Físicos','RECURSOS FISICOS':'Recursos Físicos','RECURSOS FÍSICOS':'Recursos Físicos'};
-const TIPO_MAP={'URGENCIA':'Urgencia','URGENTE':'Urgencia','EMERGENCIA':'Urgencia','MANTENIMIENTO':'Mantenimiento','MANT.':'Mantenimiento','MANT':'Mantenimiento','PEDIDOS DE INSUMOS':'Pedidos de insumos','PEDIDO DE INSUMOS':'Pedidos de insumos','INSUMOS':'Pedidos de insumos','PEDIDO INSUMOS':'Pedidos de insumos','PEDIDOS INSUMOS':'Pedidos de insumos'};
-const TIPO_ORDER=['Urgencia','Mantenimiento','Pedidos de insumos','Sin tipo'];
-const TAB_META={general:{title:'Dashboard General Consolidado',sub:'Pestaña CONSOLIDADO analizada como conjunto',filter:null},obras:{title:'Módulo Dpto. Obras',sub:'CONSOLIDADO filtrado por columna DERIVAR = DO',filter:['DO','D.O.','OBRAS']},produccion:{title:'Módulo Dpto. Producción',sub:'CONSOLIDADO filtrado por columna DERIVAR = DP',filter:['DP','D.P.','PRODUCCION','PRODUCCIÓN']},rf:{title:'Módulo Recursos Físicos',sub:'CONSOLIDADO filtrado por columna DERIVAR = RF',filter:['RF','R.F.','RECURSOS FISICOS','RECURSOS FÍSICOS']}};
+const TIPO_MAP={'URGENCIA':'Urgencia','URGENTE':'Urgencia','EMERGENCIA':'Urgencia','PROGRAMADA':'Programada','PROGRAMADO':'Programada','MANTENIMIENTO':'Mantenimiento','MANT.':'Mantenimiento','MANT':'Mantenimiento','PEDIDOS DE INSUMOS':'Pedidos de insumos','PEDIDO DE INSUMOS':'Pedidos de insumos','INSUMOS':'Pedidos de insumos','PEDIDO INSUMOS':'Pedidos de insumos','PEDIDOS INSUMOS':'Pedidos de insumos'};
+const TIPO_ORDER=['Urgencia','Programada','Mantenimiento','Pedidos de insumos','ODT Obras','ODT Producción','Pedido de móvil','Sin tipo'];
+const TAB_META={general:{title:'Dashboard General Consolidado',sub:'Pestaña CONSOLIDADO analizada como conjunto',filter:null,source:'consolidado'},obras:{title:'Módulo Dpto. Obras',sub:'CONSOLIDADO filtrado por columna DERIVAR = DO',filter:['DO','D.O.','OBRAS'],source:'consolidado'},produccion:{title:'Módulo Dpto. Producción',sub:'CONSOLIDADO filtrado por columna DERIVAR = DP',filter:['DP','D.P.','PRODUCCION','PRODUCCIÓN'],source:'consolidado'},rf:{title:'Módulo Recursos Físicos',sub:'CONSOLIDADO filtrado por columna DERIVAR = RF',filter:['RF','R.F.','RECURSOS FISICOS','RECURSOS FÍSICOS'],source:'consolidado'},'odt-obras':{title:'Módulo Orden de Trabajo de Obras',sub:'Pestaña SOPORTE · análisis propio de órdenes, secciones, cuadrillas, materiales y destinos',filter:null,source:'odtObras'},'odt-produccion':{title:'Módulo Orden de Trabajo de Producción',sub:'Pestaña ORDENES · análisis propio de producción, talleres, materiales y destinos',filter:null,source:'odtProduccion'},'pedido-moviles':{title:'Módulo Pedidos de Móviles',sub:'Pestaña PEDIDO MOVILES · análisis de solicitudes, rutas, urgencias, móviles, choferes y estado',filter:null,source:'pedidoMoviles'}};
 const PALETTE=['#1A56DB','#0694A2','#10B981','#F59E0B','#8B5CF6','#F05252','#0EA5E9','#84CC16','#EC4899','#F97316','#14B8A6','#6366F1','#64748B','#0F766E','#7C3AED'];
 const STOPWORDS=new Set(['DE','DEL','LA','LAS','EL','LOS','Y','EN','A','AL','CON','POR','PARA','UNA','UNO','UN','QUE','SE','SU','SUS','SIN','SOBRE','ENTRE','O','U','E','NRO','Nº','NO','SI','ES','SON','DESDE','HASTA','AREA','SECTOR','SOLICITA','SOLICITAN','REALIZAR','TRABAJO','TRABAJOS','SERVICIO','PEDIDO','PEDIDOS','REPARACION','ARREGLO','COLOCACION','CAMBIO','CONTROL','REVISION','MANTENIMIENTO','GENERAL','ITEM','DESCRIPCION']);
-const S={raw:{consolidado:[]},charts:{},activeTab:'general',lastRefresh:null,headers:[]};
+const S={raw:{consolidado:[],odtObras:[],odtProduccion:[],pedidoMoviles:[]},charts:{},activeTab:'general',lastRefresh:null,headers:[],headersBySource:{}};
 
 document.addEventListener('DOMContentLoaded',async()=>{updateClock();setInterval(updateClock,30000);await refreshAll();});
 function updateClock(){const now=new Date();document.getElementById('topbar-time').textContent=now.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
 function switchTab(tab,btnEl){S.activeTab=tab;document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));if(btnEl)btnEl.classList.add('active');const meta=TAB_META[tab]||TAB_META.general;document.getElementById('topbar-title').textContent=meta.title;document.getElementById('topbar-sub').textContent=meta.sub;populateFilters();renderModule();}
-async function refreshAll(){showLoading(true);setStatus('⏳ Conectando con la pestaña CONSOLIDADO...','amber');await loadConsolidado();populateFilters();renderModule();updateBadges();showLoading(false);setStatus(`Datos actualizados · ${new Date().toLocaleString('es-AR')}`,'green');document.getElementById('topbar-refresh-status').textContent='✓ Consolidado listo';}
-async function loadConsolidado(){const url=CONFIG.consolidado.CSV_URL+'&t='+Date.now();try{const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);const text=await res.text();if(text.trim().startsWith('<!'))throw new Error('El Sheet no está publicado correctamente como CSV público');const rows=csvToObjects(text);S.raw.consolidado=rows.map((r,i)=>normalizeRow(r,i));S.lastRefresh=new Date();console.log(`[DGIME] CONSOLIDADO: ${rows.length} filas cargadas`);}catch(e){console.warn('[DGIME] No se pudo leer CONSOLIDADO:',e.message);S.raw.consolidado=[];setStatus(`⚠ CONSOLIDADO: ${e.message}`,'amber');}}
+async function refreshAll(){showLoading(true);setStatus('⏳ Conectando con las fuentes publicadas...','amber');await loadAllSources();populateFilters();renderModule();updateBadges();showLoading(false);setStatus(`Datos actualizados · ${new Date().toLocaleString('es-AR')}`,'green');document.getElementById('topbar-refresh-status').textContent='✓ Datos listos';}
+async function loadAllSources(){const entries=Object.entries(CONFIG);await Promise.all(entries.map(([key,cfg])=>loadCSVSource(key,cfg)));S.lastRefresh=new Date();}
+async function loadConsolidado(){return loadCSVSource('consolidado',CONFIG.consolidado);}
+async function loadCSVSource(sourceKey,cfg){const url=cfg.CSV_URL+'&t='+Date.now();try{const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);const text=await res.text();if(text.trim().startsWith('<!'))throw new Error('El Sheet no está publicado correctamente como CSV público');const rows=csvToObjects(text,sourceKey);S.raw[sourceKey]=rows.map((r,i)=>normalizeRow(r,i,sourceKey));console.log(`[DGIME] ${cfg.label}: ${rows.length} filas cargadas`);}catch(e){console.warn(`[DGIME] No se pudo leer ${cfg.label}:`,e.message);S.raw[sourceKey]=[];setStatus(`⚠ ${cfg.label}: ${e.message}`,'amber');}}
 
-function csvToObjects(csvText){const rows=parseCSV(csvText);if(rows.length<2)return[];const headers=rows[0].map(h=>String(h||'').trim().replace(/^\uFEFF/,'').replace(/\s+/g,' '));S.headers=headers;return rows.slice(1).filter(r=>r.some(c=>String(c||'').trim())).map(row=>{const obj={__cells:row};headers.forEach((h,i)=>{obj[h||`COL_${i+1}`]=row[i]??'';});return obj;});}
+function csvToObjects(csvText,sourceKey='consolidado'){const rows=parseCSV(csvText);if(rows.length<2){S.headersBySource[sourceKey]=[];return[];}const headers=rows[0].map(h=>String(h||'').trim().replace(/^\uFEFF/,'').replace(/\s+/g,' '));S.headers=headers;S.headersBySource[sourceKey]=headers;return rows.slice(1).filter(r=>r.some(c=>String(c||'').trim())).map(row=>{const obj={__cells:row};headers.forEach((h,i)=>{obj[h||`COL_${i+1}`]=row[i]??'';});return obj;});}
+
+
 function parseCSV(text){const rows=[];let row=[];let cell='';let inQ=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(c==='"'&&inQ&&n==='"'){cell+='"';i++;}else if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){row.push(cell);cell='';}else if((c==='\n'||c==='\r')&&!inQ){if(c==='\r'&&n==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}else{cell+=c;}}if(cell||row.length){row.push(cell);rows.push(row);}return rows;}
 
-function normalizeRow(row,rowIndex=0){
+function normalizeRow(row,rowIndex=0,sourceKey='consolidado'){
+  if(sourceKey==='odtObras'||sourceKey==='odtProduccion')return normalizeOrdenTrabajo(row,rowIndex,sourceKey);
+  if(sourceKey==='pedidoMoviles')return normalizePedidoMovil(row,rowIndex);
   const out={...row,__source:'consolidado',__sourceLabel:'CONSOLIDADO'};
 
   const idRaw=getField(row,[
@@ -1542,13 +1557,82 @@ function normalizeRow(row,rowIndex=0){
   out.__texto+=' '+[out.__id,out.__efector,out.__sector,out.__rubro,out.__subrubro,out.__producto,out.__item].join(' ').toLowerCase();
   return out;
 }
-function getField(row,names){const keys=Object.keys(row).filter(k=>k!=='__cells');for(const name of names){const n=normText(name);const found=keys.find(k=>normText(k)===n);if(found!==undefined)return row[found];}return'';}
+
+function normalizeOrdenTrabajo(row,rowIndex=0,sourceKey='odtObras'){
+  const isProd=sourceKey==='odtProduccion';
+  const out={...row,__source:sourceKey,__sourceLabel:isProd?'ODT PRODUCCIÓN · ORDENES':'ODT OBRAS · SOPORTE'};
+  const idRaw=getField(row,['N° DE ORDEN','Nº DE ORDEN','N DE ORDEN','ID','ORDEN','N° ORDEN','Nº ORDEN'])||getCell(row,0)||`${isProd?'AP':'AB'}-${String(rowIndex+1).padStart(5,'0')}`;
+  out.__id=String(idRaw||`${isProd?'AP':'AB'}-${rowIndex+2}`).trim();
+  out.__idKey=normText(out.__id)||`${sourceKey}-${rowIndex+2}`;
+  out.__derivarRaw=isProd?'DP':'DO';
+  out.__derivar=isProd?'Dpto. Producción':'Dpto. Obras';
+  out.__tipo=isProd?'ODT Producción':'ODT Obras';
+  out.__tipoRaw=out.__tipo;
+  const docLink=getField(row,['LINK ODT','LINK ODS','DOC AUTORIZACION','QR SALIDA']);
+  out.__estado=getField(row,['ESTADO','Estado','SITUACION','Situación'])||(docLink?'Con documentación':'Registrada');
+  out.__subestado=getField(row,['SUBESTADO','Subestado'])||getField(row,['MOVIL','Móvil'])||'Sin subestado';
+  out.__rubro=getField(row,['SECCION','Sección','SECCIÓN'])||'Sin sección';
+  out.__subrubro=getField(row,['CUADRILLA','Cuadrilla'])||getField(row,['ORIGEN','Origen'])||'Sin cuadrilla';
+  const materiales=extractMateriales(row);
+  out.__materialesList=materiales.join(' · ');
+  out.__producto=materiales[0]?materiales[0].replace(/\s*\([^)]*\)\s*$/,''):getField(row,['MATERIAL 1','Material 1'])||'Sin material';
+  out.__item=getField(row,['TAREA A REALIZAR','Tarea a realizar','DESCRIPCION','DESCRIPCIÓN','Detalle','DETALLE'])||'Sin tarea';
+  out.__fecha=parseDateFlex(getField(row,['FECHA DE ORDEN DE TRABAJO','Fecha de orden de trabajo','Marca temporal','Timestamp','FECHA','Fecha']));
+  out.__efector=getField(row,['DESTINO','Destino','ESTABLECIMIENTO','Establecimiento'])||'Sin destino';
+  out.__sector=getField(row,['ORIGEN','Origen','SECTOR','Sector'])||'Sin origen';
+  out.__expediente=getField(row,['ID VINC UNIFICADO','ID VINCULADO','ID VINCULADO (letra)','ID VINCULADO (número)'])||'';
+  out.__monto=0;
+  out.__texto=Object.values(row).filter(v=>!Array.isArray(v)).join(' ').toLowerCase();
+  out.__texto+=' '+[out.__id,out.__derivar,out.__tipo,out.__estado,out.__subestado,out.__rubro,out.__subrubro,out.__producto,out.__item,out.__efector,out.__sector,out.__materialesList].join(' ').toLowerCase();
+  return out;
+}
+function normalizePedidoMovil(row,rowIndex=0){
+  const out={...row,__source:'pedidoMoviles',__sourceLabel:'PEDIDOS DE MÓVILES'};
+  const idRaw=getField(row,['IDpedidos','ID PEDIDOS','ID','N°','Nº'])||getCell(row,0)||`MOV-${String(rowIndex+1).padStart(5,'0')}`;
+  out.__id=String(idRaw||`MOV-${rowIndex+2}`).trim();
+  out.__idKey=normText(out.__id)||`MOV-${rowIndex+2}`;
+  out.__derivarRaw='MOVILES';
+  out.__derivar='Pedidos de móviles';
+  const tipoRaw=getField(row,['TIPO DE SOLICITUD','Tipo de solicitud','TIPO']);
+  out.__tipoRaw=String(tipoRaw||'Pedido de móvil').trim();
+  out.__tipo=TIPO_MAP[normText(out.__tipoRaw)]||out.__tipoRaw||'Pedido de móvil';
+  out.__estado=getField(row,['ESTADO','Estado'])||'Sin estado';
+  out.__subestado=getField(row,['HORA DE INICIO (TIPO)','Hora de inicio (tipo)','TIPO DE TRASLADO','Tipo de traslado'])||'Sin subestado';
+  out.__rubro=getField(row,['TIPO DE TRASLADO','Tipo de traslado'])||'Sin tipo de traslado';
+  out.__subrubro=getField(row,['MOVIL','Móvil','MOVIL FANZOLATO','Móvil Fanzolato'])||getField(row,['CHOFER ASIGNADO','Chofer asignado','CHOFER FANZOLATO'])||'Sin móvil/chofer';
+  out.__producto=getField(row,['MOVIL','Móvil','MOVIL FANZOLATO','Móvil Fanzolato'])||getField(row,['CHOFER ASIGNADO','Chofer asignado','CHOFER FANZOLATO'])||'Sin móvil';
+  const inicio=getField(row,['LUGAR DE INICIO DEL PEDIDO SOLICITADO','Lugar de inicio del pedido solicitado']);
+  const destino=getField(row,['LUGAR DE DESTINO DEL PEDIDO SOLICITADO','Lugar de destino del pedido solicitado']);
+  const obs=getField(row,['OBSERVACIONES','Observaciones']);
+  out.__item=[inicio,destino].filter(Boolean).join(' → ')||obs||'Sin recorrido';
+  if(obs&&out.__item!=='Sin recorrido')out.__item+=' · '+obs;
+  out.__fecha=parseDateFlex(getField(row,['FECHA DE INICIO DEL VIAJE','Fecha de inicio del viaje','Marca temporal','Timestamp','FECHA','Fecha']));
+  out.__efector=destino||'Sin destino';
+  out.__sector=getField(row,['SECTOR QUE SOLICITA','Sector que solicita','APELLIDO Y NOMBRE','Apellido y nombre'])||'Sin solicitante';
+  const letra=getField(row,['En el caso de que el traslado este asociado a una orden de trabajo indique su letra']);
+  const nro=getField(row,['En el caso de que el traslado este asociado a una orden de trabajo indique su número']);
+  out.__expediente=[letra,nro].filter(Boolean).join('-');
+  out.__monto=0;
+  out.__texto=Object.values(row).filter(v=>!Array.isArray(v)).join(' ').toLowerCase();
+  out.__texto+=' '+[out.__id,out.__derivar,out.__tipo,out.__estado,out.__subestado,out.__rubro,out.__subrubro,out.__producto,out.__item,out.__efector,out.__sector,out.__expediente].join(' ').toLowerCase();
+  return out;
+}
+function extractMateriales(row){
+  const out=[];
+  for(let i=1;i<=10;i++){
+    const mat=String(getField(row,[`MATERIAL ${i}`,`Material ${i}`])||'').trim();
+    const cant=String(getField(row,[`CANTIDAD ${i}`,`Cantidad ${i}`])||'').trim();
+    if(mat)out.push(cant?`${mat} (${cant})`:mat);
+  }
+  return out;
+}
+function getField(row,names){const keys=Object.keys(row).filter(k=>k!=='__cells');let fallback='';for(const name of names){const n=normText(name);const found=keys.find(k=>normText(k)===n);if(found!==undefined){const val=row[found];if(String(val??'').trim()!=='')return val;if(fallback==='')fallback=val??'';}}return fallback||'';}
 function getCell(row,idx){return Array.isArray(row.__cells)?(row.__cells[idx]??''):'';}
 function normText(v){return String(v||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').toUpperCase();}
 function parseDateFlex(v){if(!v)return null;const s=String(v).trim();if(!s)return null;if(!isNaN(+s)&&+s>20000&&+s<70000)return new Date(Date.UTC(1899,11,30)+(+s)*86400000);const m=s.split(' ')[0].match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,+m[2]-1,+m[1]);}const d=new Date(s.split(' ')[0]);return isNaN(d)?null:d;}
 function parseMoney(v){const s=String(v||'').replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.').replace(/[^\d.-]/g,'');const n=Number(s);return isNaN(n)?0:n;}
 
-function getBaseRows(tab){const con=S.raw.consolidado||[];const meta=TAB_META[tab]||TAB_META.general;if(!meta.filter)return con;const allowed=meta.filter.map(normText);return con.filter(r=>allowed.includes(normText(r.__derivarRaw)));}
+function getBaseRows(tab){const meta=TAB_META[tab]||TAB_META.general;const sourceKey=meta.source||'consolidado';const base=S.raw[sourceKey]||[];if(!meta.filter)return base;const allowed=meta.filter.map(normText);return base.filter(r=>allowed.includes(normText(r.__derivarRaw)));}
 function getFilteredRows(){const rows=getBaseRows(S.activeTab);const from=document.getElementById('g-from')?.value;const to=document.getElementById('g-to')?.value;const tipo=document.getElementById('g-tipo')?.value;const estado=document.getElementById('g-estado')?.value;const subestado=document.getElementById('g-subestado')?.value;const rubro=document.getElementById('g-rubro')?.value;const efector=document.getElementById('g-efector')?.value;const search=String(document.getElementById('g-search')?.value||'').toLowerCase().trim();const fromD=from?new Date(from+'T00:00:00'):null;const toD=to?new Date(to+'T23:59:59'):null;return rows.filter(r=>{if((fromD||toD)&&!r.__fecha)return false;if(fromD&&r.__fecha<fromD)return false;if(toD&&r.__fecha>toD)return false;if(tipo&&r.__tipo!==tipo)return false;if(estado&&r.__estado!==estado)return false;if(subestado&&r.__subestado!==subestado)return false;if(rubro&&r.__rubro!==rubro)return false;if(efector&&r.__efector!==efector)return false;if(search&&!r.__texto.includes(search))return false;return true;});}
 function populateFilters(){const rows=getBaseRows(S.activeTab);fillSel('g-tipo',sortTipo([...new Set(rows.map(r=>r.__tipo).filter(Boolean))]));fillSel('g-estado',[...new Set(rows.map(r=>r.__estado).filter(v=>v&&v!=='Sin estado'))].sort());fillSel('g-subestado',[...new Set(rows.map(r=>r.__subestado).filter(v=>v&&v!=='Sin subestado'))].sort());fillSel('g-rubro',[...new Set(rows.map(r=>r.__rubro).filter(v=>v&&v!=='Sin rubro'))].sort());fillSel('g-efector',[...new Set(rows.map(r=>r.__efector).filter(v=>v&&v!=='Sin identificar'))].sort());}
 function fillSel(id,vals){const el=document.getElementById(id);if(!el)return;const cur=el.value;el.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');if(vals.includes(cur))el.value=cur;}
@@ -1806,7 +1890,7 @@ function buildRecomendaciones(m){
 
   return recs.slice(0,9);
 }
-function renderSummary(m){const meta=TAB_META[m.tab]||TAB_META.general;document.getElementById('summary-container').innerHTML=`<h3>${esc(meta.title)}</h3><p>Este módulo analiza el <strong>conjunto de la pestaña CONSOLIDADO</strong>${m.tab==='general'?'':' filtrado por la columna <strong>DERIVAR</strong>'}. Para los indicadores principales se agrupan las filas por <strong>ID de tarea</strong>: ${fmt(m.total)} tareas únicas sobre ${fmt(m.detailTotal)} filas detalle. Las filas repetidas con el mismo ID se consideran parte de la misma tarea; los análisis de <strong>Rubro, Subrubro, Producto e Ítem</strong> se leen como detalle técnico de esas tareas.</p><ul><li>Tipo de solicitud dominante: <strong>${esc(m.topTipo[0])}</strong> (${fmt(m.topTipo[1])} tareas únicas).</li><li>Rubro principal: <strong>${esc(m.topRub[0])}</strong> (${fmt(m.topRub[1])} tareas únicas vinculadas).</li><li>Subrubro principal: <strong>${esc(m.topSubrub[0])}</strong>. Producto principal: <strong>${esc(m.topProd[0])}</strong>.</li><li>Estado dominante: <strong>${esc(m.topEst[0])}</strong>. Subestado dominante: <strong>${esc(m.topSub[0])}</strong>.</li></ul><div class="summary-pill-row"><span class="summary-pill">ID agrupado</span><span class="summary-pill">${fmt(m.filasAgrupadas)} filas agrupadas</span><span class="summary-pill">Rubro / Subrubro / Producto</span><span class="summary-pill">Tipo AK</span><span class="summary-pill">Filtro por Efector</span></div>`;}
+function renderSummary(m){const meta=TAB_META[m.tab]||TAB_META.general;const cfg=CONFIG[meta.source||'consolidado']||CONFIG.consolidado;const sourceText=(meta.source&&meta.source!=='consolidado')?`la fuente <strong>${esc(cfg.label)}</strong>`:`el <strong>conjunto de la pestaña CONSOLIDADO</strong>${m.tab==='general'?'':' filtrado por la columna <strong>DERIVAR</strong>'}`;document.getElementById('summary-container').innerHTML=`<h3>${esc(meta.title)}</h3><p>Este módulo analiza ${sourceText}. Para los indicadores principales se agrupan las filas por <strong>ID de tarea / pedido / orden</strong>: ${fmt(m.total)} registros únicos sobre ${fmt(m.detailTotal)} filas detalle. Las filas repetidas con el mismo ID se consideran parte del mismo registro; los análisis de <strong>Rubro, Subrubro, Producto e Ítem</strong> se adaptan a cada fuente.</p><ul><li>Tipo o categoría dominante: <strong>${esc(m.topTipo[0])}</strong> (${fmt(m.topTipo[1])} registros únicos).</li><li>Rubro / sección principal: <strong>${esc(m.topRub[0])}</strong> (${fmt(m.topRub[1])} registros únicos vinculados).</li><li>Subrubro / cuadrilla / móvil principal: <strong>${esc(m.topSubrub[0])}</strong>. Producto / material principal: <strong>${esc(m.topProd[0])}</strong>.</li><li>Estado dominante: <strong>${esc(m.topEst[0])}</strong>. Subestado dominante: <strong>${esc(m.topSub[0])}</strong>.</li></ul><div class="summary-pill-row"><span class="summary-pill">ID agrupado</span><span class="summary-pill">${fmt(m.filasAgrupadas)} filas agrupadas</span><span class="summary-pill">Rubro / Subrubro / Producto</span><span class="summary-pill">Fuente: ${esc(cfg.label)}</span><span class="summary-pill">Filtro por Efector/Destino</span></div>`;}
 function renderTipoCards(m){const stats=m.tipoStats.filter(t=>t.total>0);document.getElementById('tipo-container').innerHTML=stats.length?stats.map(t=>`<div class="tipo-card"><div class="tipo-head"><div class="tipo-title">${esc(t.tipo)}</div><div class="tipo-badge">${t.resolucion}% resuelto</div></div><div class="tipo-stats"><div class="tipo-stat"><b>${fmt(t.total)}</b><span>Tareas</span></div><div class="tipo-stat"><b>${fmt(t.finalizados)}</b><span>Final.</span></div><div class="tipo-stat"><b>${fmt(t.pendientes)}</b><span>Pend.</span></div><div class="tipo-stat"><b>${fmt(t.filas)}</b><span>Filas</span></div></div><p style="font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:10px">Rubro principal: <strong>${esc(t.topRubro[0])}</strong>. Estado dominante: <strong>${esc(t.topEstado[0])}</strong>.</p></div>`).join(''):`<div class="empty-state"><h3>Sin datos de tipo de solicitud</h3><p>Revise la columna AK / Tipo de solicitud.</p></div>`;}
 const COLOR_MAP={blue:'var(--blue2)',green:'var(--green2)',amber:'var(--amber2)',red:'var(--red2)',purple:'var(--purple2)',teal:'var(--teal2)'};
 function kpiTipo(m,tipo){const stat=m.tipoStats.find(x=>x.tipo===tipo)||{total:0,finalizados:0,pendientes:0,resolucion:0,topRubro:['Sin dato',0]};return stat;}
@@ -1853,7 +1937,7 @@ function buildChartSpecs(rows,m){const taskRows=m.tasks||buildTasks(rows);const 
   mkChart('Pedidos de insumos por rubro · tareas únicas','Rubros dentro de Pedidos de insumos, sin duplicar IDs en el mismo rubro.','bar',topObj(countUniqueFiltered(rows,r=>r.__tipo==='Pedidos de insumos','__rubro'),10),true),
   mkChart('Top efectores / establecimientos','Efectores con mayor concentración de tareas únicas.','bar',topObj(m.efectores,10),true)
 ];
-const prodExtra=m.tab==='produccion'?[
+const prodExtra=(m.tab==='produccion'||m.tab==='odt-produccion')?[
   mkCrossChartUnique(rows,'__producto','__rubro','Producción · Producto por Rubro','Qué productos aparecen dentro de cada rubro de Producción.',true,true,10),
   mkCrossChartUnique(rows,'__producto','__subrubro','Producción · Producto por Subrubro','Baja el análisis del módulo Producción a subrubro y producto.',true,true,10),
   mkCrossChartUnique(rows,'__rubro','__subrubro','Producción · Rubro por Subrubro','Estructura técnica de Producción para detectar concentración de demandas.',true,true,10),
@@ -1870,13 +1954,14 @@ function countPairs(rows,keyA,valA,keyB,valB){const seen=new Set();rows.forEach(
 function extractKeywords(rows){const o={};rows.forEach(r=>{const text=normText(r.__item||'').replace(/[^A-Z0-9Ñ ]/g,' ');text.split(/\s+/).filter(w=>w.length>=4&&!STOPWORDS.has(w)&&!/^[0-9]+$/.test(w)).forEach(w=>{const k=`${r.__idKey}|${w}`;if(!o.__seen)o.__seen=new Set();if(o.__seen.has(k))return;o.__seen.add(k);o[w]=(o[w]||0)+1;});});delete o.__seen;return o;}
 
 function renderTable(rows){const sample=rows.slice(0,40);const cont=document.getElementById('table-container');if(!sample.length){cont.innerHTML=`<div class="empty-state"><div class="es-icon">🔍</div><h3>Sin resultados</h3><p>No hay registros con los filtros actuales. Ajustá el período o eliminá filtros.</p></div>`;return;}const BADGE={'FINALIZADO':'badge-green','FINALIZADA':'badge-green','EN PROCESO':'badge-blue','RECIBIDO':'badge-amber','NO CALIFICA':'badge-gray','MAL CARGADO':'badge-gray','ANULADO':'badge-gray','CANCELADO':'badge-gray'};cont.innerHTML=`<div class="table-header"><h3>Muestra de registros (${sample.length} de ${fmt(rows.length)})</h3><span style="font-size:11px;color:var(--muted)">Tipo, Estado y Subestado se muestran separados</span></div><div class="table-wrap"><table class="dt"><thead><tr><th>Fecha</th><th>Derivar</th><th>Tipo solicitud</th><th>Estado</th><th>Subestado</th><th>Rubro</th><th>Descripción del ítem</th><th>Sector / Área</th><th>Efector</th><th>Expediente</th></tr></thead><tbody>${sample.map(r=>{const badgeCls=BADGE[normText(r.__estado)]||'badge-gray';const tipoCls=r.__tipo==='Urgencia'?'badge-red':r.__tipo==='Mantenimiento'?'badge-teal':r.__tipo==='Pedidos de insumos'?'badge-orange':'badge-gray';return`<tr><td style="white-space:nowrap">${r.__fecha?r.__fecha.toLocaleDateString('es-AR'):'—'}</td><td><span class="badge badge-blue">${esc(r.__derivar)}</span></td><td><span class="badge ${tipoCls}">${esc(r.__tipo)}</span></td><td><span class="badge ${badgeCls}">${esc(r.__estado)}</span></td><td><span class="badge badge-purple">${esc(r.__subestado)}</span></td><td>${esc(truncStr(r.__rubro,32))}</td><td>${esc(truncStr(r.__item,52))}</td><td>${esc(truncStr(r.__sector,25))}</td><td>${esc(truncStr(r.__efector,28))}</td><td>${r.__expediente?`<span class="badge badge-teal">${esc(r.__expediente)}</span>`:'—'}</td></tr>`;}).join('')}</tbody></table></div>`;}
-function updateBadges(){['general','obras','produccion','rf'].forEach(t=>{const el=document.getElementById(`badge-${t}`);if(el)el.textContent=fmt(buildTasks(getBaseRows(t)).length);});}
-function showSourceStatus(){const ts=S.lastRefresh?S.lastRefresh.toLocaleTimeString('es-AR'):'no cargado';toast(`📊 CONSOLIDADO: ${fmt(S.raw.consolidado.length)} registros · ${ts}`,4000);}
+function updateBadges(){Object.keys(TAB_META).forEach(t=>{const el=document.getElementById(`badge-${t}`);if(el)el.textContent=fmt(buildTasks(getBaseRows(t)).length);});}
+function showSourceStatus(){const ts=S.lastRefresh?S.lastRefresh.toLocaleTimeString('es-AR'):'no cargado';const msg=Object.entries(CONFIG).map(([k,cfg])=>`${cfg.label}: ${fmt((S.raw[k]||[]).length)}`).join(' · ');toast(`📊 ${msg} · ${ts}`,6500);}
 function exportCSV(){
   const rows=getFilteredRows();
   if(!rows.length){toast('⚠ No hay registros para exportar',3200);return;}
   const normalizedHeaders=['ID_AGRUPADO','FECHA_NORMALIZADA','DERIVAR_NORMALIZADO','TIPO_SOLICITUD_NORMALIZADO','ESTADO_NORMALIZADO','SUBESTADO_NORMALIZADO','RUBRO_NORMALIZADO','SUBRUBRO_NORMALIZADO','PRODUCTO_NORMALIZADO','ITEM_NORMALIZADO','SECTOR_NORMALIZADO','EFECTOR_NORMALIZADO','EXPEDIENTE_NORMALIZADO'];
-  const originalHeaders=(S.headers||[]).filter(Boolean);
+  const sourceKey=(TAB_META[S.activeTab]||TAB_META.general).source||'consolidado';
+  const originalHeaders=(S.headersBySource[sourceKey]||S.headers||[]).filter(Boolean);
   const headers=[...normalizedHeaders,...originalHeaders];
   const data=rows.map(r=>{
     const normalized=[r.__id||'',r.__fecha?isoDate(r.__fecha):'',r.__derivar||'',r.__tipo||'',r.__estado||'',r.__subestado||'',r.__rubro||'',r.__subrubro||'',r.__producto||'',r.__item||'',r.__sector||'',r.__efector||'',r.__expediente||''];
@@ -1979,7 +2064,7 @@ function buildPrintReportHTML(rows,m,charts){
       <div class="meta-box"><strong>Informe Ejecutivo</strong><br>${esc(meta.title)}<br>Generado: ${esc(genDate)}<br>Página ${page}/${total}</div>
     </div>
     <div class="section-tag">${section}</div>`;
-  const ftr=(page,total)=>`<div class="page-footer"><span>Fuente: CONSOLIDADO · análisis agrupado por ID único · Dirección de Mantenimiento</span><span>Diseñado por DI Emiliano Villagra · Página ${page}/${total}</span></div>`;
+  const ftr=(page,total)=>`<div class="page-footer"><span>Fuente: módulo activo · análisis agrupado por ID único · Dirección de Mantenimiento</span><span>Diseñado por DI Emiliano Villagra · Página ${page}/${total}</span></div>`;
   const TOTAL=4;
 
   return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">

@@ -1742,8 +1742,10 @@ function getFilterSummary(){
 function topEntries(obj,n=6){return Object.entries(obj||{}).filter(([,v])=>Number(v)>0).sort((a,b)=>Number(b[1])-Number(a[1])).slice(0,n);}
 function isoDate(d){return d instanceof Date&&!isNaN(d)?d.toISOString().slice(0,10):'';}
 function toCSV(matrix,sep=';'){return matrix.map(row=>row.map(v=>csvCell(v,sep)).join(sep)).join('\r\n');}
-function csvCell(v,sep=';'){const s=String(v??'').replace(/\r?\n/g,' ').trim();return /[";,
-]/.test(s)||s.includes(sep)?`"${s.replaceAll('"','""')}"`:s;}
+function csvCell(v,sep=';'){
+  const s=String(v??'').replace(/\r?\n/g,' ').trim();
+  return /[";\r\n]/.test(s)||s.includes(sep)?`"${s.replaceAll('"','""')}"`:s;
+}
 function downloadText(filename,text,mime='text/plain;charset=utf-8;'){const blob=new Blob(['\ufeff',text],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},0);}
 function slug(s){return String(s||'reporte').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,55)||'reporte';}
 function dateStamp(){const d=new Date();return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;}

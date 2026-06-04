@@ -306,6 +306,28 @@
       background:var(--border);
       align-self:center
     }
+    /* ==== Filtros multiselección (estado / subestado / rubro / efector) ==== */
+    .ms{position:relative;font-size:13px}
+    .ms-control{border:1px solid var(--border);border-radius:11px;padding:9px 11px;background:#F8FAFC;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;box-sizing:border-box;transition:all .15s ease}
+    .ms-control:hover{border-color:var(--blue2)}
+    .ms.open .ms-control{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(37,99,235,.11);background:#fff}
+    .ms-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+    .ms-text.placeholder{color:var(--muted)}
+    .ms-caret{flex:none;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-top:-4px;transition:transform .15s ease}
+    .ms.open .ms-caret{transform:rotate(-135deg);margin-top:2px}
+    .ms-panel{position:absolute;z-index:60;top:calc(100% + 5px);left:0;right:0;min-width:215px;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.18);padding:8px;display:none;max-height:300px;flex-direction:column}
+    .ms.open .ms-panel{display:flex}
+    .ms-search{border:1px solid var(--border);border-radius:9px;padding:7px 9px;font-size:12.5px;outline:none;margin-bottom:6px;width:100%;box-sizing:border-box;color:var(--text);background:#F8FAFC}
+    .ms-search:focus{border-color:var(--blue2);background:#fff}
+    .ms-actions{display:flex;gap:6px;margin-bottom:6px}
+    .ms-act{flex:1;border:1px solid var(--border);background:#fff;border-radius:8px;padding:5px 6px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer}
+    .ms-act:hover{color:var(--blue);border-color:var(--blue2)}
+    .ms-list{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:1px}
+    .ms-opt{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;line-height:1.3}
+    .ms-opt:hover{background:#F1F5F9}
+    .ms-opt input{width:15px;height:15px;flex:none;accent-color:var(--blue);margin:0;cursor:pointer}
+    .ms-opt span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .ms-empty{padding:10px 8px;color:var(--muted);font-size:12px;text-align:center}
     .btn{
       display:inline-flex;
       align-items:center;
@@ -1439,10 +1461,10 @@
       <div class="field"><label>Fecha desde</label><input type="date" id="g-from" value=""></div>
       <div class="field"><label>Fecha hasta</label><input type="date" id="g-to" value=""></div>
       <div class="field"><label>Tipo de solicitud</label><select id="g-tipo"><option value="">Todos</option></select></div>
-      <div class="field"><label>Estado</label><select id="g-estado"><option value="">Todos</option></select></div>
-      <div class="field"><label>Subestado</label><select id="g-subestado"><option value="">Todos</option></select></div>
-      <div class="field"><label>Rubro</label><select id="g-rubro"><option value="">Todos</option></select></div>
-      <div class="field"><label>Efector</label><select id="g-efector"><option value="">Todos</option></select></div>
+      <div class="field"><label>Estado</label><div class="ms" id="ms-estado" data-key="estado"></div></div>
+      <div class="field"><label>Subestado</label><div class="ms" id="ms-subestado" data-key="subestado"></div></div>
+      <div class="field"><label>Rubro</label><div class="ms" id="ms-rubro" data-key="rubro"></div></div>
+      <div class="field"><label>Efector</label><div class="ms" id="ms-efector" data-key="efector"></div></div>
       <div class="field"><label>Búsqueda libre</label><input type="text" id="g-search" placeholder="ID, sector, producto, ítem..."></div>
       <div class="toolbar-sep"></div>
       <button class="btn btn-primary" onclick="applyFilters()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>Aplicar</button>
@@ -1506,7 +1528,7 @@ const TIPO_ORDER=['Urgencia','Programada','Mantenimiento','Pedidos de insumos','
 const TAB_META={general:{title:'Dashboard General Consolidado',sub:'Pestaña CONSOLIDADO analizada como conjunto',filter:null,source:'consolidado'},obras:{title:'Módulo Dpto. Obras',sub:'CONSOLIDADO filtrado por columna DERIVAR = DO',filter:['DO','D.O.','OBRAS'],source:'consolidado'},produccion:{title:'Módulo Dpto. Producción',sub:'CONSOLIDADO filtrado por columna DERIVAR = DP',filter:['DP','D.P.','PRODUCCION','PRODUCCIÓN'],source:'consolidado'},rf:{title:'Módulo Recursos Físicos',sub:'CONSOLIDADO filtrado por columna DERIVAR = RF',filter:['RF','R.F.','RECURSOS FISICOS','RECURSOS FÍSICOS'],source:'consolidado'},'odt-obras':{title:'Módulo Orden de Trabajo de Obras',sub:'Pestaña SOPORTE · análisis propio de órdenes, secciones, cuadrillas, materiales y destinos',filter:null,source:'odtObras'},'odt-produccion':{title:'Módulo Orden de Trabajo de Producción',sub:'Pestaña ORDENES · análisis propio de producción, talleres, materiales y destinos',filter:null,source:'odtProduccion'},'pedido-moviles':{title:'Módulo Pedidos de Móviles',sub:'Pestaña PEDIDO MOVILES · análisis de solicitudes, rutas, urgencias, móviles, choferes y estado',filter:null,source:'pedidoMoviles'}};
 const PALETTE=['#1A56DB','#0694A2','#10B981','#F59E0B','#8B5CF6','#F05252','#0EA5E9','#84CC16','#EC4899','#F97316','#14B8A6','#6366F1','#64748B','#0F766E','#7C3AED'];
 const STOPWORDS=new Set(['DE','DEL','LA','LAS','EL','LOS','Y','EN','A','AL','CON','POR','PARA','UNA','UNO','UN','QUE','SE','SU','SUS','SIN','SOBRE','ENTRE','O','U','E','NRO','Nº','NO','SI','ES','SON','DESDE','HASTA','AREA','SECTOR','SOLICITA','SOLICITAN','REALIZAR','TRABAJO','TRABAJOS','SERVICIO','PEDIDO','PEDIDOS','REPARACION','ARREGLO','COLOCACION','CAMBIO','CONTROL','REVISION','MANTENIMIENTO','GENERAL','ITEM','DESCRIPCION']);
-const S={raw:{consolidado:[],odtObras:[],odtProduccion:[],pedidoMoviles:[]},charts:{},activeTab:'general',lastRefresh:null,headers:[],headersBySource:{}};
+const S={raw:{consolidado:[],odtObras:[],odtProduccion:[],pedidoMoviles:[]},charts:{},activeTab:'general',lastRefresh:null,headers:[],headersBySource:{},ms:{sel:{estado:[],subestado:[],rubro:[],efector:[]},opts:{estado:[],subestado:[],rubro:[],efector:[]}}};
 
 document.addEventListener('DOMContentLoaded',async()=>{updateClock();setInterval(updateClock,30000);await refreshAll();});
 function updateClock(){const now=new Date();document.getElementById('topbar-time').textContent=now.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
@@ -1633,12 +1655,48 @@ function parseDateFlex(v){if(!v)return null;const s=String(v).trim();if(!s)retur
 function parseMoney(v){const s=String(v||'').replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.').replace(/[^\d.-]/g,'');const n=Number(s);return isNaN(n)?0:n;}
 
 function getBaseRows(tab){const meta=TAB_META[tab]||TAB_META.general;const sourceKey=meta.source||'consolidado';const base=S.raw[sourceKey]||[];if(!meta.filter)return base;const allowed=meta.filter.map(normText);return base.filter(r=>allowed.includes(normText(r.__derivarRaw)));}
-function getFilteredRows(){const rows=getBaseRows(S.activeTab);const from=document.getElementById('g-from')?.value;const to=document.getElementById('g-to')?.value;const tipo=document.getElementById('g-tipo')?.value;const estado=document.getElementById('g-estado')?.value;const subestado=document.getElementById('g-subestado')?.value;const rubro=document.getElementById('g-rubro')?.value;const efector=document.getElementById('g-efector')?.value;const search=String(document.getElementById('g-search')?.value||'').toLowerCase().trim();const fromD=from?new Date(from+'T00:00:00'):null;const toD=to?new Date(to+'T23:59:59'):null;return rows.filter(r=>{if((fromD||toD)&&!r.__fecha)return false;if(fromD&&r.__fecha<fromD)return false;if(toD&&r.__fecha>toD)return false;if(tipo&&r.__tipo!==tipo)return false;if(estado&&r.__estado!==estado)return false;if(subestado&&r.__subestado!==subestado)return false;if(rubro&&r.__rubro!==rubro)return false;if(efector&&r.__efector!==efector)return false;if(search&&!r.__texto.includes(search))return false;return true;});}
-function populateFilters(){const rows=getBaseRows(S.activeTab);fillSel('g-tipo',sortTipo([...new Set(rows.map(r=>r.__tipo).filter(Boolean))]));fillSel('g-estado',[...new Set(rows.map(r=>r.__estado).filter(v=>v&&v!=='Sin estado'))].sort());fillSel('g-subestado',[...new Set(rows.map(r=>r.__subestado).filter(v=>v&&v!=='Sin subestado'))].sort());fillSel('g-rubro',[...new Set(rows.map(r=>r.__rubro).filter(v=>v&&v!=='Sin rubro'))].sort());fillSel('g-efector',[...new Set(rows.map(r=>r.__efector).filter(v=>v&&v!=='Sin identificar'))].sort());}
+function getFilteredRows(){const rows=getBaseRows(S.activeTab);const from=document.getElementById('g-from')?.value;const to=document.getElementById('g-to')?.value;const tipo=document.getElementById('g-tipo')?.value;const selEstado=S.ms.sel.estado;const selSub=S.ms.sel.subestado;const selRubro=S.ms.sel.rubro;const selEfector=S.ms.sel.efector;const search=String(document.getElementById('g-search')?.value||'').toLowerCase().trim();const fromD=from?new Date(from+'T00:00:00'):null;const toD=to?new Date(to+'T23:59:59'):null;return rows.filter(r=>{if((fromD||toD)&&!r.__fecha)return false;if(fromD&&r.__fecha<fromD)return false;if(toD&&r.__fecha>toD)return false;if(tipo&&r.__tipo!==tipo)return false;if(selEstado.length&&!selEstado.includes(normText(r.__estado)))return false;if(selSub.length&&!selSub.includes(normText(r.__subestado)))return false;if(selRubro.length&&!selRubro.includes(normText(r.__rubro)))return false;if(selEfector.length&&!selEfector.includes(normText(r.__efector)))return false;if(search&&!r.__texto.includes(search))return false;return true;});}
+function populateFilters(){const rows=getBaseRows(S.activeTab);fillSel('g-tipo',sortTipo([...new Set(rows.map(r=>r.__tipo).filter(Boolean))]));msBuild('estado',rows,'__estado','Sin estado');msBuild('subestado',rows,'__subestado','Sin subestado');msBuild('rubro',rows,'__rubro','Sin rubro');msBuild('efector',rows,'__efector','Sin identificar');}
 function fillSel(id,vals){const el=document.getElementById(id);if(!el)return;const cur=el.value;el.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');if(vals.includes(cur))el.value=cur;}
 function sortTipo(vals){return vals.sort((a,b)=>{const ia=TIPO_ORDER.indexOf(a),ib=TIPO_ORDER.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b);});}
 function applyFilters(){renderModule();}
-function clearFilters(){['g-from','g-to','g-tipo','g-estado','g-subestado','g-rubro','g-efector','g-search'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});renderModule();}
+function clearFilters(){['g-from','g-to','g-tipo','g-search'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});['estado','subestado','rubro','efector'].forEach(k=>{S.ms.sel[k]=[];msRender(k);});renderModule();}
+
+/* ===== Filtros multiselección + unificación por nombre ===== */
+function msLabelTitle(v){return String(v||'').trim().replace(/\s+/g,' ');}
+function msPickLabel(a,b){if(!a)return b;const mix=s=>/[a-zñáéíóúü]/.test(s)&&/[A-ZÑÁÉÍÓÚÜ]/.test(s);if(mix(b)&&!mix(a))return b;return a;}
+function msBuild(key,rows,field,sentinel){
+  const map=new Map();
+  rows.forEach(r=>{const raw=msLabelTitle(r[field]);if(!raw||raw===sentinel)return;const nk=normText(raw);if(!nk)return;map.set(nk,msPickLabel(map.get(nk),raw));});
+  const opts=[...map.entries()].map(([k,label])=>({k,label})).sort((a,b)=>a.label.localeCompare(b.label,'es'));
+  S.ms.opts[key]=opts;
+  const valid=new Set(opts.map(o=>o.k));
+  S.ms.sel[key]=S.ms.sel[key].filter(k=>valid.has(k));
+  msRender(key);
+}
+function msSummary(key){const sel=S.ms.sel[key];if(!sel.length)return{text:'Todos',ph:true};if(sel.length===1){const o=S.ms.opts[key].find(o=>o.k===sel[0]);return{text:o?o.label:sel[0],ph:false};}return{text:`${sel.length} seleccionados`,ph:false};}
+function msRender(key){
+  const cont=document.getElementById('ms-'+key);if(!cont)return;
+  const wasOpen=cont.classList.contains('open');
+  const sum=msSummary(key);const sel=S.ms.sel[key];const opts=S.ms.opts[key]||[];
+  cont.innerHTML=
+    `<div class="ms-control" onclick="msToggle('${key}')"><span class="ms-text${sum.ph?' placeholder':''}">${esc(sum.text)}</span><span class="ms-caret"></span></div>`+
+    `<div class="ms-panel" onclick="event.stopPropagation()">`+
+      `<input class="ms-search" type="text" placeholder="Buscar..." oninput="msFilterList('${key}',this.value)">`+
+      `<div class="ms-actions"><button type="button" class="ms-act" onclick="msAll('${key}')">Todos</button><button type="button" class="ms-act" onclick="msNone('${key}')">Ninguno</button></div>`+
+      `<div class="ms-list">`+
+        (opts.length?opts.map(o=>`<label class="ms-opt" data-label="${esc(o.label.toLowerCase())}"><input type="checkbox" value="${esc(o.k)}" ${sel.includes(o.k)?'checked':''} onchange="msPick('${key}',this.value,this.checked)"><span>${esc(o.label)}</span></label>`).join(''):`<div class="ms-empty">Sin opciones</div>`)+
+      `</div>`+
+    `</div>`;
+  if(wasOpen)cont.classList.add('open');
+}
+function msToggle(key){const cont=document.getElementById('ms-'+key);if(!cont)return;const open=cont.classList.contains('open');document.querySelectorAll('.ms.open').forEach(el=>el.classList.remove('open'));if(!open){cont.classList.add('open');const s=cont.querySelector('.ms-search');if(s){s.value='';msFilterList(key,'');setTimeout(()=>s.focus(),10);}}}
+function msPick(key,k,checked){const sel=S.ms.sel[key];const i=sel.indexOf(k);if(checked){if(i<0)sel.push(k);}else if(i>=0)sel.splice(i,1);msUpdateText(key);applyFilters();}
+function msAll(key){S.ms.sel[key]=(S.ms.opts[key]||[]).map(o=>o.k);msRender(key);document.getElementById('ms-'+key).classList.add('open');applyFilters();}
+function msNone(key){S.ms.sel[key]=[];msRender(key);document.getElementById('ms-'+key).classList.add('open');applyFilters();}
+function msUpdateText(key){const cont=document.getElementById('ms-'+key);if(!cont)return;const t=cont.querySelector('.ms-text');if(!t)return;const sum=msSummary(key);t.textContent=sum.text;t.classList.toggle('placeholder',sum.ph);}
+function msFilterList(key,q){const cont=document.getElementById('ms-'+key);if(!cont)return;const term=normText(q);cont.querySelectorAll('.ms-opt').forEach(o=>{const lbl=normText(o.getAttribute('data-label'));o.style.display=(!term||lbl.includes(term))?'':'none';});}
+document.addEventListener('click',e=>{if(!e.target.closest('.ms'))document.querySelectorAll('.ms.open').forEach(el=>el.classList.remove('open'));});
 
 function isFin(e){const s=normText(e);return['FINALIZADO','FINALIZADA','CERRADO','CERRADA','RESUELTO','RESUELTA','COMPLETADO','COMPLETADA','TERMINADO','TERMINADA'].some(x=>s.includes(x));}
 function isCancel(e){const s=normText(e);return['NO CALIFICA','ANULADO','ANULADA','CANCELADO','CANCELADA','MAL CARGADO','MAL CARGADA'].some(x=>s.includes(x));}
@@ -2258,7 +2316,8 @@ function getReportChartImages_ids(ids){
   }).filter(Boolean);
 }
 function getFilterSummary(){
-  const pairs=[['Desde',document.getElementById('g-from')?.value],['Hasta',document.getElementById('g-to')?.value],['Tipo',document.getElementById('g-tipo')?.value],['Estado',document.getElementById('g-estado')?.value],['Subestado',document.getElementById('g-subestado')?.value],['Rubro',document.getElementById('g-rubro')?.value],['Efector',document.getElementById('g-efector')?.value],['Búsqueda',document.getElementById('g-search')?.value]];
+  const msLabels=key=>S.ms.sel[key].map(k=>{const o=(S.ms.opts[key]||[]).find(o=>o.k===k);return o?o.label:k;}).join(', ');
+  const pairs=[['Desde',document.getElementById('g-from')?.value],['Hasta',document.getElementById('g-to')?.value],['Tipo',document.getElementById('g-tipo')?.value],['Estado',msLabels('estado')],['Subestado',msLabels('subestado')],['Rubro',msLabels('rubro')],['Efector',msLabels('efector')],['Búsqueda',document.getElementById('g-search')?.value]];
   const active=pairs.filter(([,v])=>String(v||'').trim()).map(([k,v])=>`${k}: ${v}`);
   return active.length?active.join(' · '):'Sin filtros aplicados';
 }

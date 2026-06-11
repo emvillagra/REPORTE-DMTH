@@ -1047,6 +1047,51 @@
     @media(max-width:1180px){.rec-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:760px){.rec-grid{grid-template-columns:1fr}}
 
+
+
+    /* ── MÓDULO INDICADORES DMTH ── */
+    .dmth-panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;animation:fadeUp .34s ease both}
+    .dmth-hero{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;align-items:stretch}
+    .dmth-hero-main{background:linear-gradient(135deg,#0D1B2A,#1A56DB);color:white;border-radius:15px;padding:17px 18px;box-shadow:var(--shadow-lg)}
+    .dmth-hero-main h3{font-size:16px;font-weight:950;margin-bottom:7px;color:#fff}
+    .dmth-hero-main p{font-size:11.5px;line-height:1.5;color:rgba(255,255,255,.82)}
+    .dmth-mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .dmth-mini{background:#F8FAFC;border:1px solid var(--border);border-radius:13px;padding:10px}
+    .dmth-mini span{display:block;font-size:9px;text-transform:uppercase;color:var(--muted);font-weight:950;letter-spacing:.4px}
+    .dmth-mini b{display:block;font-size:17px;margin-top:4px;color:var(--text)}
+    .dmth-chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+    .dmth-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;border-radius:999px;padding:5px 8px;border:1px solid #BFDBFE;background:#EFF6FF;color:#1D4ED8}
+    .dmth-matrix{width:100%;min-width:1180px;border-collapse:separate;border-spacing:0;font-size:10.5px}
+    .dmth-matrix th{position:sticky;top:0;background:#0D1B2A;color:#fff;padding:7px 8px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.25px;z-index:1}
+    .dmth-matrix td{border-bottom:1px solid #E2E8F0;border-right:1px solid #E2E8F0;padding:6px 8px;vertical-align:middle;background:#fff}
+    .dmth-matrix tr:nth-child(even) td{background:#F8FAFC}
+    .dmth-matrix .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .dmth-matrix .process{font-weight:900;color:#0D1B2A;max-width:170px}
+    .dmth-matrix .indicator{font-weight:900;color:#1D4ED8;max-width:150px}
+    .dmth-matrix .variable{max-width:170px;color:#334155}
+    .dmth-ok{background:#D1FAE5!important;color:#065F46!important;font-weight:950!important;text-align:center;border-radius:0}
+    .dmth-bad{background:#FEE2E2!important;color:#991B1B!important;font-weight:950!important;text-align:center;border-radius:0}
+    .dmth-na{background:#F1F5F9!important;color:#64748B!important;text-align:center}
+    .dmth-meta{font-weight:950;color:#475569;background:#F8FAFC!important;white-space:nowrap}
+    .dmth-card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .dmth-ind-card{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:13px;position:relative;overflow:hidden}
+    .dmth-ind-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--blue2)}
+    .dmth-ind-card.ok::before{background:var(--green2)}
+    .dmth-ind-card.bad::before{background:var(--red2)}
+    .dmth-ind-title{font-size:11px;font-weight:950;color:var(--text);margin-bottom:7px;text-transform:uppercase;letter-spacing:.35px}
+    .dmth-ind-value{font-size:27px;font-weight:950;line-height:1;color:var(--navy);margin-bottom:4px}
+    .dmth-ind-sub{font-size:10.5px;color:var(--muted);line-height:1.35}
+    .dmth-ind-status{display:inline-flex;margin-top:8px;border-radius:999px;padding:4px 8px;font-size:9.5px;font-weight:950}
+    .dmth-ind-card.ok .dmth-ind-status{background:#D1FAE5;color:#065F46}
+    .dmth-ind-card.bad .dmth-ind-status{background:#FEE2E2;color:#991B1B}
+    .dmth-chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .dmth-chart{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px}
+    .dmth-chart h3{font-size:11.8px;font-weight:950;margin-bottom:2px}
+    .dmth-chart p{font-size:9.8px;color:var(--muted);margin-bottom:8px}
+    .dmth-chart .chart-box{height:220px}
+    @media(max-width:1050px){.dmth-hero,.dmth-chart-grid{grid-template-columns:1fr}.dmth-card-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:760px){.dmth-card-grid,.dmth-mini-grid{grid-template-columns:1fr}.dmth-matrix{min-width:960px}}
+
     @media print{
       .sidebar,.topbar,.toolbar-card,.toast{
       display:none!important
@@ -1448,6 +1493,8 @@
       <button class="nav-item" data-tab="odt-obras" onclick="switchTab('odt-obras',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-7h6v7"/><path d="M7 10h2M15 10h2"/></svg>ODT Obras <span class="nav-badge" id="badge-odt-obras">—</span></button>
       <button class="nav-item" data-tab="odt-produccion" onclick="switchTab('odt-produccion',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V10l5 3V9l5 4V8l8 5v8H3z"/><path d="M7 17h2M12 17h2M17 17h2"/></svg>ODT Producción <span class="nav-badge" id="badge-odt-produccion">—</span></button>
       <button class="nav-item" data-tab="pedido-moviles" onclick="switchTab('pedido-moviles',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14l-1.5-6.5A2 2 0 0015.6 9H8.4a2 2 0 00-1.9 1.5L5 17z"/><path d="M7 17v2M17 17v2"/><circle cx="8" cy="17" r="1"/><circle cx="16" cy="17" r="1"/><path d="M8 9V6h8v3"/></svg>Pedidos de móviles <span class="nav-badge" id="badge-pedido-moviles">—</span></button>
+      <div class="nav-label" style="margin-top:14px">Control directivo</div>
+      <button class="nav-item" data-tab="indicadores-dmth" onclick="switchTab('indicadores-dmth',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="11" width="3" height="5" rx="1"/><rect x="12" y="7" width="3" height="9" rx="1"/><rect x="17" y="3" width="3" height="13" rx="1"/></svg>Indicadores DMTH <span class="nav-badge" id="badge-indicadores-dmth">—</span></button>
       <div class="nav-label" style="margin-top:14px">Acciones</div>
       <button class="nav-item" onclick="showSourceStatus()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h10M4 18h6"/></svg>Estado de datos</button>
       <button class="nav-item" onclick="refreshAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-15.5 6.2"/><path d="M3 12A9 9 0 0118.5 5.8"/><path d="M18 3v4h4M6 21v-4H2"/></svg>Refrescar datos</button>
@@ -1525,9 +1572,9 @@ const CONFIG={
   pedidoMoviles:{label:'PEDIDOS DE MÓVILES',CSV_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vR57w_yP1_FfAzWryu64yqD0w61PFLsnxY-25QdMqFb69bWWyOWu6zfLYgHwQZzKWVpl5D3HT0EC7N5/pub?gid=1174281307&single=true&output=csv'}
 };
 const DERIVAR_MAP={'DO':'Dpto. Obras','D.O.':'Dpto. Obras','OBRAS':'Dpto. Obras','DP':'Dpto. Producción','D.P.':'Dpto. Producción','PRODUCCION':'Dpto. Producción','PRODUCCIÓN':'Dpto. Producción','RF':'Recursos Físicos','R.F.':'Recursos Físicos','RECURSOS FISICOS':'Recursos Físicos','RECURSOS FÍSICOS':'Recursos Físicos'};
-const TIPO_MAP={'URGENCIA':'Urgencia','URGENTE':'Urgencia','EMERGENCIA':'Urgencia','PROGRAMADA':'Programada','PROGRAMADO':'Programada','MANTENIMIENTO':'Mantenimiento','MANT.':'Mantenimiento','MANT':'Mantenimiento','PEDIDOS DE INSUMOS':'Pedidos de insumos','PEDIDO DE INSUMOS':'Pedidos de insumos','INSUMOS':'Pedidos de insumos','PEDIDO INSUMOS':'Pedidos de insumos','PEDIDOS INSUMOS':'Pedidos de insumos'};
+const TIPO_MAP={'URGENCIA':'Urgencia','URGENTE':'Urgencia','EMERGENCIA':'Urgencia','PROGRAMADA':'Programada','PROGRAMADO':'Programada','MANTENIMIENTO':'Mantenimiento','MANT.':'Mantenimiento','MANT':'Mantenimiento','PEDIDOS DE INSUMOS':'Pedidos de insumos','PEDIDO DE INSUMOS':'Pedidos de insumos','INSUMOS':'Pedidos de insumos','PEDIDO INSUMOS':'Pedidos de insumos','PEDIDOS INSUMOS':'Pedidos de insumos','PEDIDO':'Pedidos de insumos','PEDIDOS':'Pedidos de insumos','PEDIDO DE MATERIALES':'Pedidos de insumos','PEDIDOS DE MATERIALES':'Pedidos de insumos'};
 const TIPO_ORDER=['Urgencia','Programada','Mantenimiento','Pedidos de insumos','ODT Obras','ODT Producción','Pedido de móvil','Sin tipo'];
-const TAB_META={general:{title:'Dashboard General Consolidado',sub:'Pestaña CONSOLIDADO analizada como conjunto',filter:null,source:'consolidado'},obras:{title:'Módulo Dpto. Obras',sub:'CONSOLIDADO filtrado por columna DERIVAR = DO',filter:['DO','D.O.','OBRAS'],source:'consolidado'},produccion:{title:'Módulo Dpto. Producción',sub:'CONSOLIDADO filtrado por columna DERIVAR = DP',filter:['DP','D.P.','PRODUCCION','PRODUCCIÓN'],source:'consolidado'},rf:{title:'Módulo Recursos Físicos',sub:'CONSOLIDADO filtrado por columna DERIVAR = RF',filter:['RF','R.F.','RECURSOS FISICOS','RECURSOS FÍSICOS'],source:'consolidado'},'odt-obras':{title:'Módulo Orden de Trabajo de Obras',sub:'Pestaña SOPORTE · análisis propio de órdenes, secciones, cuadrillas, materiales y destinos',filter:null,source:'odtObras'},'odt-produccion':{title:'Módulo Orden de Trabajo de Producción',sub:'Pestaña ORDENES · análisis propio de producción, talleres, materiales y destinos',filter:null,source:'odtProduccion'},'pedido-moviles':{title:'Módulo Pedidos de Móviles',sub:'Pestaña PEDIDO MOVILES · análisis de solicitudes, rutas, urgencias, móviles, choferes y estado',filter:null,source:'pedidoMoviles'}};
+const TAB_META={general:{title:'Dashboard General Consolidado',sub:'Pestaña CONSOLIDADO analizada como conjunto',filter:null,source:'consolidado'},obras:{title:'Módulo Dpto. Obras',sub:'CONSOLIDADO filtrado por columna DERIVAR = DO',filter:['DO','D.O.','OBRAS'],source:'consolidado'},produccion:{title:'Módulo Dpto. Producción',sub:'CONSOLIDADO filtrado por columna DERIVAR = DP',filter:['DP','D.P.','PRODUCCION','PRODUCCIÓN'],source:'consolidado'},rf:{title:'Módulo Recursos Físicos',sub:'CONSOLIDADO filtrado por columna DERIVAR = RF',filter:['RF','R.F.','RECURSOS FISICOS','RECURSOS FÍSICOS'],source:'consolidado'},'odt-obras':{title:'Módulo Orden de Trabajo de Obras',sub:'Pestaña SOPORTE · análisis propio de órdenes, secciones, cuadrillas, materiales y destinos',filter:null,source:'odtObras'},'odt-produccion':{title:'Módulo Orden de Trabajo de Producción',sub:'Pestaña ORDENES · análisis propio de producción, talleres, materiales y destinos',filter:null,source:'odtProduccion'},'pedido-moviles':{title:'Módulo Pedidos de Móviles',sub:'Pestaña PEDIDO MOVILES · análisis de solicitudes, rutas, urgencias, móviles, choferes y estado',filter:null,source:'pedidoMoviles'},'indicadores-dmth':{title:'Matriz de Control de Indicadores DMTH',sub:'CONSOLIDADO · indicadores de gestión, tiempos de respuesta, metas y cumplimiento',filter:null,source:'consolidado'}};
 const PALETTE=['#1A56DB','#0694A2','#10B981','#F59E0B','#8B5CF6','#F05252','#0EA5E9','#84CC16','#EC4899','#F97316','#14B8A6','#6366F1','#64748B','#0F766E','#7C3AED'];
 const STOPWORDS=new Set(['DE','DEL','LA','LAS','EL','LOS','Y','EN','A','AL','CON','POR','PARA','UNA','UNO','UN','QUE','SE','SU','SUS','SIN','SOBRE','ENTRE','O','U','E','NRO','Nº','NO','SI','ES','SON','DESDE','HASTA','AREA','SECTOR','SOLICITA','SOLICITAN','REALIZAR','TRABAJO','TRABAJOS','SERVICIO','PEDIDO','PEDIDOS','REPARACION','ARREGLO','COLOCACION','CAMBIO','CONTROL','REVISION','MANTENIMIENTO','GENERAL','ITEM','DESCRIPCION']);
 const S={raw:{consolidado:[],odtObras:[],odtProduccion:[],pedidoMoviles:[]},charts:{},activeTab:'general',lastRefresh:null,headers:[],headersBySource:{},ms:{sel:{estado:[],subestado:[],rubro:[],efector:[]},opts:{estado:[],subestado:[],rubro:[],efector:[]}}};
@@ -1577,6 +1624,12 @@ function normalizeRow(row,rowIndex=0,sourceKey='consolidado'){
   out.__sector=getField(row,['SECTOR SOLICITANTE','Sector solicitante','Sector','SECTOR','Área operativa / programática','Area operativa / programatica','Operativa','Programática','Programatica','CUADRILLA'])||'Sin sector';
   out.__expediente=getField(row,['Nº de expediente','N° de expediente','Nº DE EXPEDIENTE','N° DE EXPEDIENTE','Expediente','EXPEDIENTE','Generó expediente (Sí / No)','Genero expediente (Si / No)'])||'';
   out.__monto=parseMoney(getField(row,['Monto Contrato','Pres. Oficial','Pres. Actual','Costo Directo + IVA','A. Financiero','TOTAL','Monto','Importe']));
+  out.__fechaIngreso=parseDateFlex(getField(row,['Timestamp','Marca temporal','FECHA DE DERIVACION','FECHA DE DERIVACIÓN','FECHA','Fecha','fecha']))||out.__fecha;
+  out.__fechaProgramacion=parseDateFlex(getField(row,['FECHA DE PROGRAMACION','FECHA DE PROGRAMACIÓN']));
+  out.__fechaPedidoMateriales=parseDateFlex(getField(row,['FECHA PEDIDO DE MATERIALES']));
+  out.__fechaInicioTareas=parseDateFlex(getField(row,['FECHA INICIO TAREAS']));
+  out.__fechaFinalizacion=parseDateFlex(getField(row,['FECHA FINALIZACION','FECHA FINALIZACIÓN','Fecha finalizacion','Fecha finalización']));
+  out.__diasResolucion=daysBetween(out.__fechaIngreso,out.__fechaFinalizacion);
   out.__texto=Object.values(row).filter(v=>!Array.isArray(v)).join(' ').toLowerCase();
   out.__texto+=' '+[out.__id,out.__efector,out.__sector,out.__rubro,out.__subrubro,out.__producto,out.__item].join(' ').toLowerCase();
   return out;
@@ -1654,6 +1707,7 @@ function getField(row,names){const keys=Object.keys(row).filter(k=>k!=='__cells'
 function getCell(row,idx){return Array.isArray(row.__cells)?(row.__cells[idx]??''):'';}
 function normText(v){return String(v||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').toUpperCase();}
 function parseDateFlex(v){if(!v)return null;const s=String(v).trim();if(!s)return null;if(!isNaN(+s)&&+s>20000&&+s<70000)return new Date(Date.UTC(1899,11,30)+(+s)*86400000);const m=s.split(' ')[0].match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,+m[2]-1,+m[1]);}const d=new Date(s.split(' ')[0]);return isNaN(d)?null:d;}
+function daysBetween(a,b){if(!(a instanceof Date)||!(b instanceof Date)||isNaN(a)||isNaN(b))return null;const ms=new Date(b.getFullYear(),b.getMonth(),b.getDate())-new Date(a.getFullYear(),a.getMonth(),a.getDate());return Math.max(0,Math.round(ms/86400000));}
 function parseMoney(v){const s=String(v||'').replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.').replace(/[^\d.-]/g,'');const n=Number(s);return isNaN(n)?0:n;}
 
 function getBaseRows(tab){const meta=TAB_META[tab]||TAB_META.general;const sourceKey=meta.source||'consolidado';const base=S.raw[sourceKey]||[];if(!meta.filter)return base;const allowed=meta.filter.map(normText);return base.filter(r=>allowed.includes(normText(r.__derivarRaw)));}
@@ -1720,7 +1774,7 @@ function uniqueVals(rows,key){return [...new Set(rows.map(r=>String(r[key]||'').
 function groupTipoStats(rows){const tasks=buildTasks(rows);return sortTipo([...new Set(tasks.map(r=>r.__tipo||'Sin tipo'))]).map(tipo=>{const ts=tasks.filter(r=>r.__tipo===tipo);const detail=rows.filter(r=>r.__tipo===tipo);const fin=ts.filter(r=>isFin(r.__estado)).length;const pen=ts.filter(r=>isPend(r.__estado)).length;const crit=ts.filter(r=>r.__critico||isCrit(r)).length;return{tipo,total:ts.length,filas:detail.length,finalizados:fin,pendientes:pen,criticos:crit,resolucion:pct(fin,ts.length),topRubro:topEntry(countUniqueBy(detail,'__rubro')),topEstado:topEntry(countBy(ts,'__estado'))};});}
 function calcMetrics(rows,tab){const tasks=buildTasks(rows);const total=tasks.length;const detailTotal=rows.length;const estados=countBy(tasks,'__estado'),subestados=countBy(tasks,'__subestado'),tipos=countBy(tasks,'__tipo'),sectores=countBy(tasks,'__sector'),efectores=countBy(tasks,'__efector'),derivs=countBy(tasks,'__derivar');const rubros=countUniqueBy(rows,'__rubro'),subrubros=countUniqueBy(rows,'__subrubro'),productos=countUniqueBy(rows,'__producto'),items=countUniqueBy(rows,'__item');const finalizados=tasks.filter(r=>isFin(r.__estado)).length;const pendientes=tasks.filter(r=>isPend(r.__estado)).length;const criticos=tasks.filter(r=>r.__critico||isCrit(r)).length;const conFecha=tasks.filter(r=>r.__fecha).length;const conExp=tasks.filter(r=>String(r.__expediente||'').trim()).length;const conSub=rows.filter(r=>r.__subestado&&r.__subestado!=='Sin subestado').length;const conItem=rows.filter(r=>r.__item&&r.__item!=='Sin descripción').length;const tipoStats=groupTipoStats(rows);return{tab,rows,tasks,total,detailTotal,filasAgrupadas:Math.max(0,detailTotal-total),estados,subestados,tipos,rubros,subrubros,productos,items,sectores,efectores,derivs,tipoStats,finalizados,pendientes,criticos,conFecha,sinFecha:total-conFecha,conExp,conSub,conItem,topTipo:topEntry(tipos),topEst:topEntry(estados),topSub:topEntry(subestados),topRub:topEntry(rubros),topSubrub:topEntry(subrubros),topProd:topEntry(productos),topItem:topEntry(items),topSec:topEntry(sectores),topEf:topEntry(efectores),compRate:pct(finalizados,total),pendRate:pct(pendientes,total),critRate:pct(criticos,total),dateRate:pct(conFecha,total),expRate:pct(conExp,total),subRate:pct(conSub,detailTotal),itemRate:pct(conItem,detailTotal)};}
 
-function renderModule(){showLoading(true);const rows=getFilteredRows();const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderTipoCards(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderRecomendaciones(m);renderCharts(rows,m);renderPareto(rows,m);renderTable(rows,m);showLoading(false);setStatus(`${fmt(m.total)} tareas únicas · ${fmt(m.detailTotal)} filas detalle · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
+function renderModule(){showLoading(true);const rows=getFilteredRows();if(S.activeTab==='indicadores-dmth'){renderIndicadoresDMTH(rows);showLoading(false);return;}const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderTipoCards(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderRecomendaciones(m);renderCharts(rows,m);renderPareto(rows,m);renderTable(rows,m);showLoading(false);setStatus(`${fmt(m.total)} tareas únicas · ${fmt(m.detailTotal)} filas detalle · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
 
 /* ─── ANÁLISIS DE PARETO ─────────────────────────────── */
 function calcParetoData(obj, limit=15){
@@ -2013,10 +2067,161 @@ function mkCrossChartUnique(rows,primaryKey,secondaryKey,title,subtitle,horizont
 function countPairs(rows,keyA,valA,keyB,valB){const seen=new Set();rows.forEach(r=>{if(String(r[keyA]||'Sin dato')!==valA)return;if(String(r[keyB]||'Sin dato')!==valB)return;seen.add(`${r.__idKey}|${keyA}|${normText(valA)}|${keyB}|${normText(valB)}`);});return seen.size;}
 function extractKeywords(rows){const o={};rows.forEach(r=>{const text=normText(r.__item||'').replace(/[^A-Z0-9Ñ ]/g,' ');text.split(/\s+/).filter(w=>w.length>=4&&!STOPWORDS.has(w)&&!/^[0-9]+$/.test(w)).forEach(w=>{const k=`${r.__idKey}|${w}`;if(!o.__seen)o.__seen=new Set();if(o.__seen.has(k))return;o.__seen.add(k);o[w]=(o[w]||0)+1;});});delete o.__seen;return o;}
 
+
+/* ─── MÓDULO INDICADORES DMTH ─────────────────────────────── */
+const DMTH_MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DMTH_TYPES={urg:{label:'Urgencias',tipo:'Urgencia',total:'TOTAL DE URGENCIAS',res:'URGENCIAS RESUELTAS'},mant:{label:'Mantenimientos',tipo:'Mantenimiento',total:'TOTAL DE MANTENIMIENTOS',res:'MANTENIMIENTOS RESUELTOS'},ped:{label:'Pedidos',tipo:'Pedidos de insumos',total:'TOTAL DE PEDIDOS',res:'PEDIDOS RESUELTOS'}};
+const DMTH_INDICATOR_DEFS=[
+  {process:'6 - GESTIÓN LINK URG',indicator:'URGENCIAS',type:'urg',variable:'URGENCIAS RESUELTAS',meta:{op:'>',val:95},kind:'gestion'},
+  {process:'8 - GESTIÓN MANT. LINK+EXP',indicator:'MANTENIMIENTO',type:'mant',variable:'MANTENIMIENTOS RESUELTOS',meta:{op:'>',val:80},kind:'gestion'},
+  {process:'13 - GESTIÓN PEDIDOS - LINK+EXP',indicator:'PEDIDOS',type:'ped',variable:'PEDIDOS RESUELTOS',meta:{op:'>',val:60},kind:'gestion'},
+  {process:'7 - TIEMPOS DE RESPUESTA ANTE URGENCIAS - LINK',indicator:'0 a 1 día',type:'urg',variable:'URG RESUELTAS 0 a 1',meta:{op:'>',val:50},kind:'range',min:0,max:1},
+  {process:'7 - TIEMPOS DE RESPUESTA ANTE URGENCIAS - LINK',indicator:'2 a 7 días',type:'urg',variable:'URG RESUELTAS 2 a 7',meta:{op:'>',val:20},kind:'range',min:2,max:7},
+  {process:'7 - TIEMPOS DE RESPUESTA ANTE URGENCIAS - LINK',indicator:'8 a 15 días',type:'urg',variable:'URG RESUELTAS 8 a 15',meta:{op:'>',val:10},kind:'range',min:8,max:15},
+  {process:'7 - TIEMPOS DE RESPUESTA ANTE URGENCIAS - LINK',indicator:'16 a 30 días',type:'urg',variable:'URG RESUELTAS 16 a 30',meta:{op:'<',val:10},kind:'range',min:16,max:30},
+  {process:'7 - TIEMPOS DE RESPUESTA ANTE URGENCIAS - LINK',indicator:'Más de 30 días',type:'urg',variable:'URG RESUELTAS MÁS DE 30',meta:{op:'<',val:8},kind:'range',min:31,max:Infinity},
+  {process:'7 - TIEMPOS DE RESPUESTA ANTE URGENCIAS - LINK',indicator:'Más de 365 días',type:'urg',variable:'URG RESUELTAS MÁS DE 365',meta:{op:'<',val:2},kind:'range',min:366,max:Infinity},
+  {process:'9 - TIEMPOS DE RESPUESTA MANTENIMIENTO - LINK+EXPTES',indicator:'0 a 15 días',type:'mant',variable:'MANT RESUELTOS 0 a 15',meta:{op:'>',val:40},kind:'range',min:0,max:15},
+  {process:'9 - TIEMPOS DE RESPUESTA MANTENIMIENTO - LINK+EXPTES',indicator:'16 a 30 días',type:'mant',variable:'MANT RESUELTOS 16 a 30',meta:{op:'>',val:25},kind:'range',min:16,max:30},
+  {process:'9 - TIEMPOS DE RESPUESTA MANTENIMIENTO - LINK+EXPTES',indicator:'31 a 90 días',type:'mant',variable:'MANT RESUELTOS 31 a 90',meta:{op:'>',val:15},kind:'range',min:31,max:90},
+  {process:'9 - TIEMPOS DE RESPUESTA MANTENIMIENTO - LINK+EXPTES',indicator:'91 a 180 días',type:'mant',variable:'MANT RESUELTOS 91 a 180',meta:{op:'<',val:10},kind:'range',min:91,max:180},
+  {process:'9 - TIEMPOS DE RESPUESTA MANTENIMIENTO - LINK+EXPTES',indicator:'181 a 365 días',type:'mant',variable:'MANT RESUELTOS 181 a 365',meta:{op:'<',val:8},kind:'range',min:181,max:365},
+  {process:'9 - TIEMPOS DE RESPUESTA MANTENIMIENTO - LINK+EXPTES',indicator:'Más de 365 días',type:'mant',variable:'MANT RESUELTOS MÁS 365',meta:{op:'<',val:2},kind:'range',min:366,max:Infinity},
+  {process:'14 - TIEMPOS DE RESPUESTA PEDIDOS',indicator:'0 a 15 días',type:'ped',variable:'PED. RESUELTOS 0 a 15',meta:{op:'>',val:40},kind:'range',min:0,max:15},
+  {process:'14 - TIEMPOS DE RESPUESTA PEDIDOS',indicator:'16 a 30 días',type:'ped',variable:'PED. RESUELTOS 16 a 30',meta:{op:'>',val:25},kind:'range',min:16,max:30},
+  {process:'14 - TIEMPOS DE RESPUESTA PEDIDOS',indicator:'31 a 90 días',type:'ped',variable:'PED. RESUELTOS 31 a 90',meta:{op:'>',val:15},kind:'range',min:31,max:90},
+  {process:'14 - TIEMPOS DE RESPUESTA PEDIDOS',indicator:'91 a 180 días',type:'ped',variable:'PED. RESUELTOS 91 a 180',meta:{op:'<',val:10},kind:'range',min:91,max:180},
+  {process:'14 - TIEMPOS DE RESPUESTA PEDIDOS',indicator:'181 a 365 días',type:'ped',variable:'PED. RESUELTOS 181 a 365',meta:{op:'<',val:8},kind:'range',min:181,max:365},
+  {process:'14 - TIEMPOS DE RESPUESTA PEDIDOS',indicator:'Más de 365 días',type:'ped',variable:'PED. RESUELTOS MÁS 365',meta:{op:'<',val:2},kind:'range',min:366,max:Infinity}
+];
+function dmthTipoKey(tipo){const s=normText(tipo);if(s.includes('URGEN'))return'urg';if(s.includes('MANT'))return'mant';if(s.includes('PEDIDO')||s.includes('INSUMO'))return'ped';return'other';}
+function taskDateIngreso(t){const ds=(t.__rows||[t]).map(r=>r.__fechaIngreso||r.__fecha).filter(Boolean).sort((a,b)=>a-b);return ds[0]||t.__fecha||null;}
+function taskDateFin(t){const ds=(t.__rows||[t]).map(r=>r.__fechaFinalizacion).filter(Boolean).sort((a,b)=>b-a);return ds[0]||null;}
+function taskDays(t){const d=(t.__rows||[t]).map(r=>r.__diasResolucion).filter(v=>v!==null&&v!==undefined&&!isNaN(v)).sort((a,b)=>b-a)[0];if(d!==undefined)return d;return daysBetween(taskDateIngreso(t),taskDateFin(t));}
+function dmthMonthKey(d){return d?`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`:'Sin fecha';}
+function dmthMonthLabel(k){if(k==='Sin fecha')return'Sin fecha';const [y,m]=k.split('-').map(Number);return`${DMTH_MONTHS[(m||1)-1]} ${y}`;}
+function metaTxt(meta){return`${meta.op} ${meta.val}%`;}
+function cumpleMeta(real,meta){if(real===null||real===undefined||isNaN(real))return null;return meta.op==='>'?real>meta.val:real<meta.val;}
+function fmtPctDMTH(v){return v===null||v===undefined||isNaN(v)?'—':`${String(Number(v).toFixed(Number(v)%1?1:0)).replace('.',',')}%`;}
+function buildDMTHTasks(rows){return buildTasks(rows).map(t=>{const ing=taskDateIngreso(t),fin=taskDateFin(t),dias=taskDays(t);return{...t,__dmthTipo:dmthTipoKey(t.__tipo),__dmthIngreso:ing,__dmthFin:fin,__dmthDays:dias,__dmthMonth:dmthMonthKey(ing),__dmthFinal:isFin(t.__estado)};}).filter(t=>['urg','mant','ped'].includes(t.__dmthTipo));}
+function buildDMTHMatrix(rows){
+  const tasks=buildDMTHTasks(rows);
+  const months=[...new Set(tasks.map(t=>t.__dmthMonth).filter(k=>k!=='Sin fecha'))].sort();
+  const monthList=months.length?months:[];
+  const byType={urg:tasks.filter(t=>t.__dmthTipo==='urg'),mant:tasks.filter(t=>t.__dmthTipo==='mant'),ped:tasks.filter(t=>t.__dmthTipo==='ped')};
+  const rowsMatrix=DMTH_INDICATOR_DEFS.map(def=>calcDMTHRow(def,byType[def.type]||[],monthList));
+  const gestion=rowsMatrix.filter(r=>r.kind==='gestion');
+  const totalIndicadores=rowsMatrix.filter(r=>r.cumple!==null).length;
+  const cumple=rowsMatrix.filter(r=>r.cumple===true).length;
+  const noCumple=rowsMatrix.filter(r=>r.cumple===false).length;
+  return{tasks,months:monthList,rows:rowsMatrix,gestion,cumple,noCumple,totalIndicadores,cumplimiento:pct(cumple,totalIndicadores),byType};
+}
+function calcDMTHRow(def,typeTasks,months){
+  const totalPeriod=typeTasks.length;
+  const numsByMonth={};const densByMonth={};
+  months.forEach(m=>{const mt=typeTasks.filter(t=>t.__dmthMonth===m);densByMonth[m]=mt.length;numsByMonth[m]=dmthNumerator(def,mt);});
+  const numPeriod=dmthNumerator(def,typeTasks);
+  const real=totalPeriod?pct(numPeriod,totalPeriod):null;
+  const cumple=cumpleMeta(real,def.meta);
+  return{...def,totalPeriod,numPeriod,real,cumple,months:months.map(m=>{const den=densByMonth[m]||0,num=numsByMonth[m]||0;return{month:m,num,den,idx:den?pct(num,den):null};})};
+}
+function dmthNumerator(def,tasks){
+  if(def.kind==='gestion')return tasks.filter(t=>t.__dmthFinal).length;
+  return tasks.filter(t=>t.__dmthFinal&&t.__dmthDays!==null&&t.__dmthDays!==undefined&&t.__dmthDays>=def.min&&t.__dmthDays<=def.max).length;
+}
+function renderIndicadoresDMTH(rows){
+  destroyAllCharts();
+  const dmth=buildDMTHMatrix(rows);
+  const urg=dmth.gestion.find(r=>r.type==='urg')||{};
+  const mant=dmth.gestion.find(r=>r.type==='mant')||{};
+  const ped=dmth.gestion.find(r=>r.type==='ped')||{};
+  document.getElementById('summary-container').innerHTML=`<div class="dmth-hero"><div class="dmth-hero-main"><h3>Matriz de Control de Indicadores · DMTH-DGIME</h3><p>Este módulo toma la pestaña <strong>CONSOLIDADO</strong> y calcula automáticamente los indicadores solicitados: gestión de urgencias, mantenimientos y pedidos; tiempos de respuesta por rango; metas; valor real del período; y cumplimiento con semáforo.</p><div class="dmth-chip-row"><span class="dmth-chip">Fuente: CONSOLIDADO</span><span class="dmth-chip">Ingreso: Timestamp / Fecha derivación</span><span class="dmth-chip">Cierre: FECHA FINALIZACION</span><span class="dmth-chip">Agrupado por ID</span></div></div><div class="dmth-mini-grid"><div class="dmth-mini"><span>Registros DMTH</span><b>${fmt(dmth.tasks.length)}</b></div><div class="dmth-mini"><span>Indicadores</span><b>${fmt(dmth.totalIndicadores)}</b></div><div class="dmth-mini"><span>Cumplen</span><b>${fmt(dmth.cumple)}</b></div><div class="dmth-mini"><span>No cumplen</span><b>${fmt(dmth.noCumple)}</b></div></div></div>`;
+  document.getElementById('tipo-container').innerHTML=renderDMTHGestionCards([urg,mant,ped]);
+  document.getElementById('kpi-container').innerHTML=renderDMTHKPIs(dmth);
+  document.getElementById('vja-container').innerHTML=renderDMTHVJA(dmth);
+  document.getElementById('foda-container').innerHTML=renderDMTHFODA(dmth);
+  document.getElementById('insights-container').innerHTML=renderDMTHInsights(dmth);
+  document.getElementById('recomendaciones-container').innerHTML=renderDMTHRecomendaciones(dmth);
+  document.getElementById('pareto-container').innerHTML=renderDMTHRangeTables(dmth);
+  document.getElementById('charts-container').innerHTML=`<div class="dmth-chart-grid wide"><div class="dmth-chart"><h3>Resolución mensual por tipo</h3><p>Porcentaje de finalizados sobre total ingresado por mes.</p><div class="chart-box"><canvas id="dmth-chart-gestion"></canvas></div></div><div class="dmth-chart"><h3>Tiempos de respuesta · análisis del período</h3><p>Porcentaje real por rango comparado con el total del tipo.</p><div class="chart-box"><canvas id="dmth-chart-rangos"></canvas></div></div></div>`;
+  document.getElementById('chart-count').textContent='2 gráficos DMTH';
+  renderDMTHCharts(dmth);
+  renderDMTHMatrixTable(dmth);
+  setStatus(`Indicadores DMTH · ${fmt(dmth.tasks.length)} registros · ${dmth.cumple}/${dmth.totalIndicadores} indicadores cumplen · ${new Date().toLocaleTimeString('es-AR')}`,'green');
+}
+function renderDMTHGestionCards(rows){return rows.map(r=>{const ok=r.cumple===true;return`<div class="dmth-ind-card ${ok?'ok':'bad'}"><div class="dmth-ind-title">${esc(r.indicator||'—')}</div><div class="dmth-ind-value">${fmtPctDMTH(r.real)}</div><div class="dmth-ind-sub">${fmt(r.numPeriod||0)} resueltos sobre ${fmt(r.totalPeriod||0)} · Meta ${r.meta?metaTxt(r.meta):'—'}</div><span class="dmth-ind-status">${ok?'SÍ cumple':'NO cumple'}</span></div>`;}).join('');}
+function renderDMTHKPIs(dmth){
+  const data=[['🚨','Urgencias',dmth.gestion.find(r=>r.type==='urg')],['🛠️','Mantenimiento',dmth.gestion.find(r=>r.type==='mant')],['📦','Pedidos',dmth.gestion.find(r=>r.type==='ped')]];
+  const cards=data.map(([ico,label,r])=>`<div class="kpi-card"><div class="kpi-accent" style="background:${r?.cumple?'var(--green2)':'var(--red2)'}"></div><div class="kpi-icon-wrap" style="background:${r?.cumple?'#D1FAE5':'#FEE2E2'}">${ico}</div><div class="kpi-label">${esc(label)} · resolución</div><div class="kpi-value">${fmtPctDMTH(r?.real)}</div><div class="kpi-sub">${fmt(r?.numPeriod||0)} / ${fmt(r?.totalPeriod||0)} registros.</div><span class="kpi-delta delta-${r?.cumple?'up':'dn'}">${r?.cumple?'Cumple meta':'Bajo meta'}</span><div class="kpi-help">Meta institucional: ${r?.meta?metaTxt(r.meta):'—'}. Calculado por ID único, usando ESTADO finalizado/resuelto.</div></div>`).join('');
+  return cards+`<div class="kpi-card"><div class="kpi-accent" style="background:var(--blue2)"></div><div class="kpi-icon-wrap" style="background:#DBEAFE">📋</div><div class="kpi-label">Cumplimiento matriz</div><div class="kpi-value">${fmtPctDMTH(dmth.cumplimiento)}</div><div class="kpi-sub">${fmt(dmth.cumple)} cumplen · ${fmt(dmth.noCumple)} no cumplen.</div><span class="kpi-delta delta-neu">${fmt(dmth.totalIndicadores)} indicadores</span><div class="kpi-help">Incluye gestión y tiempos de respuesta. Los indicadores sin denominador quedan sin cálculo.</div></div>`;
+}
+function renderDMTHVJA(dmth){
+  const worst=[...dmth.rows].filter(r=>r.cumple===false).sort((a,b)=>(b.real||0)-(a.real||0))[0];
+  const noDate=dmth.tasks.filter(t=>!t.__dmthIngreso).length, noFin=dmth.tasks.filter(t=>t.__dmthFinal&&!t.__dmthFin).length;
+  return `<div class="analysis-card"><div class="ac-label ac-ver">👁 VER — matriz solicitada</div><p>Se analizan <strong>${fmt(dmth.tasks.length)}</strong> registros únicos del CONSOLIDADO, clasificados en urgencias, mantenimiento y pedidos.</p><ul><li>Meses detectados: <strong>${fmt(dmth.months.length)}</strong>.</li><li>Indicadores calculados: <strong>${fmt(dmth.totalIndicadores)}</strong>.</li><li>Cumplen: <strong>${fmt(dmth.cumple)}</strong>; no cumplen: <strong>${fmt(dmth.noCumple)}</strong>.</li></ul></div><div class="analysis-card"><div class="ac-label ac-juzgar">⚖ JUZGAR — lectura</div><p>La matriz compara cada porcentaje real contra su meta institucional. Los rangos de tiempo se calculan desde ingreso hasta finalización.</p><ul><li>Fecha de ingreso: <strong>Timestamp / Fecha derivación</strong>.</li><li>Fecha de cierre: <strong>FECHA FINALIZACION</strong>.</li><li>Finalizado: según columna <strong>ESTADO</strong>.</li></ul></div><div class="analysis-card"><div class="ac-label ac-actuar">⚡ ACTUAR — foco</div><p>El tablero permite ver rápidamente dónde se cumple y dónde conviene intervenir.</p><ul><li>Principal alerta: <strong>${esc(worst?.indicator||'sin alerta')}</strong>.</li><li>Sin fecha de ingreso: <strong>${fmt(noDate)}</strong>.</li><li>Finalizados sin fecha de finalización: <strong>${fmt(noFin)}</strong>.</li></ul></div>`;
+}
+function renderDMTHFODA(dmth){return `<div class="foda-box"><div class="foda-lbl foda-F">💪 Fortalezas</div><ul><li>Indicadores calculados desde la misma base consolidada.</li><li>Evita rehacer a mano la matriz mensual.</li><li>Señala automáticamente SÍ / NO cumplimiento.</li></ul></div><div class="foda-box"><div class="foda-lbl foda-O">🌟 Oportunidades</div><ul><li>Usar la matriz para reuniones de dirección.</li><li>Filtrar por efector, rubro o período para auditorías puntuales.</li><li>Detectar cuellos de botella en rangos largos.</li></ul></div><div class="foda-box"><div class="foda-lbl foda-D">⚠️ Debilidades</div><ul><li>Si falta FECHA FINALIZACION, no se puede medir tiempo de respuesta.</li><li>Si el ESTADO no está normalizado, puede afectar el cálculo de resueltos.</li><li>Los IDs repetidos dependen de una carga consistente.</li></ul></div><div class="foda-box"><div class="foda-lbl foda-A">🔴 Amenazas</div><ul><li>Muchos registros resueltos tarde pueden hacer caer los indicadores de respuesta.</li><li>La falta de cierre formal deja tareas como pendientes.</li><li>Metas exigentes pueden no reflejarse si la carga se demora.</li></ul></div>`;}
+function renderDMTHInsights(dmth){
+  const worst=dmth.rows.filter(r=>r.cumple===false).slice(0,4);
+  return [`<div class="insight"><strong>Lectura tipo PDF:</strong> cada fila tiene meta, valor real del período y cumplimiento.</div>`,`<div class="insight"><strong>Base usada:</strong> CONSOLIDADO, con tipo en columna TIPO DE SOLICITUD y cierre en FECHA FINALIZACION.</div>`,`<div class="insight"><strong>Semáforo:</strong> verde si cumple la meta, rojo si no cumple.</div>`,...worst.map(r=>`<div class="insight"><strong>Alerta:</strong> ${esc(r.indicator)} está en ${fmtPctDMTH(r.real)} contra meta ${metaTxt(r.meta)}.</div>`)].join('');}
+function renderDMTHRecomendaciones(dmth){
+  const bad=dmth.rows.filter(r=>r.cumple===false);
+  const good=dmth.rows.filter(r=>r.cumple===true);
+  const noFin=dmth.tasks.filter(t=>t.__dmthFinal&&!t.__dmthFin).length;
+  const recs=[
+    {cls:bad.length?'rec-rojo':'rec-verde',ico:bad.length?'🚨':'✅',title:bad.length?'Indicadores fuera de meta':'Matriz en buen nivel',badge:bad.length?'Prioridad alta':'Control',body:bad.length?`Hay <strong>${fmt(bad.length)}</strong> indicadores que no cumplen. Revisar primero los tiempos de respuesta con mayor desvío.`:`La mayoría de indicadores está dentro de meta. Mantener control mensual.`,act:'Usar el filtro por efector/rubro para encontrar dónde se origina el incumplimiento.'},
+    {cls:noFin?'rec-amarillo':'rec-verde',ico:'📅',title:'Calidad de fechas de cierre',badge:noFin?'Revisar carga':'Correcto',body:`Hay <strong>${fmt(noFin)}</strong> finalizados sin fecha de finalización. Eso afecta especialmente los rangos de días.`,act:'Completar FECHA FINALIZACION en los registros cerrados.'},
+    {cls:'rec-verde',ico:'📊',title:'Uso directivo',badge:'Reunión mensual',body:`La matriz resume <strong>${fmt(dmth.tasks.length)}</strong> registros únicos y permite presentar cumplimiento sin manipular planillas externas.`,act:'Exportar PDF desde este módulo y adjuntarlo como informe mensual.'}
+  ];
+  return `<div class="rec-grid">${recs.map(r=>`<div class="rec-card ${r.cls}"><div class="rec-header"><div class="rec-semaforo">${r.ico}</div><div><div class="rec-title">${esc(r.title)}</div><span class="rec-badge">${esc(r.badge)}</span></div></div><div class="rec-body">${r.body}</div><div class="rec-accion">${esc(r.act)}</div></div>`).join('')}</div>`;
+}
+function renderDMTHRangeTables(dmth){
+  const group=(key,title)=>{const rows=dmth.rows.filter(r=>r.type===key&&r.kind==='range');return `<div class="chart-card"><div class="chart-title">${esc(title)}</div><div class="chart-subtitle">Tiempos de respuesta sobre total de ${esc(DMTH_TYPES[key].label.toLowerCase())}.</div><div class="table-wrap"><table class="dt" style="min-width:620px"><thead><tr><th>Rango</th><th>Meta</th><th>Valor</th><th>Real</th><th>Cumple</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.indicator)}</td><td>${metaTxt(r.meta)}</td><td class="n">${fmt(r.numPeriod)} / ${fmt(r.totalPeriod)}</td><td class="n">${fmtPctDMTH(r.real)}</td><td class="${r.cumple?'dmth-ok':'dmth-bad'}">${r.cumple?'SI':'NO'}</td></tr>`).join('')}</tbody></table></div></div>`;};
+  return `<div class="charts-grid">${group('urg','Urgencias')}${group('mant','Mantenimiento')}${group('ped','Pedidos')}</div>`;
+}
+function renderDMTHMatrixTable(dmth){
+  const monthHeads=dmth.months.map(m=>`<th colspan="2">${esc(dmthMonthLabel(m))}</th>`).join('');
+  const monthSub=dmth.months.map(()=>`<th>Valores</th><th>Índice</th>`).join('');
+  const body=dmth.rows.map(r=>`<tr><td class="process">${esc(r.process)}</td><td class="indicator">${esc(r.indicator)}</td><td class="variable">${esc(r.variable)}<br><span style="color:#64748B">${esc(DMTH_TYPES[r.type].total)}</span></td><td class="dmth-meta">${metaTxt(r.meta)}</td>${r.months.map(m=>`<td class="n">${m.den?fmt(m.num):'—'}</td><td class="${m.idx===null?'dmth-na':cumpleMeta(m.idx,r.meta)?'dmth-ok':'dmth-bad'}">${fmtPctDMTH(m.idx)}</td>`).join('')}<td class="n">${fmt(r.numPeriod)}</td><td class="n">${fmtPctDMTH(r.real)}</td><td class="${r.cumple===null?'dmth-na':r.cumple?'dmth-ok':'dmth-bad'}">${r.cumple?'SI':r.cumple===false?'NO':'—'}</td></tr>`).join('');
+  document.getElementById('table-container').innerHTML=`<div class="table-header"><h3>Matriz de control de indicadores DMTH</h3><span style="font-size:11px;color:var(--muted)">Año/período según filtros aplicados · ${fmt(dmth.tasks.length)} registros únicos</span></div><div class="table-wrap"><table class="dmth-matrix"><thead><tr><th rowspan="2">Proceso</th><th rowspan="2">Indicador</th><th rowspan="2">Variables</th><th rowspan="2">Meta</th>${monthHeads}<th colspan="3">Análisis del período</th></tr><tr>${monthSub}<th>Valores</th><th>Real</th><th>Cumple</th></tr></thead><tbody>${body||'<tr><td colspan="8">Sin datos</td></tr>'}</tbody></table></div>`;
+}
+function renderDMTHCharts(dmth){
+  const months=dmth.months.map(dmthMonthLabel);
+  const gestionTypes=['urg','mant','ped'];
+  const datasets=gestionTypes.map((k,i)=>{const row=dmth.gestion.find(r=>r.type===k);return{label:DMTH_TYPES[k].label,data:dmth.months.map(m=>{const mm=row?.months?.find(x=>x.month===m);return mm?.idx??0;}),borderColor:PALETTE[i],backgroundColor:PALETTE[i]+'22',tension:.35,fill:false,pointRadius:3};});
+  const ctx=document.getElementById('dmth-chart-gestion');if(ctx)S.charts['dmth-chart-gestion']=new Chart(ctx,{type:'line',data:{labels:months,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+  const rangeRows=dmth.rows.filter(r=>r.kind==='range');
+  const ctx2=document.getElementById('dmth-chart-rangos');if(ctx2)S.charts['dmth-chart-rangos']=new Chart(ctx2,{type:'bar',data:{labels:rangeRows.map(r=>`${DMTH_TYPES[r.type].label.slice(0,4)} · ${r.indicator}`),datasets:[{label:'Real %',data:rangeRows.map(r=>r.real||0),backgroundColor:rangeRows.map((r,i)=>r.cumple?'#10B981CC':'#F05252CC'),borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{callback:v=>v+'%'}}}}});
+}
+function destroyAllCharts(){Object.entries(S.charts||{}).forEach(([id,c])=>{try{c.destroy();}catch(e){}delete S.charts[id];});}
+function exportIndicadoresCSV(){
+  const dmth=buildDMTHMatrix(getFilteredRows());
+  const headers=['PROCESO','INDICADOR','VARIABLES','META',...dmth.months.flatMap(m=>[`${dmthMonthLabel(m)} VALORES`,`${dmthMonthLabel(m)} INDICE`]),'ANALISIS VALORES','REAL','CUMPLE'];
+  const data=dmth.rows.map(r=>[r.process,r.indicator,`${r.variable} / ${DMTH_TYPES[r.type].total}`,metaTxt(r.meta),...r.months.flatMap(m=>[m.den?m.num:'',fmtPctDMTH(m.idx)]),r.numPeriod,fmtPctDMTH(r.real),r.cumple?'SI':r.cumple===false?'NO':'']);
+  const csv='sep=;\r\n'+toCSV([headers,...data],';');
+  downloadText(`DGIME_Indicadores_DMTH_${dateStamp()}.csv`,csv,'text/csv;charset=utf-8;');
+  toast('✓ CSV de indicadores DMTH exportado',3200);
+}
+function exportIndicadoresPDF(){
+  const dmth=buildDMTHMatrix(getFilteredRows());
+  if(!dmth.tasks.length){toast('⚠ No hay datos para armar el informe DMTH',3200);return;}
+  const charts=getReportChartImages(4);
+  const matrix=document.getElementById('table-container')?.querySelector('.table-wrap')?.innerHTML||'';
+  const filters=getFilterSummary();
+  const genDate=new Date().toLocaleString('es-AR');
+  const cards=renderDMTHGestionCards(dmth.gestion);
+  const chartImgs=charts.map(c=>`<div class="card"><h2>${esc(c.title)}</h2><img src="${c.src}" style="width:100%;max-height:220px;object-fit:contain"></div>`).join('');
+  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Indicadores DMTH</title><style>*{box-sizing:border-box}body{font-family:Segoe UI,Arial,sans-serif;color:#1E293B;margin:0;background:#fff}.page{padding:12mm}.head{display:flex;justify-content:space-between;border-bottom:3px solid #1A56DB;padding-bottom:10px;margin-bottom:12px}.brand{font-size:20px;font-weight:900;color:#0D1B2A}.sub{font-size:11px;color:#64748B;margin-top:3px}.meta{text-align:right;font-size:10px;color:#475569;line-height:1.5}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:10px 0}.dmth-ind-card{border:1px solid #DDE7F2;border-radius:12px;padding:12px;position:relative;overflow:hidden}.dmth-ind-card:before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:#F05252}.dmth-ind-card.ok:before{background:#10B981}.dmth-ind-title{font-size:9px;font-weight:900;color:#64748B;text-transform:uppercase}.dmth-ind-value{font-size:24px;font-weight:900;margin-top:6px}.dmth-ind-sub{font-size:10px;color:#64748B;margin-top:4px}.dmth-ind-status{display:inline-block;margin-top:7px;font-size:9px;font-weight:900;border-radius:999px;padding:3px 7px;background:#FEE2E2;color:#991B1B}.dmth-ind-card.ok .dmth-ind-status{background:#D1FAE5;color:#065F46}.card{border:1px solid #DDE7F2;border-radius:12px;padding:10px;margin-top:10px}.card h2{font-size:13px;margin:0 0 8px;color:#0D1B2A}.charts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}table{width:100%;border-collapse:collapse;font-size:8px}th{background:#0D1B2A;color:white;padding:5px;text-align:left}td{border:1px solid #E2E8F0;padding:4px}.dmth-ok{background:#D1FAE5!important;color:#065F46!important;font-weight:900;text-align:center}.dmth-bad{background:#FEE2E2!important;color:#991B1B!important;font-weight:900;text-align:center}.dmth-na{background:#F1F5F9!important;color:#64748B!important;text-align:center}.n{text-align:right}.footer{border-top:1px solid #E2E8F0;margin-top:10px;padding-top:6px;font-size:9px;color:#64748B;display:flex;justify-content:space-between}@media print{@page{size:A4 landscape;margin:8mm}.page{padding:0}.card,.grid,.charts{break-inside:avoid}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="page"><div class="head"><div><div class="brand">Matriz de Control de Indicadores · DMTH-DGIME</div><div class="sub">Fuente: CONSOLIDADO · Filtros: ${esc(filters)}</div></div><div class="meta"><strong>Generado:</strong><br>${esc(genDate)}<br><strong>Registros:</strong> ${fmt(dmth.tasks.length)}</div></div><div class="grid">${cards}</div><div class="charts">${chartImgs}</div><div class="card"><h2>Matriz de control</h2>${matrix}</div><div class="footer"><span>Dirección General de Infraestructura, Mantenimiento y Equipamiento</span><span>Diseñado por DI Emiliano Villagra</span></div></div></body></html>`;
+  const win=window.open('','_blank','width=1200,height=900,menubar=yes,toolbar=yes,scrollbars=yes');
+  if(!win){toast('⚠ El navegador bloqueó la ventana emergente. Permitila y reintentá.',5000);return;}
+  win.document.write(html);win.document.close();win.focus();win.onload=()=>setTimeout(()=>win.print(),400);
+}
+
 function renderTable(rows){const sample=rows.slice(0,40);const cont=document.getElementById('table-container');if(!sample.length){cont.innerHTML=`<div class="empty-state"><div class="es-icon">🔍</div><h3>Sin resultados</h3><p>No hay registros con los filtros actuales. Ajustá el período o eliminá filtros.</p></div>`;return;}const BADGE={'FINALIZADO':'badge-green','FINALIZADA':'badge-green','EN PROCESO':'badge-blue','RECIBIDO':'badge-amber','NO CALIFICA':'badge-gray','MAL CARGADO':'badge-gray','ANULADO':'badge-gray','CANCELADO':'badge-gray'};cont.innerHTML=`<div class="table-header"><h3>Muestra de registros (${sample.length} de ${fmt(rows.length)})</h3><span style="font-size:11px;color:var(--muted)">Tipo, Estado y Subestado se muestran separados</span></div><div class="table-wrap"><table class="dt"><thead><tr><th>Fecha</th><th>Derivar</th><th>Tipo solicitud</th><th>Estado</th><th>Subestado</th><th>Rubro</th><th>Descripción del ítem</th><th>Sector / Área</th><th>Efector</th><th>Expediente</th></tr></thead><tbody>${sample.map(r=>{const badgeCls=BADGE[normText(r.__estado)]||'badge-gray';const tipoCls=r.__tipo==='Urgencia'?'badge-red':r.__tipo==='Mantenimiento'?'badge-teal':r.__tipo==='Pedidos de insumos'?'badge-orange':'badge-gray';return`<tr><td style="white-space:nowrap">${r.__fecha?r.__fecha.toLocaleDateString('es-AR'):'—'}</td><td><span class="badge badge-blue">${esc(r.__derivar)}</span></td><td><span class="badge ${tipoCls}">${esc(r.__tipo)}</span></td><td><span class="badge ${badgeCls}">${esc(r.__estado)}</span></td><td><span class="badge badge-purple">${esc(r.__subestado)}</span></td><td>${esc(truncStr(r.__rubro,32))}</td><td>${esc(truncStr(r.__item,52))}</td><td>${esc(truncStr(r.__sector,25))}</td><td>${esc(truncStr(r.__efector,28))}</td><td>${r.__expediente?`<span class="badge badge-teal">${esc(r.__expediente)}</span>`:'—'}</td></tr>`;}).join('')}</tbody></table></div>`;}
 function updateBadges(){Object.keys(TAB_META).forEach(t=>{const el=document.getElementById(`badge-${t}`);if(el)el.textContent=fmt(buildTasks(getBaseRows(t)).length);});}
 function showSourceStatus(){const ts=S.lastRefresh?S.lastRefresh.toLocaleTimeString('es-AR'):'no cargado';const msg=Object.entries(CONFIG).map(([k,cfg])=>`${cfg.label}: ${fmt((S.raw[k]||[]).length)}`).join(' · ');toast(`📊 ${msg} · ${ts}`,6500);}
 function exportCSV(){
+  if(S.activeTab==='indicadores-dmth'){exportIndicadoresCSV();return;}
   const rows=getFilteredRows();
   if(!rows.length){toast('⚠ No hay registros para exportar',3200);return;}
   const normalizedHeaders=['ID_AGRUPADO','FECHA_NORMALIZADA','DERIVAR_NORMALIZADO','TIPO_SOLICITUD_NORMALIZADO','ESTADO_NORMALIZADO','SUBESTADO_NORMALIZADO','RUBRO_NORMALIZADO','SUBRUBRO_NORMALIZADO','PRODUCTO_NORMALIZADO','ITEM_NORMALIZADO','SECTOR_NORMALIZADO','EFECTOR_NORMALIZADO','EXPEDIENTE_NORMALIZADO'];
@@ -2034,6 +2239,7 @@ function exportCSV(){
   toast(`✓ CSV exportado · ${fmt(rows.length)} filas`,3200);
 }
 function exportPDF(){
+  if(S.activeTab==='indicadores-dmth'){exportIndicadoresPDF();return;}
   const rows=getFilteredRows();
   if(!rows.length){toast('⚠ No hay datos para armar el informe',3200);return;}
   toast('⏳ Abriendo informe ejecutivo para imprimir/guardar como PDF...',4000);

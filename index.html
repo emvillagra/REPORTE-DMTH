@@ -1538,6 +1538,8 @@
       <button class="nav-item" data-tab="pedido-moviles" onclick="switchTab('pedido-moviles',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14l-1.5-6.5A2 2 0 0015.6 9H8.4a2 2 0 00-1.9 1.5L5 17z"/><path d="M7 17v2M17 17v2"/><circle cx="8" cy="17" r="1"/><circle cx="16" cy="17" r="1"/><path d="M8 9V6h8v3"/></svg>Pedidos de móviles <span class="nav-badge" id="badge-pedido-moviles">—</span></button>
       <div class="nav-label" style="margin-top:14px">Control directivo</div>
       <button class="nav-item" data-tab="indicadores-dmth" onclick="switchTab('indicadores-dmth',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="11" width="3" height="5" rx="1"/><rect x="12" y="7" width="3" height="9" rx="1"/><rect x="17" y="3" width="3" height="13" rx="1"/></svg>Indicadores DMTH <span class="nav-badge" id="badge-indicadores-dmth">—</span></button>
+
+      <button class="nav-item" data-tab="evol-semanal" onclick="switchTab('evol-semanal',this)" style="margin-top:8px;border-top:1px solid rgba(255,255,255,.06)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>Evolución Semanal <span class="nav-badge" id="badge-evol-semanal">—</span></button>
       <div class="nav-label" style="margin-top:14px">Acciones</div>
       <button class="nav-item" onclick="showSourceStatus()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h10M4 18h6"/></svg>Estado de datos</button>
       <button class="nav-item" onclick="refreshAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-15.5 6.2"/><path d="M3 12A9 9 0 0118.5 5.8"/><path d="M18 3v4h4M6 21v-4H2"/></svg>Refrescar datos</button>
@@ -1549,6 +1551,96 @@
     <div class="topbar-spacer"></div><div class="topbar-badge" id="topbar-refresh-status">Cargando...</div><div class="topbar-time" id="topbar-time">—</div>
   </header>
   <main class="main">
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- MÓDULO: EVOLUCIÓN SEMANAL DE ÓRDENES DE TRABAJO                 -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <section data-tab="evol-semanal" class="tab-content" style="display:none">
+
+      <!-- TOOLBAR CON FILTROS -->
+      <div class="toolbar-card" style="gap:16px;margin-bottom:18px;display:flex;flex-wrap:wrap;align-items:flex-end">
+        <div class="field" style="min-width:148px">
+          <label>Semana</label>
+          <select id="es-week-select" style="border:1px solid var(--border);border-radius:11px;padding:9px 11px;background:var(--soft);color:var(--text);outline:none;font-size:13px;cursor:pointer;width:100%">
+            <option value="">-- Seleccionar semana --</option>
+          </select>
+        </div>
+
+        <div class="field" style="min-width:148px">
+          <label>Tipo de Orden</label>
+          <select id="es-tipo-orden" style="border:1px solid var(--border);border-radius:11px;padding:9px 11px;background:var(--soft);color:var(--text);outline:none;font-size:13px;cursor:pointer;width:100%">
+            <option value="">-- Todos --</option>
+            <option value="ODT Obra">ODT Obra</option>
+            <option value="ODT Producción">ODT Producción</option>
+          </select>
+        </div>
+
+        <div class="field" style="min-width:148px;flex:1;max-width:230px">
+          <label>Rubro(s)</label>
+          <div class="ms" id="es-rubro-ms">
+            <div class="ms-control">
+              <span class="ms-text placeholder">-- Seleccionar rubro --</span>
+              <span class="ms-caret"></span>
+            </div>
+            <div class="ms-panel">
+              <input type="text" class="ms-search" placeholder="Buscar rubro...">
+              <div class="ms-actions">
+                <button class="ms-act" onclick="window.ES.selectAllRubros()">Todos</button>
+                <button class="ms-act" onclick="window.ES.clearRubros()">Limpiar</button>
+              </div>
+              <div class="ms-list" id="es-rubro-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="width:1px;height:38px;background:var(--border);align-self:center;margin:0 8px"></div>
+
+        <button class="btn btn-primary" onclick="window.ES.apply()" style="display:inline-flex;gap:7px;border:0;border-radius:11px;padding:9px 14px;font-weight:900;font-size:12.5px;cursor:pointer;background:var(--blue2);color:#fff;white-space:nowrap">
+          ⚙️ Aplicar
+        </button>
+        <button class="btn btn-ghost" onclick="window.ES.resetFilters()" style="display:inline-flex;gap:7px;border:1px solid var(--border);border-radius:11px;padding:9px 14px;font-weight:900;font-size:12.5px;cursor:pointer;background:#fff;color:var(--text);white-space:nowrap">
+          🔄 Limpiar
+        </button>
+        <button class="btn btn-teal" onclick="window.ES.exportToPDF()" style="display:inline-flex;gap:7px;border:0;border-radius:11px;padding:9px 14px;font-weight:900;font-size:12.5px;cursor:pointer;background:var(--teal);color:#fff;white-space:nowrap">
+          📄 Exportar
+        </button>
+      </div>
+
+      <!-- GRÁFICO DE BARRAS -->
+      <div class="chart-container" style="border:1px solid var(--border);border-radius:var(--radius);padding:20px;background:var(--card);box-shadow:var(--shadow);margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <h2 style="font-size:15px;font-weight:950;margin:0">Evolución semanal de Órdenes de Trabajo</h2>
+          <div id="es-chart-meta" style="font-size:11px;color:var(--muted)"></div>
+        </div>
+        <div style="position:relative;width:100%;height:380px">
+          <canvas id="es-chart-barras"></canvas>
+        </div>
+      </div>
+
+      <!-- TABLA RESUMEN -->
+      <div class="chart-container" style="border:1px solid var(--border);border-radius:var(--radius);padding:20px;background:var(--card);box-shadow:var(--shadow)">
+        <h2 style="font-size:15px;font-weight:950;margin-bottom:12px">Detalle por día</h2>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px">
+            <thead>
+              <tr style="background:var(--navy);color:#fff">
+                <th style="text-align:left;padding:10px 12px;font-weight:900;text-transform:uppercase;font-size:11px">Día</th>
+                <th style="text-align:right;padding:10px 12px;font-weight:900;text-transform:uppercase;font-size:11px">ODT Obra</th>
+                <th style="text-align:right;padding:10px 12px;font-weight:900;text-transform:uppercase;font-size:11px">ODT Prod.</th>
+                <th style="text-align:right;padding:10px 12px;font-weight:900;text-transform:uppercase;font-size:11px">Total</th>
+                <th style="text-align:right;padding:10px 12px;font-weight:900;text-transform:uppercase;font-size:11px">Rubros</th>
+              </tr>
+            </thead>
+            <tbody id="es-tabla-body">
+              <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Selecciona filtros y aplica para ver datos</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+    <!-- FIN MÓDULO EVOLUCIÓN SEMANAL -->
+
     <div class="toolbar-card">
       <div class="field"><label>Fecha desde</label><input type="date" id="g-from" value=""></div>
       <div class="field"><label>Fecha hasta</label><input type="date" id="g-to" value=""></div>
@@ -2600,5 +2692,385 @@ function fmtM(n){const v=Number(n||0);if(v===0)return'—';if(v>=1e9)return`$${(
 function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');}
 function truncStr(s,n){s=String(s||'');return s.length>n?s.slice(0,n-1)+'…':s;}
 </script>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- SCRIPT MÓDULO EVOLUCIÓN SEMANAL                                  -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<script>
+window.ES = {
+  data: [],
+  weeksDef: [],
+  rubrosUnicos: new Set(),
+  chartInstance: null,
+  
+  filtros: {
+    semana: '',
+    tipoOrden: '',
+    rubros: new Set()
+  },
+
+  init() {
+    this.generateWeeks();
+    this.loadData();
+    this.renderRubrosOptions();
+    this.setupEventListeners();
+    console.log('[ES] Inicializado:', this.data.length, 'registros');
+  },
+
+  setupEventListeners() {
+    document.getElementById('es-week-select').addEventListener('change', (e) => {
+      this.filtros.semana = e.target.value;
+    });
+    document.getElementById('es-tipo-orden').addEventListener('change', (e) => {
+      this.filtros.tipoOrden = e.target.value;
+    });
+    const msEl = document.getElementById('es-rubro-ms');
+    if (msEl) {
+      msEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        msEl.classList.toggle('open');
+      });
+    }
+    document.addEventListener('click', () => {
+      if (msEl) msEl.classList.remove('open');
+    });
+  },
+
+  generateWeeks() {
+    const startDate = new Date(2026, 5, 15);
+    const weeks = [];
+
+    for (let i = 0; i < 13; i++) {
+      const mondayDate = new Date(startDate);
+      mondayDate.setDate(startDate.getDate() + i * 7);
+      
+      const sundayDate = new Date(mondayDate);
+      sundayDate.setDate(mondayDate.getDate() + 6);
+
+      const label = `${mondayDate.toLocaleDateString('es-AR', {day:'2-digit',month:'short'})} - ${sundayDate.toLocaleDateString('es-AR', {day:'2-digit',month:'short'})}`;
+      const key = `${mondayDate.getFullYear()}-W${String(Math.ceil((mondayDate.getDate() + new Date(mondayDate.getFullYear(), mondayDate.getMonth(), 1).getDay()) / 7)).padStart(2,'0')}`;
+      
+      weeks.push({ key, label, start: mondayDate, end: sundayDate });
+    }
+
+    this.weeksDef = weeks;
+    this.renderWeeksSelect();
+  },
+
+  renderWeeksSelect() {
+    const select = document.getElementById('es-week-select');
+    if (select) {
+      const opts = this.weeksDef.map(w => `<option value="${w.key}">${w.label}</option>`).join('');
+      select.innerHTML = '<option value="">-- Seleccionar semana --</option>' + opts;
+    }
+  },
+
+  loadData() {
+    if (typeof S !== 'undefined' && S.data && Array.isArray(S.data)) {
+      this.data = S.data;
+    } else {
+      this.data = [];
+    }
+
+    this.data.forEach(row => {
+      if (row.rubro) this.rubrosUnicos.add(String(row.rubro));
+    });
+  },
+
+  renderRubrosOptions() {
+    const list = document.getElementById('es-rubro-list');
+    if (!list) return;
+    
+    const opts = Array.from(this.rubrosUnicos)
+      .sort()
+      .map(rubro => `
+        <div class="ms-opt">
+          <input type="checkbox" name="rubro" value="${rubro}" onchange="window.ES.toggleRubro('${rubro}')">
+          <span>${rubro}</span>
+        </div>
+      `)
+      .join('');
+    
+    list.innerHTML = opts || '<div class="ms-empty">Sin rubros disponibles</div>';
+    this.updateRubroText();
+  },
+
+  toggleRubro(rubro) {
+    if (this.filtros.rubros.has(rubro)) {
+      this.filtros.rubros.delete(rubro);
+    } else {
+      this.filtros.rubros.add(rubro);
+    }
+    this.updateRubroText();
+  },
+
+  selectAllRubros() {
+    this.rubrosUnicos.forEach(r => this.filtros.rubros.add(r));
+    document.querySelectorAll('#es-rubro-list input[type="checkbox"]').forEach(cb => cb.checked = true);
+    this.updateRubroText();
+  },
+
+  clearRubros() {
+    this.filtros.rubros.clear();
+    document.querySelectorAll('#es-rubro-list input[type="checkbox"]').forEach(cb => cb.checked = false);
+    this.updateRubroText();
+  },
+
+  updateRubroText() {
+    const text = document.querySelector('#es-rubro-ms .ms-text');
+    if (!text) return;
+    const cnt = this.filtros.rubros.size;
+    if (cnt === 0) {
+      text.textContent = '-- Seleccionar rubro --';
+      text.classList.add('placeholder');
+    } else if (cnt === this.rubrosUnicos.size) {
+      text.textContent = 'Todos los rubros';
+      text.classList.remove('placeholder');
+    } else {
+      text.textContent = `${cnt} rubro${cnt > 1 ? 's' : ''}`;
+      text.classList.remove('placeholder');
+    }
+  },
+
+  apply() {
+    const filtrados = this.filterData();
+    this.buildChart(filtrados);
+    this.buildTable(filtrados);
+  },
+
+  filterData() {
+    return this.data.filter(row => {
+      if (this.filtros.semana) {
+        const week = this.weeksDef.find(w => w.key === this.filtros.semana);
+        if (week) {
+          const rowDate = new Date(row.fecha || '');
+          if (isNaN(rowDate.getTime()) || rowDate < week.start || rowDate > week.end) {
+            return false;
+          }
+        }
+      }
+
+      if (this.filtros.tipoOrden && !String(row.tipo || '').includes(this.filtros.tipoOrden)) {
+        return false;
+      }
+
+      if (this.filtros.rubros.size > 0 && !this.filtros.rubros.has(String(row.rubro || ''))) {
+        return false;
+      }
+
+      return true;
+    });
+  },
+
+  buildChart(filtrados) {
+    const dayCounts = {
+      'Lunes': 0, 'Martes': 0, 'Miércoles': 0, 'Jueves': 0,
+      'Viernes': 0, 'Sábado': 0, 'Domingo': 0
+    };
+    const dayLabels = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+    filtrados.forEach(row => {
+      try {
+        const d = new Date(row.fecha || '');
+        if (!isNaN(d.getTime())) {
+          const dayIndex = d.getDay();
+          const dayName = dayLabels[(dayIndex + 6) % 7];
+          dayCounts[dayName]++;
+        }
+      } catch (e) {}
+    });
+
+    const meta = document.getElementById('es-chart-meta');
+    if (meta) meta.innerHTML = `${filtrados.length} órdenes cargadas`;
+
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+    }
+
+    const canvas = document.getElementById('es-chart-barras');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    this.chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: dayLabels,
+        datasets: [{
+          label: 'Órdenes ejecutadas',
+          data: dayLabels.map(d => dayCounts[d]),
+          backgroundColor: 'rgba(26, 86, 219, 0.8)',
+          borderColor: '#1A56DB',
+          borderWidth: 1.5,
+          borderRadius: 8,
+          hoverBackgroundColor: 'rgba(37, 99, 235, 0.95)'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: { font: { size: 13, weight: '600' }, color: '#1E293B', padding: 12 }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(15,23,42,0.9)',
+            padding: 10,
+            titleFont: { size: 12, weight: 'bold' },
+            bodyFont: { size: 12 },
+            borderColor: '#E2E8F0',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#64748B', font: { size: 12, weight: '600' }, stepSize: 1 },
+            grid: { color: 'rgba(226, 232, 240, 0.5)', drawBorder: false }
+          },
+          x: {
+            ticks: { color: '#64748B', font: { size: 12, weight: '600' } },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  },
+
+  buildTable(filtrados) {
+    const tbody = document.getElementById('es-tabla-body');
+    if (!tbody) return;
+
+    const dayData = {};
+    const dayLabels = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+    dayLabels.forEach(d => {
+      dayData[d] = { obra: 0, prod: 0, rubros: new Set() };
+    });
+
+    filtrados.forEach(row => {
+      try {
+        const d = new Date(row.fecha || '');
+        if (!isNaN(d.getTime())) {
+          const dayIndex = d.getDay();
+          const dayName = dayLabels[(dayIndex + 6) % 7];
+          
+          if (String(row.tipo || '').includes('Obra')) {
+            dayData[dayName].obra++;
+          } else if (String(row.tipo || '').includes('Producción')) {
+            dayData[dayName].prod++;
+          }
+          
+          if (row.rubro) dayData[dayName].rubros.add(String(row.rubro));
+        }
+      } catch (e) {}
+    });
+
+    const rows = dayLabels.map(day => {
+      const data = dayData[day];
+      const total = data.obra + data.prod;
+      const rubrosStr = Array.from(data.rubros).sort().join(', ') || '—';
+      
+      return `
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:10px 12px;font-weight:600;color:var(--text)">${day}</td>
+          <td style="padding:10px 12px;text-align:right;color:#334155">${data.obra}</td>
+          <td style="padding:10px 12px;text-align:right;color:#334155">${data.prod}</td>
+          <td style="padding:10px 12px;text-align:right;font-weight:700;color:var(--navy)">${total}</td>
+          <td style="padding:10px 12px;font-size:12px;color:var(--muted)">${rubrosStr}</td>
+        </tr>
+      `;
+    }).join('');
+
+    tbody.innerHTML = rows || '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Sin datos</td></tr>';
+  },
+
+  resetFilters() {
+    this.filtros = { semana: '', tipoOrden: '', rubros: new Set() };
+    const weekSelect = document.getElementById('es-week-select');
+    const tipoSelect = document.getElementById('es-tipo-orden');
+    if (weekSelect) weekSelect.value = '';
+    if (tipoSelect) tipoSelect.value = '';
+    document.querySelectorAll('#es-rubro-list input[type="checkbox"]').forEach(cb => cb.checked = false);
+    this.updateRubroText();
+    const tbody = document.getElementById('es-tabla-body');
+    if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Selecciona filtros y aplica para ver datos</td></tr>';
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+      this.chartInstance = null;
+    }
+  },
+
+  exportToPDF() {
+    const week = this.weeksDef.find(w => w.key === this.filtros.semana);
+    const weekLabel = week ? week.label : 'Sin fecha';
+    const filtrados = this.filterData();
+    
+    const dayLabels = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const dayCounts = {};
+    dayLabels.forEach(d => dayCounts[d] = 0);
+
+    filtrados.forEach(row => {
+      try {
+        const d = new Date(row.fecha || '');
+        if (!isNaN(d.getTime())) {
+          const dayIndex = d.getDay();
+          const dayName = dayLabels[(dayIndex + 6) % 7];
+          dayCounts[dayName]++;
+        }
+      } catch (e) {}
+    });
+
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>
+      body{font-family:Arial,sans-serif;padding:20px;background:#f5f5f5}
+      .page{background:white;padding:30px;margin:20px 0;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+      h1{color:#0D1B2A;font-size:24px;margin-bottom:10px}
+      h2{color:#1A56DB;font-size:16px;margin-top:20px;margin-bottom:12px;border-bottom:2px solid #E2E8F0;padding-bottom:8px}
+      .meta{font-size:12px;color:#64748B;margin-bottom:20px}
+      table{width:100%;border-collapse:collapse;margin:15px 0}
+      th{background:#0D1B2A;color:white;padding:10px;text-align:left;font-weight:bold;font-size:12px}
+      td{padding:8px 10px;border-bottom:1px solid #E2E8F0}
+      tr:nth-child(even){background:#F8FAFC}
+      .summary{background:#EFF6FF;border-left:4px solid #1A56DB;padding:12px;margin:15px 0;border-radius:4px}
+      .summary p{margin:4px 0;font-size:13px}
+    </style></head><body><div class="page">
+      <h1>📊 Evolución Semanal de Órdenes de Trabajo</h1>
+      <div class="meta">
+        <strong>Semana:</strong> ${weekLabel}<br>
+        <strong>Total órdenes:</strong> ${filtrados.length}<br>
+        <strong>Tipo:</strong> ${this.filtros.tipoOrden || 'Todos'}<br>
+        <strong>Rubros:</strong> ${this.filtros.rubros.size > 0 ? Array.from(this.filtros.rubros).join(', ') : 'Todos'}
+      </div>
+      <h2>Órdenes por día</h2>
+      <table><thead><tr><th>Día</th><th style="text-align:right">Órdenes ejecutadas</th></tr></thead><tbody>
+      ${dayLabels.map(d => `<tr><td>${d}</td><td style="text-align:right;font-weight:bold">${dayCounts[d]}</td></tr>`).join('')}
+      </tbody></table>
+      <div class="summary">
+        <p><strong>📈 Resumen:</strong> Se ejecutaron <strong>${filtrados.length}</strong> órdenes en la semana del ${weekLabel}.</p>
+      </div>
+      <p style="font-size:11px;color:#64748B;font-style:italic">Documento generado automáticamente desde DGIME Dashboard · ${new Date().toLocaleDateString('es-AR')}</p>
+    </div></body></html>`;
+
+    if (typeof html2pdf !== 'undefined') {
+      html2pdf()
+        .set({ 
+          margin: 10, 
+          filename: `EvolucionSemanal_${this.filtros.semana || 'general'}_${new Date().toISOString().slice(0,10)}.pdf`, 
+          image: { type: 'png', quality: 0.98 }, 
+          html2canvas: { scale: 2 }, 
+          jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' } 
+        })
+        .from(html)
+        .save();
+    }
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.ES.init();
+});
+</script>
+
 </body>
 </html>

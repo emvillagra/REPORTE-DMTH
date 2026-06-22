@@ -1521,6 +1521,44 @@
       table.dt{min-width:880px;}
     }
 
+
+    /* ── MÓDULO EVOLUCIÓN SEMANAL ODT ── */
+    .weekly-field{display:none}
+    body.weekly-view .weekly-field{display:flex}
+    body.weekly-view .toolbar-card .field:not(.weekly-field):not(.weekly-rubro-field),
+    body.weekly-view .toolbar-card .toolbar-sep{display:none!important}
+    body.weekly-view .toolbar-card{justify-content:flex-end}
+    #weekly-container{display:none}
+    .weekly-only-mode > #weekly-container{display:block!important}
+    .weekly-only-mode > .section-hdr,
+    .weekly-only-mode > #summary-container,
+    .weekly-only-mode > #tipo-container,
+    .weekly-only-mode > #kpi-container,
+    .weekly-only-mode > #vja-container,
+    .weekly-only-mode > #foda-container,
+    .weekly-only-mode > #insights-container,
+    .weekly-only-mode > #pareto-container,
+    .weekly-only-mode > #recomendaciones-container,
+    .weekly-only-mode > #charts-container,
+    .weekly-only-mode > #table-container,
+    .weekly-only-mode > .designer-credit{display:none!important}
+    .weekly-shell{display:grid;gap:12px}
+    .weekly-kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+    .weekly-kpi{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:12px;position:relative;overflow:hidden}
+    .weekly-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue2),var(--teal2))}
+    .weekly-kpi span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:950}
+    .weekly-kpi b{display:block;font-size:22px;line-height:1;margin-top:6px;color:var(--navy)}
+    .weekly-kpi small{display:block;font-size:9.7px;color:var(--muted);line-height:1.3;margin-top:6px}
+    .weekly-chart-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:13px}
+    .weekly-chart-card .chart-box{height:290px}
+    .weekly-note{font-size:11px;color:var(--muted);line-height:1.45;margin-top:7px}
+    .weekly-table{width:100%;border-collapse:collapse;min-width:720px}
+    .weekly-table th{background:#F8FAFC;color:var(--muted);font-size:9.5px;font-weight:950;text-transform:uppercase;letter-spacing:.3px;text-align:left;padding:8px;border-bottom:1px solid var(--border)}
+    .weekly-table td{font-size:11px;color:var(--text);padding:8px;border-bottom:1px solid var(--border)}
+    .weekly-table .n{text-align:right;font-variant-numeric:tabular-nums}
+    @media(max-width:760px){.weekly-chart-card .chart-box{height:245px}.weekly-table{min-width:620px}}
+
+
   </style>
 </head>
 <body>
@@ -1535,11 +1573,10 @@
       <div class="nav-label" style="margin-top:14px">Órdenes y móviles</div>
       <button class="nav-item" data-tab="odt-obras" onclick="switchTab('odt-obras',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-7h6v7"/><path d="M7 10h2M15 10h2"/></svg>ODT Obras <span class="nav-badge" id="badge-odt-obras">—</span></button>
       <button class="nav-item" data-tab="odt-produccion" onclick="switchTab('odt-produccion',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V10l5 3V9l5 4V8l8 5v8H3z"/><path d="M7 17h2M12 17h2M17 17h2"/></svg>ODT Producción <span class="nav-badge" id="badge-odt-produccion">—</span></button>
+      <button class="nav-item" data-tab="evolucion-semanal" onclick="switchTab('evolucion-semanal',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 7-8"/><path d="M14 7h6v6"/><path d="M3 21h18"/></svg>Evolución semanal <span class="nav-badge" id="badge-evolucion-semanal">—</span></button>
       <button class="nav-item" data-tab="pedido-moviles" onclick="switchTab('pedido-moviles',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14l-1.5-6.5A2 2 0 0015.6 9H8.4a2 2 0 00-1.9 1.5L5 17z"/><path d="M7 17v2M17 17v2"/><circle cx="8" cy="17" r="1"/><circle cx="16" cy="17" r="1"/><path d="M8 9V6h8v3"/></svg>Pedidos de móviles <span class="nav-badge" id="badge-pedido-moviles">—</span></button>
       <div class="nav-label" style="margin-top:14px">Control directivo</div>
       <button class="nav-item" data-tab="indicadores-dmth" onclick="switchTab('indicadores-dmth',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="11" width="3" height="5" rx="1"/><rect x="12" y="7" width="3" height="9" rx="1"/><rect x="17" y="3" width="3" height="13" rx="1"/></svg>Indicadores DMTH <span class="nav-badge" id="badge-indicadores-dmth">—</span></button>
-
-      <button class="nav-item" data-tab="evol-semanal" onclick="switchTab('evol-semanal',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>Evolución Semanal <span class="nav-badge" id="badge-evol-semanal">—</span></button>
       <div class="nav-label" style="margin-top:14px">Acciones</div>
       <button class="nav-item" onclick="showSourceStatus()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h10M4 18h6"/></svg>Estado de datos</button>
       <button class="nav-item" onclick="refreshAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-15.5 6.2"/><path d="M3 12A9 9 0 0118.5 5.8"/><path d="M18 3v4h4M6 21v-4H2"/></svg>Refrescar datos</button>
@@ -1557,7 +1594,8 @@
       <div class="field"><label>Tipo de solicitud</label><select id="g-tipo"><option value="">Todos</option></select></div>
       <div class="field"><label>Estado</label><div class="ms" id="ms-estado" data-key="estado"></div></div>
       <div class="field"><label>Subestado</label><div class="ms" id="ms-subestado" data-key="subestado"></div></div>
-      <div class="field"><label>Rubro</label><div class="ms" id="ms-rubro" data-key="rubro"></div></div>
+      <div class="field weekly-rubro-field"><label>Rubro</label><div class="ms" id="ms-rubro" data-key="rubro"></div></div>
+      <div class="field weekly-field"><label>Semana</label><input type="week" id="ev-week" value="2026-W25" onchange="renderModule()"></div>
       <div class="field"><label>Efector</label><div class="ms" id="ms-efector" data-key="efector"></div></div>
       <div class="field"><label>Búsqueda libre</label><input type="text" id="g-search" placeholder="ID, sector, producto, ítem..."></div>
       <div class="toolbar-sep"></div>
@@ -1576,6 +1614,7 @@
           <div class="export-brand-sub">Dirección General · SIPROSA</div>
         </div>
       </div>
+      <div id="weekly-container"></div>
       <div class="section-hdr"><h2><span>📌</span> Resumen ejecutivo</h2></div>
       <div class="summary-card" id="summary-container"></div>
       <div class="section-hdr"><h2><span>🧩</span> Tipo / categoría de solicitud</h2><span class="section-note">El análisis se adapta a Consolidado, órdenes de trabajo y pedidos de móviles.</span></div>
@@ -1598,49 +1637,6 @@
       <div class="table-card" id="table-container"></div>
       <div class="designer-credit">Diseñado por DI Emiliano Villagra</div>
     </div>
-
-    <!-- MÓDULO EVOLUCIÓN SEMANAL -->
-    <section data-tab="evol-semanal" class="tab-content" style="display:none">
-      <div style="padding:20px;margin:0 16px 16px">
-        
-        <!-- FILTROS SIMPLES -->
-        <div style="display:flex;gap:16px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap">
-          
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <label style="font-size:11px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Semana</label>
-            <select id="es-semana" style="border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:var(--soft);font-size:13px;cursor:pointer;min-width:180px">
-              <option>-- Seleccionar --</option>
-            </select>
-          </div>
-
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <label style="font-size:11px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Tipo</label>
-            <select id="es-tipo" style="border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:var(--soft);font-size:13px;cursor:pointer;min-width:160px">
-              <option value="">Todos</option>
-              <option value="ODT Obra">ODT Obra</option>
-              <option value="ODT Producción">ODT Producción</option>
-            </select>
-          </div>
-
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <label style="font-size:11px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Rubros</label>
-            <select id="es-rubros" multiple style="border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:var(--soft);font-size:13px;cursor:pointer;min-width:200px;height:38px">
-            </select>
-          </div>
-
-          <button onclick="window.ES_simple.render()" style="align-self:flex-end;background:var(--blue2);color:white;border:0;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px">
-            Aplicar
-          </button>
-        </div>
-
-        <!-- GRÁFICO SOLAMENTE -->
-        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
-          <canvas id="es-chart" style="max-height:380px"></canvas>
-        </div>
-
-      </div>
-    </section>
-
   </main>
   <div class="toast" id="toast"></div>
 
@@ -1662,7 +1658,7 @@ const CONFIG={
 const DERIVAR_MAP={'DO':'Dpto. Obras','D.O.':'Dpto. Obras','OBRAS':'Dpto. Obras','DP':'Dpto. Producción','D.P.':'Dpto. Producción','PRODUCCION':'Dpto. Producción','PRODUCCIÓN':'Dpto. Producción','RF':'Recursos Físicos','R.F.':'Recursos Físicos','RECURSOS FISICOS':'Recursos Físicos','RECURSOS FÍSICOS':'Recursos Físicos'};
 const TIPO_MAP={'URGENCIA':'Urgencia','URGENTE':'Urgencia','EMERGENCIA':'Urgencia','PROGRAMADA':'Programada','PROGRAMADO':'Programada','MANTENIMIENTO':'Mantenimiento','MANT.':'Mantenimiento','MANT':'Mantenimiento','PEDIDOS DE INSUMOS':'Pedidos de insumos','PEDIDO DE INSUMOS':'Pedidos de insumos','INSUMOS':'Pedidos de insumos','PEDIDO INSUMOS':'Pedidos de insumos','PEDIDOS INSUMOS':'Pedidos de insumos','PEDIDO':'Pedidos de insumos','PEDIDOS':'Pedidos de insumos','PEDIDO DE MATERIALES':'Pedidos de insumos','PEDIDOS DE MATERIALES':'Pedidos de insumos'};
 const TIPO_ORDER=['Urgencia','Programada','Mantenimiento','Pedidos de insumos','ODT Obras','ODT Producción','Pedido de móvil','Sin tipo'];
-const TAB_META={general:{title:'Dashboard General Consolidado',sub:'Pestaña CONSOLIDADO analizada como conjunto',filter:null,source:'consolidado'},obras:{title:'Módulo Dpto. Obras',sub:'CONSOLIDADO filtrado por columna DERIVAR = DO',filter:['DO','D.O.','OBRAS'],source:'consolidado'},produccion:{title:'Módulo Dpto. Producción',sub:'CONSOLIDADO filtrado por columna DERIVAR = DP',filter:['DP','D.P.','PRODUCCION','PRODUCCIÓN'],source:'consolidado'},rf:{title:'Módulo Recursos Físicos',sub:'CONSOLIDADO filtrado por columna DERIVAR = RF',filter:['RF','R.F.','RECURSOS FISICOS','RECURSOS FÍSICOS'],source:'consolidado'},'odt-obras':{title:'Módulo Orden de Trabajo de Obras',sub:'Pestaña SOPORTE · análisis propio de órdenes, secciones, cuadrillas, materiales y destinos',filter:null,source:'odtObras'},'odt-produccion':{title:'Módulo Orden de Trabajo de Producción',sub:'Pestaña ORDENES · análisis propio de producción, talleres, materiales y destinos',filter:null,source:'odtProduccion'},'pedido-moviles':{title:'Módulo Pedidos de Móviles',sub:'Pestaña PEDIDO MOVILES · análisis de solicitudes, rutas, urgencias, móviles, choferes y estado',filter:null,source:'pedidoMoviles'},'indicadores-dmth':{title:'Matriz de Control de Indicadores DMTH',sub:'CONSOLIDADO · indicadores de gestión, tiempos de respuesta, metas y cumplimiento',filter:null,source:'consolidado'}};
+const TAB_META={general:{title:'Dashboard General Consolidado',sub:'Pestaña CONSOLIDADO analizada como conjunto',filter:null,source:'consolidado'},obras:{title:'Módulo Dpto. Obras',sub:'CONSOLIDADO filtrado por columna DERIVAR = DO',filter:['DO','D.O.','OBRAS'],source:'consolidado'},produccion:{title:'Módulo Dpto. Producción',sub:'CONSOLIDADO filtrado por columna DERIVAR = DP',filter:['DP','D.P.','PRODUCCION','PRODUCCIÓN'],source:'consolidado'},rf:{title:'Módulo Recursos Físicos',sub:'CONSOLIDADO filtrado por columna DERIVAR = RF',filter:['RF','R.F.','RECURSOS FISICOS','RECURSOS FÍSICOS'],source:'consolidado'},'odt-obras':{title:'Módulo Orden de Trabajo de Obras',sub:'Pestaña SOPORTE · análisis propio de órdenes, secciones, cuadrillas, materiales y destinos',filter:null,source:'odtObras'},'odt-produccion':{title:'Módulo Orden de Trabajo de Producción',sub:'Pestaña ORDENES · análisis propio de producción, talleres, materiales y destinos',filter:null,source:'odtProduccion'},'evolucion-semanal':{title:'Módulo Evolución Semanal ODT',sub:'ODT Obras + ODT Producción · órdenes ejecutadas por día, filtradas por semana y rubro',filter:null,source:'odtWeekly',combineSources:['odtObras','odtProduccion']},'pedido-moviles':{title:'Módulo Pedidos de Móviles',sub:'Pestaña PEDIDO MOVILES · análisis de solicitudes, rutas, urgencias, móviles, choferes y estado',filter:null,source:'pedidoMoviles'},'indicadores-dmth':{title:'Matriz de Control de Indicadores DMTH',sub:'CONSOLIDADO · indicadores de gestión, tiempos de respuesta, metas y cumplimiento',filter:null,source:'consolidado'}};
 const PALETTE=['#1A56DB','#0694A2','#10B981','#F59E0B','#8B5CF6','#F05252','#0EA5E9','#84CC16','#EC4899','#F97316','#14B8A6','#6366F1','#64748B','#0F766E','#7C3AED'];
 const STOPWORDS=new Set(['DE','DEL','LA','LAS','EL','LOS','Y','EN','A','AL','CON','POR','PARA','UNA','UNO','UN','QUE','SE','SU','SUS','SIN','SOBRE','ENTRE','O','U','E','NRO','Nº','NO','SI','ES','SON','DESDE','HASTA','AREA','SECTOR','SOLICITA','SOLICITAN','REALIZAR','TRABAJO','TRABAJOS','SERVICIO','PEDIDO','PEDIDOS','REPARACION','ARREGLO','COLOCACION','CAMBIO','CONTROL','REVISION','MANTENIMIENTO','GENERAL','ITEM','DESCRIPCION']);
 const S={raw:{consolidado:[],odtObras:[],odtProduccion:[],pedidoMoviles:[]},charts:{},activeTab:'general',lastRefresh:null,headers:[],headersBySource:{},ms:{sel:{estado:[],subestado:[],rubro:[],efector:[]},opts:{estado:[],subestado:[],rubro:[],efector:[]}}};
@@ -1798,13 +1794,13 @@ function parseDateFlex(v){if(!v)return null;const s=String(v).trim();if(!s)retur
 function daysBetween(a,b){if(!(a instanceof Date)||!(b instanceof Date)||isNaN(a)||isNaN(b))return null;const ms=new Date(b.getFullYear(),b.getMonth(),b.getDate())-new Date(a.getFullYear(),a.getMonth(),a.getDate());return Math.max(0,Math.round(ms/86400000));}
 function parseMoney(v){const s=String(v||'').replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.').replace(/[^\d.-]/g,'');const n=Number(s);return isNaN(n)?0:n;}
 
-function getBaseRows(tab){const meta=TAB_META[tab]||TAB_META.general;const sourceKey=meta.source||'consolidado';const base=S.raw[sourceKey]||[];if(!meta.filter)return base;const allowed=meta.filter.map(normText);return base.filter(r=>allowed.includes(normText(r.__derivarRaw)));}
+function getBaseRows(tab){const meta=TAB_META[tab]||TAB_META.general;if(meta.combineSources&&Array.isArray(meta.combineSources)){return meta.combineSources.flatMap(k=>S.raw[k]||[]);}const sourceKey=meta.source||'consolidado';const base=S.raw[sourceKey]||[];if(!meta.filter)return base;const allowed=meta.filter.map(normText);return base.filter(r=>allowed.includes(normText(r.__derivarRaw)));}
 function getFilteredRows(){const rows=getBaseRows(S.activeTab);const from=document.getElementById('g-from')?.value;const to=document.getElementById('g-to')?.value;const tipo=document.getElementById('g-tipo')?.value;const selEstado=S.ms.sel.estado;const selSub=S.ms.sel.subestado;const selRubro=S.ms.sel.rubro;const selEfector=S.ms.sel.efector;const search=String(document.getElementById('g-search')?.value||'').toLowerCase().trim();const fromD=from?new Date(from+'T00:00:00'):null;const toD=to?new Date(to+'T23:59:59'):null;return rows.filter(r=>{if((fromD||toD)&&!r.__fecha)return false;if(fromD&&r.__fecha<fromD)return false;if(toD&&r.__fecha>toD)return false;if(tipo&&r.__tipo!==tipo)return false;if(selEstado.length&&!selEstado.includes(normText(r.__estado)))return false;if(selSub.length&&!selSub.includes(normText(r.__subestado)))return false;if(selRubro.length&&!selRubro.includes(normText(r.__rubro)))return false;if(selEfector.length&&!selEfector.includes(normText(r.__efector)))return false;if(search&&!r.__texto.includes(search))return false;return true;});}
 function populateFilters(){const rows=getBaseRows(S.activeTab);fillSel('g-tipo',sortTipo([...new Set(rows.map(r=>r.__tipo).filter(Boolean))]));msBuild('estado',rows,'__estado','Sin estado');msBuild('subestado',rows,'__subestado','Sin subestado');msBuild('rubro',rows,'__rubro','Sin rubro');msBuild('efector',rows,'__efector','Sin identificar');}
 function fillSel(id,vals){const el=document.getElementById(id);if(!el)return;const cur=el.value;el.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');if(vals.includes(cur))el.value=cur;}
 function sortTipo(vals){return vals.sort((a,b)=>{const ia=TIPO_ORDER.indexOf(a),ib=TIPO_ORDER.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b);});}
 function applyFilters(){renderModule();}
-function clearFilters(){['g-from','g-to','g-tipo','g-search'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});['estado','subestado','rubro','efector'].forEach(k=>{S.ms.sel[k]=[];msRender(k);});renderModule();}
+function clearFilters(){['g-from','g-to','g-tipo','g-search'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});['estado','subestado','rubro','efector'].forEach(k=>{S.ms.sel[k]=[];msRender(k);});setWeeklyDefaultWeek(true);renderModule();}
 
 /* ===== Filtros multiselección + unificación por nombre ===== */
 function msLabelTitle(v){return String(v||'').trim().replace(/\s+/g,' ');}
@@ -1862,7 +1858,49 @@ function uniqueVals(rows,key){return [...new Set(rows.map(r=>String(r[key]||'').
 function groupTipoStats(rows){const tasks=buildTasks(rows);return sortTipo([...new Set(tasks.map(r=>r.__tipo||'Sin tipo'))]).map(tipo=>{const ts=tasks.filter(r=>r.__tipo===tipo);const detail=rows.filter(r=>r.__tipo===tipo);const fin=ts.filter(r=>isFin(r.__estado)).length;const pen=ts.filter(r=>isPend(r.__estado)).length;const crit=ts.filter(r=>r.__critico||isCrit(r)).length;return{tipo,total:ts.length,filas:detail.length,finalizados:fin,pendientes:pen,criticos:crit,resolucion:pct(fin,ts.length),topRubro:topEntry(countUniqueBy(detail,'__rubro')),topEstado:topEntry(countBy(ts,'__estado'))};});}
 function calcMetrics(rows,tab){const tasks=buildTasks(rows);const total=tasks.length;const detailTotal=rows.length;const estados=countBy(tasks,'__estado'),subestados=countBy(tasks,'__subestado'),tipos=countBy(tasks,'__tipo'),sectores=countBy(tasks,'__sector'),efectores=countBy(tasks,'__efector'),derivs=countBy(tasks,'__derivar');const rubros=countUniqueBy(rows,'__rubro'),subrubros=countUniqueBy(rows,'__subrubro'),productos=countUniqueBy(rows,'__producto'),items=countUniqueBy(rows,'__item');const finalizados=tasks.filter(r=>isFin(r.__estado)).length;const pendientes=tasks.filter(r=>isPend(r.__estado)).length;const criticos=tasks.filter(r=>r.__critico||isCrit(r)).length;const conFecha=tasks.filter(r=>r.__fecha).length;const conExp=tasks.filter(r=>String(r.__expediente||'').trim()).length;const conSub=rows.filter(r=>r.__subestado&&r.__subestado!=='Sin subestado').length;const conItem=rows.filter(r=>r.__item&&r.__item!=='Sin descripción').length;const tipoStats=groupTipoStats(rows);return{tab,rows,tasks,total,detailTotal,filasAgrupadas:Math.max(0,detailTotal-total),estados,subestados,tipos,rubros,subrubros,productos,items,sectores,efectores,derivs,tipoStats,finalizados,pendientes,criticos,conFecha,sinFecha:total-conFecha,conExp,conSub,conItem,topTipo:topEntry(tipos),topEst:topEntry(estados),topSub:topEntry(subestados),topRub:topEntry(rubros),topSubrub:topEntry(subrubros),topProd:topEntry(productos),topItem:topEntry(items),topSec:topEntry(sectores),topEf:topEntry(efectores),compRate:pct(finalizados,total),pendRate:pct(pendientes,total),critRate:pct(criticos,total),dateRate:pct(conFecha,total),expRate:pct(conExp,total),subRate:pct(conSub,detailTotal),itemRate:pct(conItem,detailTotal)};}
 
-function renderModule(){showLoading(true);const isDmth=S.activeTab==='indicadores-dmth';document.body.classList.toggle('dmth-view',isDmth);const exportArea=document.getElementById('export-area');if(exportArea)exportArea.classList.toggle('dmth-only-mode',isDmth);const rows=isDmth?getBaseRows(S.activeTab):getFilteredRows();if(isDmth){renderIndicadoresDMTH(rows);showLoading(false);return;}const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderTipoCards(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderRecomendaciones(m);renderCharts(rows,m);renderPareto(rows,m);renderTable(rows,m);showLoading(false);setStatus(`${fmt(m.total)} tareas únicas · ${fmt(m.detailTotal)} filas detalle · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
+function renderModule(){showLoading(true);const isDmth=S.activeTab==='indicadores-dmth';const isWeekly=S.activeTab==='evolucion-semanal';document.body.classList.toggle('dmth-view',isDmth);document.body.classList.toggle('weekly-view',isWeekly);const exportArea=document.getElementById('export-area');if(exportArea){exportArea.classList.toggle('dmth-only-mode',isDmth);exportArea.classList.toggle('weekly-only-mode',isWeekly);}const rows=(isDmth||isWeekly)?getBaseRows(S.activeTab):getFilteredRows();if(isDmth){renderIndicadoresDMTH(rows);showLoading(false);return;}if(isWeekly){renderEvolucionSemanal();showLoading(false);return;}const weekly=document.getElementById('weekly-container');if(weekly)weekly.innerHTML='';const m=calcMetrics(rows,S.activeTab);renderSummary(m);renderTipoCards(m);renderKPIs(m);renderVJA(m);renderFODA(m);renderInsights(m);renderRecomendaciones(m);renderCharts(rows,m);renderPareto(rows,m);renderTable(rows,m);showLoading(false);setStatus(`${fmt(m.total)} tareas únicas · ${fmt(m.detailTotal)} filas detalle · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
+
+
+/* ─── MÓDULO EVOLUCIÓN SEMANAL ODT ─────────────────────────────── */
+const WEEKLY_DEFAULT_WEEK='2026-W25';
+const WEEKLY_DAY_NAMES=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+function setWeeklyDefaultWeek(force=false){const el=document.getElementById('ev-week');if(!el)return;if(force||!el.value)el.value=WEEKLY_DEFAULT_WEEK;}
+function isoWeekToRange(weekStr){const m=String(weekStr||WEEKLY_DEFAULT_WEEK).match(/^(\d{4})-W(\d{2})$/);let year=2026,week=25;if(m){year=+m[1];week=+m[2];}const simple=new Date(year,0,1+(week-1)*7);const dow=simple.getDay()||7;const start=new Date(simple);if(dow<=4)start.setDate(simple.getDate()-dow+1);else start.setDate(simple.getDate()+8-dow);start.setHours(0,0,0,0);const end=new Date(start);end.setDate(start.getDate()+6);end.setHours(23,59,59,999);return{weekStr:`${year}-W${String(week).padStart(2,'0')}`,start,end};}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
+function fmtDateShort(d){return d instanceof Date&&!isNaN(d)?d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'}):'—';}
+function fmtDateLong(d){return d instanceof Date&&!isNaN(d)?d.toLocaleDateString('es-AR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}):'—';}
+function weeklyExecutionDate(r){return parseDateFlex(getField(r,['FECHA DE EJECUCION','FECHA DE EJECUCIÓN','FECHA EJECUCION','FECHA EJECUCIÓN','FECHA FINALIZACION','FECHA FINALIZACIÓN','FECHA DE FINALIZACION','FECHA DE FINALIZACIÓN','FECHA DE CIERRE','FECHA CIERRE','FECHA REALIZADO','FECHA REALIZADA','FECHA DE REALIZACION','FECHA DE REALIZACIÓN','FECHA DE ORDEN DE TRABAJO','Fecha de orden de trabajo','FECHA','Fecha']))||r.__fecha||null;}
+function weeklyIsExecuted(r){const s=normText([r.__estado,r.__subestado,r.__texto].join(' '));if(isCancel(r.__estado))return false;if(isFin(r.__estado))return true;return['EJECUTAD','REALIZAD','FINALIZAD','TERMINAD','CERRAD','COMPLETAD','ENTREGAD','CON DOCUMENTACION'].some(x=>s.includes(x));}
+function weeklySelectedRubrosLabel(){const sel=S.ms.sel.rubro||[];if(!sel.length)return'Todos los rubros';const labels=sel.map(k=>{const o=(S.ms.opts.rubro||[]).find(x=>x.k===k);return o?o.label:k;});return labels.join(', ');}
+function buildWeeklyEvolutionData(){setWeeklyDefaultWeek(false);const range=isoWeekToRange(document.getElementById('ev-week')?.value||WEEKLY_DEFAULT_WEEK);const selectedRubros=S.ms.sel.rubro||[];let rows=getBaseRows('evolucion-semanal');if(selectedRubros.length)rows=rows.filter(r=>selectedRubros.includes(normText(r.__rubro)));const executedRows=rows.filter(weeklyIsExecuted);const sinFecha=executedRows.filter(r=>!weeklyExecutionDate(r)).length;const inRange=executedRows.filter(r=>{const d=weeklyExecutionDate(r);return d&&d>=range.start&&d<=range.end;});const grouped=new Map();inRange.forEach(r=>{const key=`${r.__source}|${r.__idKey||r.__id}`;if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(r);});const tasks=Array.from(grouped.values()).map(group=>{const dates=group.map(weeklyExecutionDate).filter(Boolean).sort((a,b)=>a-b);const base={...group[0]};base.__rows=group;base.__rowCount=group.length;base.__weeklyDate=dates[0]||base.__fecha;base.__rubro=uniqueVals(group,'__rubro').length>1?'Múltiples rubros':firstValid(group,'__rubro','Sin rubro');base.__item=uniqueVals(group,'__item').length>1?'Múltiples tareas':firstValid(group,'__item','Sin tarea');return base;}).filter(t=>t.__weeklyDate&&t.__weeklyDate>=range.start&&t.__weeklyDate<=range.end);const days=Array.from({length:7},(_,i)=>{const date=addDays(range.start,i);return{date,label:`${WEEKLY_DAY_NAMES[i]} ${fmtDateShort(date)}`,obras:0,produccion:0,total:0};});tasks.forEach(t=>{const idx=daysBetween(range.start,t.__weeklyDate);if(idx==null||idx<0||idx>6)return;if(t.__source==='odtProduccion')days[idx].produccion++;else days[idx].obras++;days[idx].total++;});const total=tasks.length,obras=tasks.filter(t=>t.__source==='odtObras').length,produccion=tasks.filter(t=>t.__source==='odtProduccion').length;const peak=days.slice().sort((a,b)=>b.total-a.total)[0]||days[0];const rubros=countUniqueBy(tasks.flatMap(t=>t.__rows||[t]),'__rubro');return{range,rows,executedRows,inRange,tasks,days,total,obras,produccion,sinFecha,peak,rubros,rubroLabel:weeklySelectedRubrosLabel()};}
+function ensureWeeklyContainer(){let cont=document.getElementById('weekly-container');if(!cont){cont=document.createElement('div');cont.id='weekly-container';const area=document.getElementById('export-area');if(area)area.prepend(cont);}return cont;}
+function renderEvolucionSemanal(){destroyCharts();const data=buildWeeklyEvolutionData();const cont=ensureWeeklyContainer();const rangeTxt=`${fmtDateLong(data.range.start)} al ${fmtDateLong(data.range.end)}`;const dayRows=data.days.map(d=>`<tr><td>${esc(d.label)}</td><td class="n">${fmt(d.obras)}</td><td class="n">${fmt(d.produccion)}</td><td class="n"><strong>${fmt(d.total)}</strong></td></tr>`).join('');const sample=data.tasks.slice(0,35).map(t=>`<tr><td>${t.__weeklyDate?esc(t.__weeklyDate.toLocaleDateString('es-AR')):'—'}</td><td>${esc(t.__source==='odtProduccion'?'ODT Producción':'ODT Obras')}</td><td>${esc(truncStr(t.__id,18))}</td><td>${esc(truncStr(t.__rubro,30))}</td><td>${esc(truncStr(t.__item,46))}</td><td>${esc(truncStr(t.__efector,28))}</td></tr>`).join('');cont.innerHTML=`
+    <div class="weekly-shell">
+      <div class="section-hdr"><h2><span>📈</span> Evolución semanal de ODT ejecutadas</h2><span class="section-note">Semana: ${esc(rangeTxt)}</span></div>
+      <div class="summary-card"><h3>ODT Obras + ODT Producción</h3><p>Este módulo muestra la evolución semanal de las <strong>órdenes de trabajo ejecutadas</strong> por día. La semana se elige desde el calendario superior y el análisis se puede focalizar en uno o varios <strong>rubros</strong>.</p><ul><li><strong>Semana analizada:</strong> ${esc(rangeTxt)}.</li><li><strong>Rubros filtrados:</strong> ${esc(data.rubroLabel)}.</li><li><strong>Criterio de ejecución:</strong> estados finalizados/ejecutados/realizados/cerrados, o registros con documentación asociada cuando no exista fecha específica de ejecución.</li></ul><div class="summary-pill-row"><span class="summary-pill">ODT Obras</span><span class="summary-pill">ODT Producción</span><span class="summary-pill">Agrupado por orden</span><span class="summary-pill">Calendario semanal parametrizado</span></div></div>
+      <div class="weekly-kpi-grid">
+        <div class="weekly-kpi"><span>Total ejecutadas</span><b>${fmt(data.total)}</b><small>Órdenes únicas en la semana seleccionada.</small></div>
+        <div class="weekly-kpi"><span>ODT Obras</span><b>${fmt(data.obras)}</b><small>${pct(data.obras,data.total)}% del total semanal.</small></div>
+        <div class="weekly-kpi"><span>ODT Producción</span><b>${fmt(data.produccion)}</b><small>${pct(data.produccion,data.total)}% del total semanal.</small></div>
+        <div class="weekly-kpi"><span>Día pico</span><b>${esc(data.peak?.label||'—')}</b><small>${fmt(data.peak?.total||0)} órdenes ejecutadas.</small></div>
+      </div>
+      <div class="weekly-chart-card"><div class="chart-title">Órdenes ejecutadas por día</div><div class="chart-subtitle">Barras agrupadas por día, separando ODT Obras y ODT Producción. La lectura respeta los rubros seleccionados.</div><div class="chart-box"><canvas id="weekly-chart"></canvas></div></div>
+      <div class="table-card"><div class="table-header"><h3>Detalle diario de la semana</h3><span style="font-size:11px;color:var(--muted)">${esc(rangeTxt)}</span></div><div class="table-wrap"><table class="weekly-table"><thead><tr><th>Día</th><th>ODT Obras</th><th>ODT Producción</th><th>Total</th></tr></thead><tbody>${dayRows}</tbody></table></div></div>
+      <div class="table-card"><div class="table-header"><h3>Muestra de ODT ejecutadas (${fmt(Math.min(data.tasks.length,35))} de ${fmt(data.tasks.length)})</h3><span style="font-size:11px;color:var(--muted)">Agrupadas por número de orden</span></div><div class="table-wrap"><table class="weekly-table"><thead><tr><th>Fecha</th><th>Fuente</th><th>Orden</th><th>Rubro</th><th>Tarea</th><th>Destino</th></tr></thead><tbody>${sample||'<tr><td colspan="6">Sin ODT ejecutadas para los filtros seleccionados.</td></tr>'}</tbody></table></div></div>
+      <div class="designer-credit">Diseñado por DI Emiliano Villagra</div>
+    </div>`;const ctx=document.getElementById('weekly-chart');if(ctx){S.charts['weekly-chart']=new Chart(ctx,{type:'bar',data:{labels:data.days.map(d=>d.label),datasets:[{label:'ODT Obras',data:data.days.map(d=>d.obras),backgroundColor:'#1A56DB'},{label:'ODT Producción',data:data.days.map(d=>d.produccion),backgroundColor:'#0694A2'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{footer:items=>`Total: ${items.reduce((s,i)=>s+Number(i.raw||0),0)}`}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{precision:0}}}}});}setStatus(`${fmt(data.total)} ODT ejecutadas · ${esc(rangeTxt)} · ${new Date().toLocaleTimeString('es-AR')}`,'green');}
+function exportEvolucionSemanalCSV(){const data=buildWeeklyEvolutionData();const rangeTxt=`${data.range.start.toLocaleDateString('es-AR')} al ${data.range.end.toLocaleDateString('es-AR')}`;const resumen=[['Semana',rangeTxt],['Rubros',data.rubroLabel],['Total ejecutadas',data.total],['ODT Obras',data.obras],['ODT Producción',data.produccion],[]];const dias=[['Día','Fecha','ODT Obras','ODT Producción','Total'],...data.days.map((d,i)=>[WEEKLY_DAY_NAMES[i],isoDate(d.date),d.obras,d.produccion,d.total])];const detalle=[[],['Detalle de ODT ejecutadas'],['Fecha','Fuente','Orden','Rubro','Tarea','Destino','Estado'],...data.tasks.map(t=>[isoDate(t.__weeklyDate),t.__source==='odtProduccion'?'ODT Producción':'ODT Obras',t.__id||'',t.__rubro||'',t.__item||'',t.__efector||'',t.__estado||''])];const csv='sep=;\r\n'+toCSV([...resumen,...dias,...detalle],';');downloadText(`DGIME_Evolucion_Semanal_ODT_${data.range.weekStr}_${dateStamp()}.csv`,csv,'text/csv;charset=utf-8;');toast(`✓ CSV evolución semanal exportado · ${fmt(data.total)} ODT`,3200);}
+function exportEvolucionSemanalPDF(){const data=buildWeeklyEvolutionData();const chart=getReportChartImages_ids(['weekly-chart'])[0];const rangeTxt=`${fmtDateLong(data.range.start)} al ${fmtDateLong(data.range.end)}`;const genDate=new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});const dayRows=data.days.map(d=>`<tr><td>${esc(d.label)}</td><td class="n">${fmt(d.obras)}</td><td class="n">${fmt(d.produccion)}</td><td class="n"><strong>${fmt(d.total)}</strong></td></tr>`).join('');const detailRows=data.tasks.slice(0,28).map(t=>`<tr><td>${t.__weeklyDate?esc(t.__weeklyDate.toLocaleDateString('es-AR')):'—'}</td><td>${esc(t.__source==='odtProduccion'?'ODT Producción':'ODT Obras')}</td><td>${esc(truncStr(t.__id,16))}</td><td>${esc(truncStr(t.__rubro,24))}</td><td>${esc(truncStr(t.__item,44))}</td><td>${esc(truncStr(t.__efector,24))}</td></tr>`).join('');const img=chart?.src?`<img src="${chart.src}" style="width:100%;max-height:330px;object-fit:contain;display:block;background:#fff">`:`<p>Sin imagen de gráfico disponible. Abra el módulo antes de exportar para capturar el gráfico.</p>`;const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>DGIME · Evolución semanal ODT</title><style>
+    @page{size:A4 landscape;margin:10mm}body{font-family:'Segoe UI',Arial,sans-serif;color:#1E293B;margin:0;background:#fff;font-size:10pt}.hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1A56DB;padding-bottom:10px;margin-bottom:12px}.brand{display:flex;align-items:center;gap:10px}.mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#0D1B2A,#1A56DB);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:950}.title{font-size:20pt;font-weight:950;color:#0D1B2A;line-height:1}.sub{font-size:9pt;color:#64748B;margin-top:3px}.meta{text-align:right;font-size:8.5pt;color:#475569;line-height:1.45}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.kpi{border:1px solid #DDE7F2;border-radius:11px;padding:10px;background:#F8FAFC}.kpi span{font-size:7.5pt;text-transform:uppercase;color:#64748B;font-weight:900}.kpi b{display:block;font-size:18pt;color:#0D1B2A;margin-top:4px}.card{border:1px solid #DDE7F2;border-radius:12px;padding:10px;margin-top:10px;break-inside:avoid}.card h2{font-size:12pt;margin:0 0 7px;color:#0D1B2A}p,li{font-size:9.2pt;line-height:1.4}table{width:100%;border-collapse:collapse;font-size:8.4pt}th{background:#0D1B2A;color:#fff;text-align:left;padding:6px;border:1px solid #0D1B2A}td{padding:5px 6px;border:1px solid #E2E8F0;vertical-align:top}tr:nth-child(even) td{background:#F8FAFC}.n{text-align:right}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ftr{margin-top:12px;border-top:1px solid #E2E8F0;padding-top:6px;color:#64748B;font-size:8pt;display:flex;justify-content:space-between}@media print{.no-print{display:none}}
+  </style></head><body>
+  <div class="hdr"><div class="brand"><div class="mark">DG</div><div><div class="title">Evolución semanal de ODT ejecutadas</div><div class="sub">ODT Obras + ODT Producción · ${esc(rangeTxt)}</div></div></div><div class="meta"><strong>DGIME · SIPROSA</strong><br>Generado: ${esc(genDate)}<br>Rubros: ${esc(data.rubroLabel)}</div></div>
+  <div class="card"><h2>Resumen ejecutivo</h2><p>El informe muestra la evolución diaria de órdenes de trabajo ejecutadas durante la semana seleccionada. Se agrupa por número de orden para evitar duplicar registros cuando una misma ODT tiene varias líneas de materiales o detalle.</p></div>
+  <div class="kpis"><div class="kpi"><span>Total ejecutadas</span><b>${fmt(data.total)}</b></div><div class="kpi"><span>ODT Obras</span><b>${fmt(data.obras)}</b></div><div class="kpi"><span>ODT Producción</span><b>${fmt(data.produccion)}</b></div><div class="kpi"><span>Día pico</span><b style="font-size:12pt">${esc(data.peak?.label||'—')}</b></div></div>
+  <div class="card"><h2>Gráfico semanal</h2>${img}</div>
+  <div class="grid"><div class="card"><h2>Detalle por día</h2><table><thead><tr><th>Día</th><th>ODT Obras</th><th>ODT Producción</th><th>Total</th></tr></thead><tbody>${dayRows}</tbody></table></div><div class="card"><h2>Top rubros del filtro</h2><table><thead><tr><th>#</th><th>Rubro</th><th>Órdenes</th></tr></thead><tbody>${topEntries(data.rubros,10).map((e,i)=>`<tr><td class="n">${i+1}</td><td>${esc(truncStr(e[0],34))}</td><td class="n">${fmt(e[1])}</td></tr>`).join('')||'<tr><td colspan="3">Sin datos</td></tr>'}</tbody></table></div></div>
+  <div class="card"><h2>Muestra de órdenes ejecutadas</h2><table><thead><tr><th>Fecha</th><th>Fuente</th><th>Orden</th><th>Rubro</th><th>Tarea</th><th>Destino</th></tr></thead><tbody>${detailRows||'<tr><td colspan="6">Sin ODT ejecutadas para los filtros seleccionados.</td></tr>'}</tbody></table></div>
+  <div class="ftr"><span>DGIME · Dashboard Integral</span><span>Diseñado por DI Emiliano Villagra</span></div>
+  </body></html>`;toast('⏳ Abriendo informe semanal para imprimir/guardar como PDF...',4000);const win=window.open('','_blank','width=1200,height=850,menubar=yes,toolbar=yes,scrollbars=yes');if(!win){toast('⚠ El navegador bloqueó la ventana emergente. Permitila y reintentá.',5000);return;}win.document.write(html);win.document.close();win.focus();win.onload=()=>setTimeout(()=>win.print(),400);}
 
 /* ─── ANÁLISIS DE PARETO ─────────────────────────────── */
 function calcParetoData(obj, limit=15){
@@ -2319,6 +2357,7 @@ function updateBadges(){Object.keys(TAB_META).forEach(t=>{const el=document.getE
 function showSourceStatus(){const ts=S.lastRefresh?S.lastRefresh.toLocaleTimeString('es-AR'):'no cargado';const msg=Object.entries(CONFIG).map(([k,cfg])=>`${cfg.label}: ${fmt((S.raw[k]||[]).length)}`).join(' · ');toast(`📊 ${msg} · ${ts}`,6500);}
 function exportCSV(){
   if(S.activeTab==='indicadores-dmth'){exportIndicadoresCSV();return;}
+  if(S.activeTab==='evolucion-semanal'){exportEvolucionSemanalCSV();return;}
   const rows=getFilteredRows();
   if(!rows.length){toast('⚠ No hay registros para exportar',3200);return;}
   const normalizedHeaders=['ID_AGRUPADO','FECHA_NORMALIZADA','DERIVAR_NORMALIZADO','TIPO_SOLICITUD_NORMALIZADO','ESTADO_NORMALIZADO','SUBESTADO_NORMALIZADO','RUBRO_NORMALIZADO','SUBRUBRO_NORMALIZADO','PRODUCTO_NORMALIZADO','ITEM_NORMALIZADO','SECTOR_NORMALIZADO','EFECTOR_NORMALIZADO','EXPEDIENTE_NORMALIZADO'];
@@ -2337,6 +2376,7 @@ function exportCSV(){
 }
 function exportPDF(){
   if(S.activeTab==='indicadores-dmth'){exportIndicadoresPDF();return;}
+  if(S.activeTab==='evolucion-semanal'){exportEvolucionSemanalPDF();return;}
   const rows=getFilteredRows();
   if(!rows.length){toast('⚠ No hay datos para armar el informe',3200);return;}
   toast('⏳ Abriendo informe ejecutivo para imprimir/guardar como PDF...',4000);
@@ -2645,144 +2685,5 @@ function fmtM(n){const v=Number(n||0);if(v===0)return'—';if(v>=1e9)return`$${(
 function esc(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');}
 function truncStr(s,n){s=String(s||'');return s.length>n?s.slice(0,n-1)+'…':s;}
 </script>
-
-<script>
-window.ES_simple = {
-  data: [],
-  chart: null,
-
-  init() {
-    this.loadData();
-    this.renderWeeks();
-    this.renderRubros();
-  },
-
-  loadData() {
-    if (typeof S !== 'undefined' && S.data && Array.isArray(S.data)) {
-      this.data = S.data;
-    } else {
-      this.data = [];
-    }
-  },
-
-  renderWeeks() {
-    const select = document.getElementById('es-semana');
-    const startDate = new Date(2026, 5, 15);
-    
-    for (let i = 0; i < 13; i++) {
-      const mon = new Date(startDate);
-      mon.setDate(startDate.getDate() + i * 7);
-      const sun = new Date(mon);
-      sun.setDate(mon.getDate() + 6);
-      
-      const label = `${mon.toLocaleDateString('es-AR', {day:'2-digit',month:'short'})} - ${sun.toLocaleDateString('es-AR', {day:'2-digit',month:'short'})}`;
-      const option = document.createElement('option');
-      option.value = JSON.stringify({start: mon.toISOString().slice(0,10), end: sun.toISOString().slice(0,10)});
-      option.textContent = label;
-      select.appendChild(option);
-    }
-  },
-
-  renderRubros() {
-    const select = document.getElementById('es-rubros');
-    const rubros = new Set();
-    this.data.forEach(row => {
-      if (row.rubro) rubros.add(String(row.rubro));
-    });
-    
-    Array.from(rubros).sort().forEach(r => {
-      const opt = document.createElement('option');
-      opt.value = r;
-      opt.textContent = r;
-      select.appendChild(opt);
-    });
-  },
-
-  render() {
-    const semanaVal = document.getElementById('es-semana').value;
-    const tipoVal = document.getElementById('es-tipo').value;
-    const rubrosVals = Array.from(document.getElementById('es-rubros').selectedOptions).map(o => o.value);
-    
-    if (!semanaVal || semanaVal === '-- Seleccionar --') {
-      alert('Selecciona una semana');
-      return;
-    }
-
-    const {start, end} = JSON.parse(semanaVal);
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    endDate.setHours(23, 59, 59);
-
-    const filtrados = this.data.filter(row => {
-      const d = new Date(row.fecha || '');
-      if (isNaN(d.getTime()) || d < startDate || d > endDate) return false;
-      if (tipoVal && !String(row.tipo || '').includes(tipoVal)) return false;
-      if (rubrosVals.length > 0 && !rubrosVals.includes(String(row.rubro || ''))) return false;
-      return true;
-    });
-
-    const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-    const counts = {Lunes: 0, Martes: 0, Miércoles: 0, Jueves: 0, Viernes: 0, Sábado: 0, Domingo: 0};
-    
-    filtrados.forEach(row => {
-      const d = new Date(row.fecha || '');
-      const dayIdx = d.getDay();
-      const dayName = days[(dayIdx + 6) % 7];
-      counts[dayName]++;
-    });
-
-    if (this.chart) this.chart.destroy();
-    
-    const ctx = document.getElementById('es-chart').getContext('2d');
-    this.chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: days,
-        datasets: [{
-          label: 'Órdenes emitidas',
-          data: days.map(d => counts[d]),
-          backgroundColor: '#1A56DB',
-          borderColor: '#1A56DB',
-          borderWidth: 0,
-          borderRadius: 6
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        indexAxis: undefined,
-        plugins: {
-          legend: {display: false},
-          tooltip: {
-            backgroundColor: 'rgba(15,23,42,0.9)',
-            padding: 8,
-            titleFont: {size: 12, weight: 'bold'},
-            bodyFont: {size: 12},
-            borderColor: '#E2E8F0',
-            borderWidth: 1
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {color: '#64748B', font: {size: 12}},
-            grid: {color: 'rgba(226, 232, 240, 0.3)', drawBorder: false}
-          },
-          x: {
-            ticks: {color: '#64748B', font: {size: 12}},
-            grid: {display: false}
-          }
-        }
-      }
-    });
-  }
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-  window.ES_simple.init();
-});
-</script>
-
-
 </body>
 </html>
